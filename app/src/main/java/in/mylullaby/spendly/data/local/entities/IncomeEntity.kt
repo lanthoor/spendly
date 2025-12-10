@@ -1,0 +1,66 @@
+package `in`.mylullaby.spendly.data.local.entities
+
+import androidx.room.*
+
+/**
+ * Income entity representing a single income transaction.
+ *
+ * Tracks income from various sources including salary, freelance work,
+ * investments, and refunds. Can be linked to an expense for refund tracking.
+ *
+ * @property id Unique identifier (auto-generated)
+ * @property amount Amount in paise (₹1.00 = 100 paise)
+ * @property source Income source (Salary/Freelance/Investments/Refund/Other)
+ * @property date Transaction date (Unix timestamp in milliseconds)
+ * @property description Income description
+ * @property isRecurring Whether this income is from a recurring setup
+ * @property linkedExpenseId Foreign key to ExpenseEntity (for refunds)
+ * @property createdAt Record creation timestamp
+ * @property modifiedAt Last modification timestamp
+ */
+@Entity(
+    tableName = "income",
+    indices = [
+        Index(value = ["date"]),
+        Index(value = ["source"]),
+        Index(value = ["linked_expense_id"]),
+        Index(value = ["created_at"])
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = ExpenseEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["linked_expense_id"],
+            onDelete = ForeignKey.SET_NULL // Keep income, unlink from expense
+        )
+    ]
+)
+data class IncomeEntity(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
+
+    @ColumnInfo(name = "amount")
+    val amount: Long, // Paise
+
+    @ColumnInfo(name = "source")
+    val source: String, // Salary/Freelance/Investments/Refund/Other
+
+    @ColumnInfo(name = "date")
+    val date: Long,
+
+    @ColumnInfo(name = "description")
+    val description: String,
+
+    @ColumnInfo(name = "is_recurring")
+    val isRecurring: Boolean = false,
+
+    @ColumnInfo(name = "linked_expense_id")
+    val linkedExpenseId: Long?, // For refunds - links back to original expense
+
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long,
+
+    @ColumnInfo(name = "modified_at")
+    val modifiedAt: Long
+)
