@@ -62,19 +62,28 @@ The project uses GitHub Actions for continuous integration and deployment:
 
 **Workflow Configuration:** `.github/workflows/android.yml`
 
-**Automated Checks:**
-- **Build:** Runs `./gradlew build` on every push and pull request
-- **Unit Tests:** Runs `./gradlew test` to execute all unit tests
-- **Lint:** Runs `./gradlew lint` to check code quality
-- **Instrumented Tests:** Runs `./gradlew connectedAndroidTest` with Android emulator for UI tests
+**✅ Status:** Fully configured and operational
+**Badge:** [![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
 
-**Caching:** Gradle dependencies are cached to speed up build times
+**Architecture:** 3 parallel jobs for faster feedback:
+1. **Build Job:** Runs `./gradlew build` - verifies project compiles
+2. **Test & Lint Job:** Runs `./gradlew test` + `./gradlew lint` - unit tests and code quality
+3. **Instrumented Tests Job:** Runs `./gradlew connectedAndroidTest` with Android emulator (API 31, google_apis, x86_64)
+
+**Actions Used (commit-hash pinned for security):**
+- `actions/checkout@v6.0.1` (latest)
+- `actions/setup-java@v5.1.0` (latest, JDK 17)
+- `actions/cache@v4.3.0` (latest, Gradle caching)
+- `actions/upload-artifact@v5.0.0` (latest, test/lint reports)
+- `reactivecircus/android-emulator-runner@v2.35.0` (latest)
+
+**Caching:** Gradle dependencies and wrapper cached with proper cache keys
 
 **Triggers:** Workflow runs on:
 - Push to `main` branch
 - Pull requests to `main` branch
 
-**Status Badge:** Build status badge should be added to README.md to show current CI status
+**Artifacts:** Test and lint reports uploaded on every run (accessible even on failure)
 
 **Note:** Play Store deployment is NOT automated - deferred to end of development (manual process as per PLAN.md task 210)
 
@@ -89,7 +98,9 @@ The project uses GitHub Actions for continuous integration and deployment:
 - **Target SDK:** 36
 
 ### Architecture Pattern
-- **MVVM:** Model-View-ViewModel with ViewModel and StateFlow (planned)
+- **MVVM:** Model-View-ViewModel with ViewModel and StateFlow (in progress)
+- **Clean Architecture:** Separation of data, domain, and presentation layers
+- **Dependency Injection:** Hilt v2.51.1 for all dependencies
 - **Dependency Management:** Version catalog in `gradle/libs.versions.toml`
 - **Compose Navigation:** Material 3 Adaptive Navigation Suite for responsive layouts
 
@@ -98,34 +109,68 @@ The project uses GitHub Actions for continuous integration and deployment:
 app/src/
 ├── main/
 │   ├── java/in/mylullaby/spendly/
-│   │   ├── MainActivity.kt          # Main entry point with NavigationSuiteScaffold
-│   │   └── ui/theme/                # Material 3 theming (Color, Type, Theme)
-│   ├── res/                         # Resources (layouts, drawables, values)
+│   │   ├── MainActivity.kt                    # Main entry point with NavigationSuiteScaffold
+│   │   ├── data/                              # Data layer
+│   │   │   ├── local/                         # Room database
+│   │   │   │   ├── entities/                  # Room entities (to be implemented)
+│   │   │   │   └── dao/                       # Data Access Objects (to be implemented)
+│   │   │   ├── repository/                    # Repository implementations (to be implemented)
+│   │   │   └── datastore/                     # DataStore preferences (to be implemented)
+│   │   ├── domain/                            # Domain layer
+│   │   │   ├── model/                         # Domain models (to be implemented)
+│   │   │   └── repository/                    # Repository interfaces (to be implemented)
+│   │   ├── ui/                                # Presentation layer
+│   │   │   ├── screens/                       # Feature screens
+│   │   │   │   ├── dashboard/                 # Dashboard/Home (to be implemented)
+│   │   │   │   ├── expenses/                  # Expense management (to be implemented)
+│   │   │   │   ├── income/                    # Income tracking (to be implemented)
+│   │   │   │   ├── budgets/                   # Budget management (to be implemented)
+│   │   │   │   ├── analytics/                 # Analytics & charts (to be implemented)
+│   │   │   │   └── settings/                  # Settings (to be implemented)
+│   │   │   ├── components/                    # Reusable composables (to be implemented)
+│   │   │   ├── navigation/                    # Navigation setup (to be implemented)
+│   │   │   └── theme/                         # ✅ Material 3 theming (Color, Type, Theme)
+│   │   ├── di/                                # Dependency injection modules
+│   │   │   ├── DatabaseModule.kt              # Database providers (placeholder)
+│   │   │   ├── RepositoryModule.kt            # Repository bindings (placeholder)
+│   │   │   └── AppModule.kt                   # App-level dependencies (placeholder)
+│   │   └── utils/                             # Helper utilities
+│   │       └── Extensions.kt                  # Extension functions (placeholder)
+│   ├── res/                                   # Resources (layouts, drawables, values)
 │   └── AndroidManifest.xml
-├── test/                            # Unit tests
-└── androidTest/                     # Instrumented tests
+├── test/                                      # Unit tests
+└── androidTest/                               # Instrumented tests
 ```
 
 ### Current Implementation Status
-The app currently has:
-- Basic MainActivity with Material 3 adaptive navigation (Home/Favorites/Profile destinations)
-- Material 3 theming with dynamic color support (Android 12+)
-- Edge-to-edge UI enabled
-- Placeholder "Hello Android" greeting screen
 
-The app is in early stages - most features from PLAN.md are not yet implemented.
+**✅ Phase 1 Complete: Project Setup & Infrastructure (Tasks 1-16)**
+- ✅ Basic MainActivity with Material 3 adaptive navigation (Home/Favorites/Profile destinations)
+- ✅ Material 3 theming with dynamic color support (Android 12+)
+- ✅ Edge-to-edge UI enabled
+- ✅ Placeholder "Hello Android" greeting screen
+- ✅ **All dependencies configured:** Room v2.6.1, Vico v2.0.0-alpha.28, DataStore v1.1.1, Hilt v2.51.1
+- ✅ **ProGuard rules configured** for all libraries (Room, Hilt, DataStore, Coroutines)
+- ✅ **Complete package structure** following clean architecture (data, domain, ui, di, utils)
+- ✅ **GitHub Actions CI/CD** with 3 parallel jobs (Build, Test & Lint, Instrumented Tests)
+- ✅ **Latest GitHub Actions** with commit-hash pinning for security
 
-### Planned Tech Stack (from PLAN.md)
-- **Database:** Room (SQLite wrapper) with SQLCipher encryption
-- **Charts:** Vico
-- **Dependency Injection:** Hilt (planned)
-- **Preferences:** DataStore
-- **Image Loading:** Coil
-- **Background Work:** WorkManager for recurring transactions
-- **Permissions:** SMS read for auto-detection
-- **Security:** BiometricPrompt, EncryptedSharedPreferences
-- **Pagination:** Paging 3 library
-- **CI/CD:** GitHub Actions (build, test, lint)
+**🚧 Next Phase: Database Foundation (Tasks 17-27)**
+- Room database entities (Expense, Income, Category, Budget, Receipt, RecurringTransaction, Tag)
+- DAOs with Flow-based reactive queries
+- Repository layer with clean architecture
+
+### Tech Stack (Configured & Ready)
+- ✅ **Database:** Room v2.6.1 (SQLite wrapper) - SQLCipher encryption deferred to task 173
+- ✅ **Charts:** Vico v2.0.0-alpha.28 with Material 3 integration
+- ✅ **Dependency Injection:** Hilt v2.51.1 with Navigation Compose v1.2.0
+- ✅ **Preferences:** DataStore v1.1.1 (preferences and core)
+- ⏳ **Image Loading:** Coil (to be added when needed)
+- ⏳ **Background Work:** WorkManager for recurring transactions (to be added)
+- ⏳ **Permissions:** SMS read for auto-detection (to be added)
+- ⏳ **Security:** BiometricPrompt, EncryptedSharedPreferences (to be added)
+- ⏳ **Pagination:** Paging 3 library (to be added)
+- ✅ **CI/CD:** GitHub Actions with parallel jobs, latest actions (v6/v5), commit-hash pinned
 
 ## Core Features (Planned)
 

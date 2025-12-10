@@ -1,5 +1,7 @@
 # Personal Expense Tracker - Feature List & Scope
 
+[![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
+
 ## Core Features
 
 ### 1. **Expense Management**

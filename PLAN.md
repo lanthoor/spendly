@@ -3,20 +3,20 @@
 ## Project Setup & Infrastructure
 1. ✓ Initialize Android project with Kotlin and Jetpack Compose
 2. ✓ Configure Gradle build system with version catalogs
-3. Add Room database dependency and configure
-4. Add Vico chart library dependency
-5. Add DataStore for preferences management
-6. Configure Hilt for dependency injection
-7. Set up build variants (debug/release) and ProGuard rules
-8. Create project package structure (ui, data, domain, utils)
-9. Set up GitHub Actions workflow for CI/CD
-10. Configure GitHub Actions to run on push and pull requests
-11. Add build job to GitHub Actions (./gradlew build)
-12. Add unit test job to GitHub Actions (./gradlew test)
-13. Add lint check job to GitHub Actions (./gradlew lint)
-14. Add instrumented test job to GitHub Actions (./gradlew connectedAndroidTest) with Android emulator
-15. Configure caching for Gradle dependencies in GitHub Actions
-16. Add status badge to README.md for build status
+3. ✓ Add Room database dependency and configure (v2.6.1 with KSP v2.0.21-1.0.28)
+4. ✓ Add Vico chart library dependency (v2.0.0-alpha.28 with Material 3 integration)
+5. ✓ Add DataStore for preferences management (v1.1.1 - preferences and core)
+6. ✓ Configure Hilt for dependency injection (v2.51.1 with Navigation Compose v1.2.0)
+7. ✓ Set up build variants (debug/release) and ProGuard rules (Room, Hilt, DataStore, Coroutines)
+8. ✓ Create project package structure (data/local/entities, data/local/dao, data/repository, data/datastore, domain/model, domain/repository, ui/screens/*, ui/components, ui/navigation, di/, utils/)
+9. ✓ Set up GitHub Actions workflow for CI/CD (3 parallel jobs: Build, Test & Lint, Instrumented Tests)
+10. ✓ Configure GitHub Actions to run on push and pull requests (main branch)
+11. ✓ Add build job to GitHub Actions (./gradlew build) - runs in parallel
+12. ✓ Add unit test job to GitHub Actions (./gradlew test) - runs with lint in Test & Lint job
+13. ✓ Add lint check job to GitHub Actions (./gradlew lint) - runs with tests in Test & Lint job
+14. ✓ Add instrumented test job to GitHub Actions (./gradlew connectedAndroidTest) with Android emulator (API 31, google_apis, x86_64)
+15. ✓ Configure caching for Gradle dependencies in GitHub Actions (v4.3.0 with proper cache keys)
+16. ✓ Add status badge to README.md for build status (https://github.com/lanthoor/spendly)
 
 ## Database Design & Implementation
 17. Create Room database class and version management with SQLCipher encryption
