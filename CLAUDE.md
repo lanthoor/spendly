@@ -72,7 +72,7 @@ The project uses GitHub Actions for continuous integration and deployment:
 
 **Actions Used (commit-hash pinned for security):**
 - `actions/checkout@v6.0.1` (latest)
-- `actions/setup-java@v5.1.0` (latest, JDK 17)
+- `actions/setup-java@v5.1.0` (latest, JDK 21 LTS)
 - `actions/cache@v4.3.0` (latest, Gradle caching)
 - `actions/upload-artifact@v5.0.0` (latest, test/lint reports)
 - `reactivecircus/android-emulator-runner@v2.35.0` (latest)
@@ -90,7 +90,8 @@ The project uses GitHub Actions for continuous integration and deployment:
 ## Architecture
 
 ### Technology Stack
-- **Language:** Kotlin
+- **Language:** Kotlin 2.0.21
+- **Java:** 21 LTS (Temurin distribution)
 - **UI Framework:** Jetpack Compose with Material 3
 - **Navigation:** Material 3 Adaptive Navigation Suite (bottom nav/rail/drawer based on screen size)
 - **Build System:** Gradle with Kotlin DSL
