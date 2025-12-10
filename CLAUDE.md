@@ -110,17 +110,18 @@ The project uses GitHub Actions for continuous integration and deployment:
 app/src/
 ├── main/
 │   ├── java/in/mylullaby/spendly/
-│   │   ├── MainActivity.kt                    # Main entry point with NavigationSuiteScaffold
+│   │   ├── MainActivity.kt                    # ✅ Main entry point with @AndroidEntryPoint
+│   │   ├── SpendlyApplication.kt              # ✅ Application class with @HiltAndroidApp
 │   │   ├── data/                              # Data layer
 │   │   │   ├── local/                         # Room database
 │   │   │   │   ├── entities/                  # ✅ Room entities (8 entities)
 │   │   │   │   ├── dao/                       # ✅ Data Access Objects (8 DAOs)
 │   │   │   │   └── SpendlyDatabase.kt         # ✅ Room database configuration
-│   │   │   ├── repository/                    # Repository implementations (to be implemented)
+│   │   │   ├── repository/                    # ✅ Repository implementations (5 repositories)
 │   │   │   └── datastore/                     # DataStore preferences (to be implemented)
 │   │   ├── domain/                            # Domain layer
-│   │   │   ├── model/                         # Domain models (to be implemented)
-│   │   │   └── repository/                    # Repository interfaces (to be implemented)
+│   │   │   ├── model/                         # ✅ Domain models (6 models)
+│   │   │   └── repository/                    # ✅ Repository interfaces (5 interfaces)
 │   │   ├── ui/                                # Presentation layer
 │   │   │   ├── screens/                       # Feature screens
 │   │   │   │   ├── dashboard/                 # Dashboard/Home (to be implemented)
@@ -132,12 +133,14 @@ app/src/
 │   │   │   ├── components/                    # Reusable composables (to be implemented)
 │   │   │   ├── navigation/                    # Navigation setup (to be implemented)
 │   │   │   └── theme/                         # ✅ Material 3 theming (Color, Type, Theme)
-│   │   ├── di/                                # Dependency injection modules
-│   │   │   ├── DatabaseModule.kt              # Database providers (to be implemented)
-│   │   │   ├── RepositoryModule.kt            # Repository bindings (to be implemented)
-│   │   │   └── AppModule.kt                   # App-level dependencies (to be implemented)
+│   │   ├── di/                                # ✅ Dependency injection modules (4 modules)
+│   │   │   ├── DatabaseModule.kt              # ✅ Database & DAO providers
+│   │   │   ├── RepositoryModule.kt            # ✅ Repository bindings
+│   │   │   ├── DataStoreModule.kt             # ✅ DataStore preferences provider
+│   │   │   └── AppModule.kt                   # ✅ App-level dependencies
 │   │   └── utils/                             # Helper utilities
-│   │       └── Extensions.kt                  # Extension functions (placeholder)
+│   │       ├── CurrencyUtils.kt               # ✅ Paise/Rupee conversion utilities
+│   │       └── Enums.kt                       # ✅ PaymentMethod, IncomeSource, etc.
 │   ├── res/                                   # Resources (layouts, drawables, values)
 │   └── AndroidManifest.xml
 ├── test/                                      # Unit tests
@@ -277,3 +280,5 @@ Refer to PLAN.md for complete schema. Key entities:
   - JSON: Single file with metadata (version, export_date, currency: INR) and all entities
   - CSV: Date, Amount (in ₹), Category, Description, Payment Method, Tags (comma-separated)
 - never commit without explicit instruction
+- use concise and short commit messages. no need to put test coverage/etc., next phase details, challenges, etc. in the commit message. also the first line should be less than 60 characters long.
+- update PLAN.md and README.md after each phase completion

@@ -30,18 +30,31 @@
 9. ✓ Create DAO interfaces for each entity with CRUD operations, use Flow for reactive queries
 **Note:** Room migrations moved to Performance Optimization section. Database backup/restore moved to Data Import/Export section.
 
-## Core Data Models & State Management
-1. Create Kotlin data classes for Expense model with amount helper functions (fromPaise, toPaise, displayAmount)
-2. Create Kotlin data classes for Income model with refund linking support
-3. Create Kotlin data classes for Receipt model
-4. Create Kotlin data classes for Category model with predefined list constant
-5. Create Kotlin data classes for Budget model
-6. Create Kotlin data classes for Tag model
-7. Create Repository classes for expenses with Flow/StateFlow, default sort by date DESC (newest first)
-8. Create Repository classes for income with Flow/StateFlow
-9. Create Repository classes for categories with Flow/StateFlow, include predefined seed data
-10. Create Repository classes for budgets with Flow/StateFlow, include notification tracking
-11. Set up DataStore for application settings (theme: Light/Dark/System, default_payment_method, notification_preferences, calendar_view_mode: expenses/income/both)
+## Core Data Models & State Management (Phase 3 - Complete)
+1. ✓ Create Kotlin data classes for Expense model with amount helper functions (fromPaise, toPaise, displayAmount)
+2. ✓ Create Kotlin data classes for Income model with refund linking support
+3. ✓ Create Kotlin data classes for Receipt model
+4. ✓ Create Kotlin data classes for Category model with predefined list constant (14 categories)
+5. ✓ Create Kotlin data classes for Budget model with progress calculation and notification threshold helpers
+6. ✓ Create Kotlin data classes for Tag model with TransactionTag junction model
+7. ✓ Create Repository interface for expenses with Flow/StateFlow, default sort by date DESC (newest first)
+8. ✓ Create Repository interface for income with Flow/StateFlow
+9. ✓ Create Repository interface for categories with Flow/StateFlow, include predefined seed data
+10. ✓ Create Repository interface for budgets with Flow/StateFlow, include notification tracking
+11. ✓ Create Repository interface for tags with transaction-tag association methods
+12. ✓ Implement ExpenseRepositoryImpl with entity-to-model mapping and DAO integration
+13. ✓ Implement IncomeRepositoryImpl with refund filtering support
+14. ✓ Implement CategoryRepositoryImpl with predefined category seeding logic (checks "Uncategorized")
+15. ✓ Implement BudgetRepositoryImpl with notification flag tracking
+16. ✓ Implement TagRepositoryImpl with many-to-many junction table operations
+17. ✓ Configure Hilt DatabaseModule - provides Room database and all 8 DAOs
+18. ✓ Configure Hilt RepositoryModule - binds all 5 repository implementations to interfaces
+19. ✓ Configure Hilt DataStoreModule - provides Preferences DataStore for app settings
+20. ✓ Configure Hilt AppModule - provides application context and coroutine scope
+21. ✓ Create SpendlyApplication with @HiltAndroidApp and category seeding on first launch
+22. ✓ Update MainActivity with @AndroidEntryPoint annotation
+23. ✓ Verify build success and all tests pass
+**Note:** DataStore settings keys defined: theme, default_payment_method, notification_preferences, calendar_view_mode, budget_alert_75_enabled, budget_alert_100_enabled, sms_auto_detection_enabled
 
 ## Expense Management Features
 1. Create ExpenseViewModel with StateFlow for UI state
