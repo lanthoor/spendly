@@ -118,7 +118,7 @@ class ExpenseRepositoryImpl @Inject constructor(
             categoryId = entity.categoryId,
             date = entity.date,
             description = entity.description,
-            paymentMethod = PaymentMethod.valueOf(entity.paymentMethod),
+            paymentMethod = PaymentMethod.fromStringOrDefault(entity.paymentMethod, PaymentMethod.CASH),
             createdAt = entity.createdAt,
             modifiedAt = entity.modifiedAt,
             receipts = receipts

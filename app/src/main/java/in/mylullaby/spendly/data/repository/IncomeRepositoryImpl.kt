@@ -99,7 +99,7 @@ class IncomeRepositoryImpl @Inject constructor(
             id = entity.id,
             amount = entity.amount,
             categoryId = entity.categoryId,
-            source = IncomeSource.valueOf(entity.source),
+            source = IncomeSource.fromStringOrDefault(entity.source, IncomeSource.OTHER),
             date = entity.date,
             description = entity.description,
             isRecurring = entity.isRecurring,

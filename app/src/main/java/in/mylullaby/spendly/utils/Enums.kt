@@ -16,6 +16,18 @@ enum class PaymentMethod {
         fun fromString(value: String): PaymentMethod? {
             return entries.find { it.name == value }
         }
+
+        /**
+         * Safe parsing with fallback to default value.
+         * Prevents IllegalArgumentException crashes from invalid database values.
+         * Logs warning when unknown value is encountered.
+         */
+        fun fromStringOrDefault(value: String, default: PaymentMethod = CASH): PaymentMethod {
+            return fromString(value) ?: run {
+                android.util.Log.w("PaymentMethod", "Unknown payment method: $value, defaulting to ${default.name}")
+                default
+            }
+        }
     }
 }
 
@@ -58,6 +70,18 @@ enum class IncomeSource {
         fun fromString(value: String): IncomeSource? {
             return entries.find { it.name == value }
         }
+
+        /**
+         * Safe parsing with fallback to default value.
+         * Prevents IllegalArgumentException crashes from invalid database values.
+         * Logs warning when unknown value is encountered.
+         */
+        fun fromStringOrDefault(value: String, default: IncomeSource = OTHER): IncomeSource {
+            return fromString(value) ?: run {
+                android.util.Log.w("IncomeSource", "Unknown income source: $value, defaulting to ${default.name}")
+                default
+            }
+        }
     }
 }
 
@@ -88,6 +112,18 @@ enum class RecurringFrequency {
         fun fromString(value: String): RecurringFrequency? {
             return entries.find { it.name == value }
         }
+
+        /**
+         * Safe parsing with fallback to default value.
+         * Prevents IllegalArgumentException crashes from invalid database values.
+         * Logs warning when unknown value is encountered.
+         */
+        fun fromStringOrDefault(value: String, default: RecurringFrequency = MONTHLY): RecurringFrequency {
+            return fromString(value) ?: run {
+                android.util.Log.w("RecurringFrequency", "Unknown recurring frequency: $value, defaulting to ${default.name}")
+                default
+            }
+        }
     }
 }
 
@@ -102,6 +138,18 @@ enum class TransactionType {
     companion object {
         fun fromString(value: String): TransactionType? {
             return entries.find { it.name == value }
+        }
+
+        /**
+         * Safe parsing with fallback to default value.
+         * Prevents IllegalArgumentException crashes from invalid database values.
+         * Logs warning when unknown value is encountered.
+         */
+        fun fromStringOrDefault(value: String, default: TransactionType = EXPENSE): TransactionType {
+            return fromString(value) ?: run {
+                android.util.Log.w("TransactionType", "Unknown transaction type: $value, defaulting to ${default.name}")
+                default
+            }
         }
     }
 }

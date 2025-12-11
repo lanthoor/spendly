@@ -126,20 +126,37 @@ object FileUtils {
     /**
      * Deletes a receipt file from internal storage.
      *
+     * SECURITY: Validates canonical path to prevent path traversal attacks.
+     * Malicious paths like "../../sensitive_file" are rejected.
+     *
      * @param context Application context
      * @param filePath Relative path of the file (e.g., "receipts/receipt_123_1638123456789.jpg")
-     * @return true if deletion succeeded or file doesn't exist, false on failure
+     * @return true if deletion succeeded or file doesn't exist, false on failure or invalid path
      */
     fun deleteReceiptFile(context: Context, filePath: String): Boolean {
         return try {
-            val file = File(context.filesDir, filePath)
+            // Determine receipts directory
+            val receiptsDir = File(context.filesDir, "receipts")
+            val file = File(receiptsDir, filePath)
+
+            // CRITICAL SECURITY CHECK: Validate canonical path stays within receipts directory
+            // This prevents path traversal attacks (e.g., "../../sensitive_file")
+            val receiptsDirCanonical = receiptsDir.canonicalPath
+            val fileCanonical = file.canonicalPath
+
+            if (!fileCanonical.startsWith(receiptsDirCanonical)) {
+                android.util.Log.e("FileUtils", "Path traversal attempt detected: $filePath")
+                return false
+            }
+
+            // Safe to delete
             if (file.exists()) {
                 file.delete()
             } else {
                 true // File doesn't exist, consider it deleted
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("FileUtils", "Failed to delete receipt: $filePath", e)
             false
         }
     }
@@ -172,11 +189,26 @@ object FileUtils {
 
     /**
      * Validates if a file type is supported for receipts.
+     * DEPRECATED: Use validateReceiptFile() instead for comprehensive validation.
      *
      * @param extension File extension (jpg, png, webp, pdf)
      * @return true if supported
      */
+    @Deprecated("Use validateReceiptFile() for comprehensive validation including magic numbers")
     fun isSupportedFileType(extension: String): Boolean {
         return extension.lowercase() in setOf("jpg", "jpeg", "png", "webp", "pdf")
+    }
+
+    /**
+     * Comprehensive validation of a receipt file.
+     *
+     * SECURITY: Validates file extension, magic numbers, and size.
+     * Prevents malicious files disguised with wrong extensions.
+     *
+     * @param file The file to validate
+     * @return ValidationResult with detailed failure reason
+     */
+    fun validateReceiptFile(file: File): FileTypeValidator.ValidationResult {
+        return FileTypeValidator.validateReceiptFile(file, MAX_FILE_SIZE_BYTES)
     }
 }

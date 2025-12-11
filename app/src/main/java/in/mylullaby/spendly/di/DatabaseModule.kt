@@ -1,7 +1,10 @@
 package `in`.mylullaby.spendly.di
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,7 +24,13 @@ object DatabaseModule {
 
     /**
      * Provides the Spendly database instance.
-     * Includes migrations:
+     *
+     * Security features:
+     * - Foreign key constraints explicitly enabled
+     * - Write-ahead logging for better concurrency
+     * - No destructive migration fallback (prevents accidental data loss)
+     *
+     * Migrations:
      * - 1→2: Add category type field
      * - 2→3: Add categoryId to income
      */
@@ -37,7 +46,22 @@ object DatabaseModule {
                 SpendlyDatabase.MIGRATION_1_2,
                 SpendlyDatabase.MIGRATION_2_3
             )
-            .fallbackToDestructiveMigration() // Fallback for other versions
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    super.onOpen(db)
+                    // CRITICAL: Explicitly enable foreign key constraints
+                    // This ensures referential integrity is enforced
+                    db.execSQL("PRAGMA foreign_keys = ON;")
+                }
+
+                override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                    // This should NEVER happen in production
+                    // Prevents accidental data loss from missing migration paths
+                    Log.e("DatabaseModule", "CRITICAL: Destructive migration attempted!")
+                    throw IllegalStateException("Migration path missing - data loss prevented")
+                }
+            })
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .build()
     }
 
