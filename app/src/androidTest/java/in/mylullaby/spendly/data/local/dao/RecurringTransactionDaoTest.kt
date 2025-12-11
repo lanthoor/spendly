@@ -50,7 +50,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun insertRecurringTransaction_withValidData_returnsInsertedId() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring = TestDataBuilders.createTestRecurringTransactionEntity(
@@ -78,7 +78,7 @@ class RecurringTransactionDaoTest {
         // Test ZERO tolerance for precision loss
         val testAmounts = listOf(1L, 50L, 100L, 12345L, 123456789L)
 
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         testAmounts.forEach { amount ->
@@ -104,7 +104,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun updateRecurringTransaction_changesData_andModifiedTimestamp() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring = TestDataBuilders.createTestRecurringTransactionEntity(
@@ -145,7 +145,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun deleteRecurringTransaction_removesFromDatabase() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring = TestDataBuilders.createTestRecurringTransactionEntity(categoryId = categoryId)
@@ -168,7 +168,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getAllRecurringTransactions_orderedByNextDateAsc() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val now = System.currentTimeMillis()
@@ -207,7 +207,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getRecurringTransactionById_returnsCorrectTransaction() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring1 = TestDataBuilders.createTestRecurringTransactionEntity(
@@ -233,7 +233,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getRecurringTransactionsByType_returnsOnlyMatchingType() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val expense1 = TestDataBuilders.createTestRecurringTransactionEntity(
@@ -268,7 +268,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getDueRecurringTransactions_returnsOnlyDue() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val now = System.currentTimeMillis()
@@ -310,8 +310,9 @@ class RecurringTransactionDaoTest {
     @Test
     fun getRecurringTransactionsByCategory_returnsOnlyMatchingCategory() = runTest {
         // Arrange
-        val category1 = TestDataBuilders.createTestCategoryEntity(name = "Rent")
-        val category2 = TestDataBuilders.createTestCategoryEntity(name = "Utilities")
+        val timestamp = System.currentTimeMillis()
+        val category1 = TestDataBuilders.createTestCategoryEntity(name = "Rent-$timestamp")
+        val category2 = TestDataBuilders.createTestCategoryEntity(name = "Utilities-$timestamp")
         val categoryId1 = categoryDao.insert(category1)
         val categoryId2 = categoryDao.insert(category2)
 
@@ -346,7 +347,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getRecurringTransactionCountByCategory_returnsCorrectCount() = runBlocking {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         dao.insert(TestDataBuilders.createTestRecurringTransactionEntity(categoryId = categoryId))
@@ -365,7 +366,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun insertRecurringTransaction_withDifferentFrequencies_success() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val frequencies = listOf("DAILY", "WEEKLY", "MONTHLY")
@@ -393,7 +394,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun deleteCategory_setsRecurringTransactionCategoryIdToNull() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Rent-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring = TestDataBuilders.createTestRecurringTransactionEntity(
@@ -428,7 +429,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getAllRecurringTransactions_emitsUpdatesOnInsert() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         // Act & Assert
@@ -453,7 +454,7 @@ class RecurringTransactionDaoTest {
     @Test
     fun getRecurringTransactionById_emitsUpdatesOnUpdate() = runTest {
         // Arrange
-        val category = TestDataBuilders.createTestCategoryEntity(name = "Test")
+        val category = TestDataBuilders.createTestCategoryEntity(name = "Test-${System.currentTimeMillis()}")
         val categoryId = categoryDao.insert(category)
 
         val recurring = TestDataBuilders.createTestRecurringTransactionEntity(

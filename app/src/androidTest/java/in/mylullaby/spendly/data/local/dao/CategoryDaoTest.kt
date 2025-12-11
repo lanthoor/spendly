@@ -122,7 +122,7 @@ class CategoryDaoTest {
 
     @Test
     fun insertAll_withPredefinedCategories_insertsAllThirteen() = runTest {
-        // Arrange - Use actual predefined categories from domain model
+        // Arrange - Use actual predefined categories from domain model (13 expense + 10 income = 23)
         val predefinedCategories = Category.PREDEFINED.map { category ->
             TestDataBuilders.createTestCategoryEntity(
                 id = category.id,
@@ -140,11 +140,14 @@ class CategoryDaoTest {
         // Assert
         dao.getAllCategories().test {
             val retrieved = awaitItem()
-            assertEquals(13, retrieved.size)
-            // Verify key categories exist
+            assertEquals(23, retrieved.size) // 13 expense + 10 income
+            // Verify key expense categories exist
             assertTrue(retrieved.any { it.name == "Food & Dining" })
             assertTrue(retrieved.any { it.name == "Travel" })
             assertTrue(retrieved.any { it.name == "Misc" })
+            // Verify key income categories exist
+            assertTrue(retrieved.any { it.name == "Salary" })
+            assertTrue(retrieved.any { it.name == "Other" })
             cancelAndIgnoreRemainingEvents()
         }
     }

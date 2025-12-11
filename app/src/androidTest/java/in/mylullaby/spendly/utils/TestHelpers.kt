@@ -88,6 +88,7 @@ object TestDataBuilders {
     fun createTestIncomeEntity(
         id: Long = 0,
         amount: Long = 50000L,
+        categoryId: Long? = null,
         source: String = "SALARY",
         date: Long = System.currentTimeMillis(),
         description: String = "Test Income",
@@ -98,6 +99,7 @@ object TestDataBuilders {
     ) = IncomeEntity(
         id = id,
         amount = amount,
+        categoryId = categoryId,
         source = source,
         date = date,
         description = description,
@@ -163,7 +165,7 @@ object TestDataBuilders {
         id: Long = 0,
         transactionType: String = "EXPENSE",
         amount: Long = 20000L,
-        categoryId: Long,
+        categoryId: Long = 1L,
         description: String = "Test Recurring Transaction",
         frequency: String = "MONTHLY",
         nextDate: Long = System.currentTimeMillis(),

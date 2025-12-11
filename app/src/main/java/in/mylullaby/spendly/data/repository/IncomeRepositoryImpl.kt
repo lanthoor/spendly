@@ -1,12 +1,16 @@
 package `in`.mylullaby.spendly.data.repository
 
+import android.util.Log
 import `in`.mylullaby.spendly.data.local.dao.IncomeDao
+import `in`.mylullaby.spendly.data.local.dao.TransactionTagDao
 import `in`.mylullaby.spendly.data.local.entities.IncomeEntity
 import `in`.mylullaby.spendly.domain.model.Income
 import `in`.mylullaby.spendly.domain.repository.IncomeRepository
 import `in`.mylullaby.spendly.utils.IncomeSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +20,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class IncomeRepositoryImpl @Inject constructor(
-    private val incomeDao: IncomeDao
+    private val incomeDao: IncomeDao,
+    private val transactionTagDao: TransactionTagDao
 ) : IncomeRepository {
 
     // CRUD operations
@@ -29,8 +34,18 @@ class IncomeRepositoryImpl @Inject constructor(
         incomeDao.update(incomeEntityFrom(income))
     }
 
-    override suspend fun deleteIncome(income: Income) {
-        incomeDao.delete(incomeEntityFrom(income))
+    override suspend fun deleteIncome(income: Income) = withContext(Dispatchers.IO) {
+        try {
+            // Delete all transaction_tags for this income
+            // (No FK exists between transaction_tags and income, so manual cleanup required)
+            transactionTagDao.deleteAllTagsForTransaction(income.id, "INCOME")
+
+            // Delete the income
+            incomeDao.delete(incomeEntityFrom(income))
+        } catch (e: Exception) {
+            Log.e("IncomeRepository", "Failed to delete income: ${income.id}", e)
+            throw e // Re-throw to let caller handle
+        }
     }
 
     override fun getIncomeById(id: Long): Flow<Income?> {

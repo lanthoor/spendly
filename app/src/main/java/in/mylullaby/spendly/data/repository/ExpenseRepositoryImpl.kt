@@ -1,16 +1,24 @@
 package `in`.mylullaby.spendly.data.repository
 
+import android.content.Context
+import android.util.Log
+import dagger.hilt.android.qualifiers.ApplicationContext
 import `in`.mylullaby.spendly.data.local.dao.ExpenseDao
 import `in`.mylullaby.spendly.data.local.dao.ReceiptDao
+import `in`.mylullaby.spendly.data.local.dao.TransactionTagDao
 import `in`.mylullaby.spendly.data.local.entities.ExpenseEntity
 import `in`.mylullaby.spendly.data.local.entities.ReceiptEntity
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Receipt
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
+import `in`.mylullaby.spendly.utils.FileUtils
 import `in`.mylullaby.spendly.utils.PaymentMethod
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +29,9 @@ import javax.inject.Singleton
 @Singleton
 class ExpenseRepositoryImpl @Inject constructor(
     private val expenseDao: ExpenseDao,
-    private val receiptDao: ReceiptDao
+    private val receiptDao: ReceiptDao,
+    private val transactionTagDao: TransactionTagDao,
+    @ApplicationContext private val context: Context
 ) : ExpenseRepository {
 
     // CRUD operations
@@ -34,8 +44,29 @@ class ExpenseRepositoryImpl @Inject constructor(
         expenseDao.update(expenseEntityFrom(expense))
     }
 
-    override suspend fun deleteExpense(expense: Expense) {
-        expenseDao.delete(expenseEntityFrom(expense))
+    override suspend fun deleteExpense(expense: Expense) = withContext(Dispatchers.IO) {
+        try {
+            // Step 1: Get all receipts for this expense and delete their physical files
+            val receipts = receiptDao.getReceiptsByExpense(expense.id).firstOrNull() ?: emptyList()
+            receipts.forEach { receiptEntity ->
+                try {
+                    FileUtils.deleteReceiptFile(context, receiptEntity.filePath)
+                } catch (e: Exception) {
+                    Log.w("ExpenseRepository", "Failed to delete receipt file: ${receiptEntity.filePath}", e)
+                    // Continue - don't fail expense deletion if file deletion fails
+                }
+            }
+
+            // Step 2: Delete all transaction_tags for this expense
+            // (No FK exists between transaction_tags and expenses, so manual cleanup required)
+            transactionTagDao.deleteAllTagsForTransaction(expense.id, "EXPENSE")
+
+            // Step 3: Delete the expense (CASCADE will handle receipt database records)
+            expenseDao.delete(expenseEntityFrom(expense))
+        } catch (e: Exception) {
+            Log.e("ExpenseRepository", "Failed to delete expense: ${expense.id}", e)
+            throw e // Re-throw to let caller handle
+        }
     }
 
     override fun getExpenseById(id: Long): Flow<Expense?> {

@@ -50,10 +50,10 @@ data class Category(
             Category(101, "Salary", "briefcase", 0xFF2E7D32.toInt(), false, 1, CategoryType.INCOME),
             Category(102, "Freelance", "laptop", 0xFF00897B.toInt(), false, 2, CategoryType.INCOME),
             Category(103, "Business", "storefront", 0xFF1976D2.toInt(), false, 3, CategoryType.INCOME),
-            Category(104, "Investments", "trending_up", 0xFF1DD1A1.toInt(), false, 4, CategoryType.INCOME),
+            Category(104, "Investment Income", "trending_up", 0xFF1DD1A1.toInt(), false, 4, CategoryType.INCOME),
             Category(105, "Rental", "home", 0xFF7B1FA2.toInt(), false, 5, CategoryType.INCOME),
             Category(106, "Interest", "bank", 0xFFE65100.toInt(), false, 6, CategoryType.INCOME),
-            Category(107, "Gifts", "card_giftcard", 0xFFC44569.toInt(), false, 7, CategoryType.INCOME),
+            Category(107, "Gift Received", "card_giftcard", 0xFFC44569.toInt(), false, 7, CategoryType.INCOME),
             Category(108, "Refund", "receipt", 0xFF00ACC1.toInt(), false, 8, CategoryType.INCOME),
             Category(109, "Bonus", "gift", 0xFFF57C00.toInt(), false, 9, CategoryType.INCOME),
             Category(110, "Other", "category", 0xFF9E9E9E.toInt(), false, 10, CategoryType.INCOME)

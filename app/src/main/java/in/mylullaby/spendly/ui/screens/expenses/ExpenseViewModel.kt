@@ -17,12 +17,14 @@ import `in`.mylullaby.spendly.utils.ImageCompressor
 import `in`.mylullaby.spendly.utils.PaymentMethod
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -63,15 +65,32 @@ class ExpenseViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    // Job tracking for Flow collections (prevents memory leaks)
+    private var loadExpensesJob: Job? = null
+    private var loadExpenseByIdJob: Job? = null
+    private var loadReceiptsJob: Job? = null
+
     init {
         loadExpenses()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        // Cancel all active Flow collections
+        loadExpensesJob?.cancel()
+        loadExpenseByIdJob?.cancel()
+        loadReceiptsJob?.cancel()
+    }
+
     /**
-     * Loads expenses based on current filters
+     * Loads expenses based on current filters.
+     * Cancels any previous loading job to prevent memory leaks.
      */
     fun loadExpenses() {
-        viewModelScope.launch {
+        // Cancel previous job if still running
+        loadExpensesJob?.cancel()
+
+        loadExpensesJob = viewModelScope.launch {
             _uiState.value = ExpenseListUiState.Loading
 
             try {
@@ -169,12 +188,16 @@ class ExpenseViewModel @Inject constructor(
     }
 
     /**
-     * Loads a specific expense for editing
+     * Loads a specific expense for editing.
+     * Uses collectLatest to automatically cancel on new emissions.
      */
     fun loadExpenseById(id: Long) {
-        viewModelScope.launch {
+        // Cancel previous job if still running
+        loadExpenseByIdJob?.cancel()
+
+        loadExpenseByIdJob = viewModelScope.launch {
             try {
-                expenseRepository.getExpenseById(id).collect { expense ->
+                expenseRepository.getExpenseById(id).collectLatest { expense ->
                     if (expense != null) {
                         _formState.update {
                             ExpenseFormState(
@@ -205,12 +228,16 @@ class ExpenseViewModel @Inject constructor(
     }
 
     /**
-     * Loads receipts for an expense
+     * Loads receipts for an expense.
+     * Uses collectLatest to automatically cancel on new emissions.
      */
     fun loadReceiptsForExpense(expenseId: Long) {
-        viewModelScope.launch {
+        // Cancel previous job if still running
+        loadReceiptsJob?.cancel()
+
+        loadReceiptsJob = viewModelScope.launch {
             try {
-                receiptRepository.getReceiptsByExpense(expenseId).collect { receipts ->
+                receiptRepository.getReceiptsByExpense(expenseId).collectLatest { receipts ->
                     _formState.update {
                         it.copy(receipts = receipts, receiptError = null)
                     }
