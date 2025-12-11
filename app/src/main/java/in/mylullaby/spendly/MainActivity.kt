@@ -5,25 +5,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.ChartPieSlice
+import com.adamglin.phosphoricons.regular.Gear
+import com.adamglin.phosphoricons.regular.House
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import `in`.mylullaby.spendly.ui.navigation.Screen
+import `in`.mylullaby.spendly.ui.navigation.SpendlyNavHost
 import `in`.mylullaby.spendly.ui.theme.SpendlyTheme
 
 @AndroidEntryPoint
@@ -42,55 +42,77 @@ class MainActivity : ComponentActivity() {
 @PreviewScreenSizes
 @Composable
 fun SpendlyApp() {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+    val navController = rememberNavController()
+    SpendlyApp(navController = navController)
+}
+
+@Composable
+fun SpendlyApp(navController: NavHostController) {
+    // Observe current back stack entry to sync bottom navigation
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    // Determine current destination based on route
+    val currentDestination = when (currentRoute) {
+        Screen.Dashboard.route -> AppDestinations.HOME
+        Screen.Analytics.route -> AppDestinations.ANALYTICS
+        Screen.Settings.route -> AppDestinations.SETTINGS
+        else -> AppDestinations.HOME // Default to home for expense sub-screens
+    }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
-            AppDestinations.entries.forEach {
+            AppDestinations.entries.forEach { destination ->
                 item(
                     icon = {
                         Icon(
-                            it.icon,
-                            contentDescription = it.label
+                            destination.icon,
+                            contentDescription = destination.label
                         )
                     },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
+                    label = { Text(destination.label) },
+                    selected = destination == currentDestination,
+                    onClick = {
+                        // Navigate to the corresponding screen
+                        val route = when (destination) {
+                            AppDestinations.HOME -> Screen.Dashboard.route
+                            AppDestinations.ANALYTICS -> Screen.Analytics.route
+                            AppDestinations.SETTINGS -> Screen.Settings.route
+                        }
+
+                        // Only navigate if not already on that destination
+                        if (currentRoute != route) {
+                            navController.navigate(route) {
+                                // Pop up to start destination to avoid building large back stack
+                                popUpTo(Screen.Dashboard.route) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of same destination
+                                launchSingleTop = true
+                                // Restore state when navigating back to a destination
+                                restoreState = true
+                            }
+                        }
+                    }
                 )
             }
         }
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Android",
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
+        SpendlyNavHost(
+            navController = navController,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
+/**
+ * Primary navigation destinations in the app, shown in the bottom navigation bar/rail/drawer
+ */
 enum class AppDestinations(
     val label: String,
     val icon: ImageVector,
 ) {
-    HOME("Home", Icons.Default.Home),
-    FAVORITES("Favorites", Icons.Default.Favorite),
-    PROFILE("Profile", Icons.Default.AccountBox),
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SpendlyTheme {
-        Greeting("Android")
-    }
+    HOME("Home", PhosphorIcons.Regular.House),
+    ANALYTICS("Analytics", PhosphorIcons.Regular.ChartPieSlice),
+    SETTINGS("Settings", PhosphorIcons.Regular.Gear),
 }

@@ -14,6 +14,7 @@ vico = "2.0.0-alpha.28"
 datastore = "1.1.1"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
+phosphor = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,9 @@ androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# Phosphor Icons
+phosphor-compose = { group = "com.adamglin", name = "phosphor-icon", version.ref = "phosphor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

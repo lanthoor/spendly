@@ -20,10 +20,10 @@
 
 ## Database Design & Implementation (Phase 2 - Complete)
 1. ✓ Create Room database class and version management (SQLCipher encryption deferred to Security & Data Protection section)
-2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable (default Uncategorized), date: Long (timestamp), description: String, payment_method: String (enum: Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), created_at: Long, modified_at: Long)
+2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable (default Misc), date: Long (timestamp), description: String, payment_method: String (enum: Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), created_at: Long, modified_at: Long)
 3. ✓ Create Receipt entity (id: Long, expense_id: Long, file_path: String, file_type: String (JPG/PNG/WebP/PDF), file_size_bytes: Long max 5MB, compressed: Boolean)
 4. ✓ Create Income entity (id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), created_at: Long, modified_at: Long)
-5. ✓ Create Category entity (id: Long, name: String, icon: String (Material Icon name), color: Int, is_custom: Boolean, sort_order: Int) - includes 13 predefined + Uncategorized
+5. ✓ Create Category entity (id: Long, name: String, icon: String (Material Icon name), color: Int, is_custom: Boolean, sort_order: Int) - includes 13 predefined categories
 6. ✓ Create Budget entity (id: Long, category_id: Long nullable (null = overall budget), amount: Long (paise), month: Int, year: Int, notification_75_sent: Boolean, notification_100_sent: Boolean)
 7. ✓ Create RecurringTransaction entity (id: Long, transaction_type: String (expense/income), amount: Long (paise), category_id: Long, description: String, frequency: String (daily/weekly/monthly), next_date: Long, last_processed: Long nullable)
 8. ✓ Create Tag entity and TransactionTag junction entity with cross-references (many-to-many)
@@ -34,7 +34,7 @@
 1. ✓ Create Kotlin data classes for Expense model with amount helper functions (fromPaise, toPaise, displayAmount)
 2. ✓ Create Kotlin data classes for Income model with refund linking support
 3. ✓ Create Kotlin data classes for Receipt model
-4. ✓ Create Kotlin data classes for Category model with predefined list constant (14 categories)
+4. ✓ Create Kotlin data classes for Category model with predefined list constant (13 categories)
 5. ✓ Create Kotlin data classes for Budget model with progress calculation and notification threshold helpers
 6. ✓ Create Kotlin data classes for Tag model with TransactionTag junction model
 7. ✓ Create Repository interface for expenses with Flow/StateFlow, default sort by date DESC (newest first)
@@ -44,7 +44,7 @@
 11. ✓ Create Repository interface for tags with transaction-tag association methods
 12. ✓ Implement ExpenseRepositoryImpl with entity-to-model mapping and DAO integration
 13. ✓ Implement IncomeRepositoryImpl with refund filtering support
-14. ✓ Implement CategoryRepositoryImpl with predefined category seeding logic (checks "Uncategorized")
+14. ✓ Implement CategoryRepositoryImpl with predefined category seeding logic (checks "Misc")
 15. ✓ Implement BudgetRepositoryImpl with notification flag tracking
 16. ✓ Implement TagRepositoryImpl with many-to-many junction table operations
 17. ✓ Configure Hilt DatabaseModule - provides Room database and all 8 DAOs
@@ -56,24 +56,61 @@
 23. ✓ Verify build success and all tests pass
 **Note:** DataStore settings keys defined: theme, default_payment_method, notification_preferences, calendar_view_mode, budget_alert_75_enabled, budget_alert_100_enabled, sms_auto_detection_enabled
 
-## Expense Management Features
-1. Create ExpenseViewModel with StateFlow for UI state
-2. Create expense entry Compose form with validation (category optional, defaults to Uncategorized)
-3. Implement add expense functionality with Room insert, store amount in paise (Long)
-4. Implement edit expense functionality with Room update, track modified_at timestamp
-5. Implement delete expense with Material 3 confirmation dialog
-6. Create expense list LazyColumn with default sort: newest first (date DESC)
-7. Implement receipt attachment using ActivityResultContracts for file picker (JPG, PNG, WebP, PDF)
-8. Implement receipt photo capture using CameraX
-9. Implement receipt image compression to 1920px max width, 85% quality, max 5MB per file
-10. Create receipt storage using internal storage directory with encryption
-11. Support unlimited receipts per expense (one-to-many relationship)
-12. Implement recurring expense setup Compose UI (daily, weekly, monthly frequency)
-13. Create app startup check for recurring expense processing (check last 3 months for missed occurrences)
-14. Implement expense search functionality with Room FTS (Full-Text Search)
-15. Implement expense filter by date range using DateRangePicker
-16. Implement expense filter by category using FilterChip
-17. Implement expense filter by payment method using dropdown menu (Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet)
+## Expense Management Features (Phase 4 - Complete)
+1. ✓ Create ExpenseViewModel with StateFlow for UI state (Loading, Success, Error)
+2. ✓ Create expense entry Compose form with validation (category optional, defaults to Misc)
+3. ✓ Implement add expense functionality with Room insert, store amount in paise (Long)
+4. ✓ Implement edit expense functionality with Room update, track modified_at timestamp
+5. ✓ Implement delete expense with Material 3 confirmation dialog (DeleteConfirmDialog)
+6. ✓ Create expense list LazyColumn with default sort: newest first (date DESC)
+7. Implement receipt attachment using ActivityResultContracts for file picker (JPG, PNG, WebP, PDF) - **Deferred to Phase 5**
+8. Implement receipt photo capture using CameraX - **Deferred to Phase 5**
+9. Implement receipt image compression to 1920px max width, 85% quality, max 5MB per file - **Deferred to Phase 5**
+10. Create receipt storage using internal storage directory with encryption - **Deferred to Phase 5**
+11. Support unlimited receipts per expense (one-to-many relationship) - **Deferred to Phase 5**
+12. Implement recurring expense setup Compose UI (daily, weekly, monthly frequency) - **Deferred to Phase 5**
+13. Create app startup check for recurring expense processing (check last 3 months for missed occurrences) - **Deferred to Phase 5**
+14. Implement expense search functionality with Room FTS (Full-Text Search) - **Deferred to Phase 5**
+15. ✓ Implement expense filter by date range using DateRangePicker (UI ready in ViewModel, sheet pending)
+16. ✓ Implement expense filter by category using FilterChip (UI ready in ViewModel, sheet pending)
+17. ✓ Implement expense filter by payment method using dropdown menu (UI ready in ViewModel, sheet pending)
+
+**Phase 4 Completed Components:**
+- ✓ Navigation: Screen sealed class + SpendlyNavHost with type-safe routes
+- ✓ ExpenseViewModel: Complete state management (UI state, form state, filter state)
+- ✓ Shared UI Components: AmountTextField, CategoryDropdown, PaymentMethodDropdown, DatePickerField, SpendlyTopAppBar, EmptyState, LoadingIndicator, IconMapper
+- ✓ ExpenseFormFields: Reusable form component for Add/Edit screens
+- ✓ AddExpenseScreen: Modal bottom sheet with complete create flow and validation
+- ✓ ExpenseListScreen: List view with empty/loading/error states, launches Add/Edit in bottom sheets
+- ✓ EditExpenseScreen: Modal bottom sheet with complete update flow and pre-populated form
+- ✓ ExpenseListItem: Material 3 list item with category icon, description, date, payment method, amount
+- ✓ DeleteConfirmDialog: Confirmation dialog with cascade deletion (receipts auto-deleted via foreign key)
+- ✓ CategorySelectionDialog: 3-column grid layout with icons, colors, visual selection (no radio buttons)
+- ✓ PaymentMethodSelectionDialog: 3-column grid layout with payment icons and visual selection
+- ✓ MainActivity: Updated with NavigationSuiteScaffold integration
+- ✓ Dashboard route: Temporarily shows ExpenseList until Dashboard implemented in Phase 5
+- ✓ Phosphor Icons: Replaced all Material Icons throughout the app (v1.0.0)
+- ✓ InteractionSource: Proper click handling for read-only text fields
+
+**UI/UX Improvements Implemented:**
+- Modal bottom sheets for Add/Edit expense instead of separate screens (better mobile UX)
+- Grid-based selection dialogs for categories and payment methods
+- Visual selection indicators using colored backgrounds + borders (no radio buttons)
+- Icons displayed for all categories (with category colors) and payment methods
+- InteractionSource-based click detection for proper interaction with read-only fields
+- Snackbar feedback with 2-second duration before navigation on edit success
+- LazyVerticalGrid for scrollable category/payment selection with 3 columns
+- Phosphor Icons used throughout for consistent modern iconography
+
+**Technical Implementation Notes:**
+- Icons: Phosphor Icons library (com.adamglin:phosphor-icon:1.0.0)
+- Dialogs: AlertDialog with LazyVerticalGrid for scrollable content
+- Selection: GridCells.Fixed(3) with aspectRatio(1f) for square items
+- Colors: Material 3 primaryContainer + primary border for selection
+- Interaction: MutableInteractionSource with PressInteraction.Release for clicks
+- Navigation: ModalBottomSheet with skipPartiallyExpanded = true
+- Filter logic: Implemented in ViewModel, sheet UI deferred to Phase 5
+- Tests: Build successful, unit tests passing
 
 ## Income Tracking Features
 1. Create IncomeViewModel with StateFlow
@@ -89,13 +126,13 @@
 11. Create income vs expense comparison Compose view with charts
 
 ## Categories & Tags System
-1. Implement predefined categories seed data (13 categories): Food & Dining (restaurant icon), Travel (flight icon), Rent (home icon), Utilities (lightbulb icon), Services (build icon), Shopping (shopping_cart icon), Entertainment (movie icon), Healthcare (local_hospital icon), Gifts (card_giftcard icon), Education (school icon), Investments (trending_up icon), Groceries (local_grocery_store icon), Others (more_horiz icon), plus Uncategorized (category icon)
+1. Implement predefined categories seed data (13 categories): Food & Dining (restaurant icon), Travel (flight icon), Rent (home icon), Utilities (lightbulb icon), Services (build icon), Shopping (shopping_cart icon), Media (movie icon), Healthcare (local_hospital icon), Gifts (card_giftcard icon), Education (school icon), Investments (trending_up icon), Groceries (local_grocery_store icon), Misc (category icon)
 2. Create category management Compose screen
 3. Implement custom category creation form with Material Icons picker
 4. Implement custom category color picker using Compose ColorPicker
 5. Use Material Icons library for category icons (icon stored as String name)
 6. Implement category edit functionality in ViewModel
-7. Implement category delete with transaction reassignment dialog - user must select replacement category (including Uncategorized option)
+7. Implement category delete with transaction reassignment dialog - user must select replacement category (including Misc option)
 8. Create tag management Compose screen
 9. Implement tag creation functionality
 10. Implement tag assignment to transactions using junction table (many-to-many)

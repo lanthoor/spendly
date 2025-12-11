@@ -76,9 +76,9 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isPredefinedSeeded(): Boolean {
-        // Check if any predefined categories exist (check for "Uncategorized" by name)
-        val uncategorized = categoryDao.getCategoryByName("Uncategorized")
-        return uncategorized != null
+        // Check if any predefined categories exist (check for "Misc" by name)
+        val misc = categoryDao.getCategoryByName("Misc")
+        return misc != null
     }
 
     // Validation
