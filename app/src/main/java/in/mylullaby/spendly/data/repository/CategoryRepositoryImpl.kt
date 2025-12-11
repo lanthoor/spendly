@@ -3,6 +3,7 @@ package `in`.mylullaby.spendly.data.repository
 import `in`.mylullaby.spendly.data.local.dao.CategoryDao
 import `in`.mylullaby.spendly.data.local.entities.CategoryEntity
 import `in`.mylullaby.spendly.domain.model.Category
+import `in`.mylullaby.spendly.domain.model.CategoryType
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -81,6 +82,30 @@ class CategoryRepositoryImpl @Inject constructor(
         return misc != null
     }
 
+    // Filter by type
+
+    override fun getCategoriesByType(type: CategoryType): Flow<List<Category>> {
+        val typeString = when (type) {
+            CategoryType.INCOME -> "INCOME"
+            CategoryType.EXPENSE -> "EXPENSE"
+        }
+        return categoryDao.getCategoriesByType(typeString).map { entities ->
+            entities.map { it.toDomainModel() }
+        }
+    }
+
+    override fun getExpenseCategories(): Flow<List<Category>> {
+        return categoryDao.getExpenseCategories().map { entities ->
+            entities.map { it.toDomainModel() }
+        }
+    }
+
+    override fun getIncomeCategories(): Flow<List<Category>> {
+        return categoryDao.getIncomeCategories().map { entities ->
+            entities.map { it.toDomainModel() }
+        }
+    }
+
     // Validation
 
     override suspend fun isCategoryNameUnique(name: String): Boolean {
@@ -97,7 +122,11 @@ class CategoryRepositoryImpl @Inject constructor(
             icon = icon,
             color = color,
             isCustom = isCustom,
-            sortOrder = sortOrder
+            sortOrder = sortOrder,
+            type = when (type) {
+                "INCOME" -> CategoryType.INCOME
+                else -> CategoryType.EXPENSE
+            }
         )
     }
 
@@ -108,7 +137,11 @@ class CategoryRepositoryImpl @Inject constructor(
             icon = icon,
             color = color,
             isCustom = isCustom,
-            sortOrder = sortOrder
+            sortOrder = sortOrder,
+            type = when (type) {
+                CategoryType.INCOME -> "INCOME"
+                CategoryType.EXPENSE -> "EXPENSE"
+            }
         )
     }
 }

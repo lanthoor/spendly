@@ -20,14 +20,38 @@ enum class PaymentMethod {
 }
 
 /**
+ * Convert PaymentMethod enum to display string in title case with proper spacing.
+ * Keeps acronyms in uppercase.
+ *
+ * Examples:
+ * - CASH -> "Cash"
+ * - UPI -> "UPI"
+ * - DEBIT_CARD -> "Debit Card"
+ * - NET_BANKING -> "Net Banking"
+ */
+fun PaymentMethod.toDisplayName(): String {
+    return when (this) {
+        PaymentMethod.UPI -> "UPI"
+        else -> name.lowercase()
+            .replace('_', ' ')
+            .split(' ')
+            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+    }
+}
+
+/**
  * Income sources supported by the app.
  * Used for income transactions.
  */
 enum class IncomeSource {
     SALARY,
     FREELANCE,
-    INVESTMENTS,
-    REFUND_RETURN,
+    INVESTMENT,
+    GIFTS,
+    REFUND,
+    BUSINESS,
+    RENTAL,
+    INTEREST,
     OTHER;
 
     companion object {
@@ -35,6 +59,20 @@ enum class IncomeSource {
             return entries.find { it.name == value }
         }
     }
+}
+
+/**
+ * Convert IncomeSource enum to display string in title case.
+ *
+ * Examples:
+ * - SALARY -> "Salary"
+ * - FREELANCE -> "Freelance"
+ * - INVESTMENT -> "Investment"
+ */
+fun IncomeSource.toDisplayString(): String {
+    return name.lowercase()
+        .split('_')
+        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
 }
 
 /**

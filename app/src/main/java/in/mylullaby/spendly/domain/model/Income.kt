@@ -10,7 +10,8 @@ import `in`.mylullaby.spendly.utils.IncomeSource
 data class Income(
     val id: Long = 0,
     val amount: Long, // in paise
-    val source: IncomeSource,
+    val categoryId: Long?, // income category ID (nullable for backwards compatibility)
+    val source: IncomeSource, // DEPRECATED - use categoryId instead
     val date: Long, // timestamp in milliseconds
     val description: String,
     val isRecurring: Boolean = false,

@@ -69,4 +69,13 @@ abstract class RepositoryModule {
     abstract fun bindReceiptRepository(
         impl: ReceiptRepositoryImpl
     ): ReceiptRepository
+
+    /**
+     * Binds RecurringTransactionRepositoryImpl to RecurringTransactionRepository interface.
+     */
+    @Binds
+    @Singleton
+    abstract fun bindRecurringTransactionRepository(
+        impl: RecurringTransactionRepositoryImpl
+    ): RecurringTransactionRepository
 }

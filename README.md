@@ -142,10 +142,30 @@
 - Optimized image thumbnails with lazy loading
 - Info cards guiding users to save expenses before attaching receipts
 
-**Deferred to Phase 5:**
-- Recurring expense setup UI and background processing
+### ✅ Phase 5: Dashboard, Income Tracking & Navigation (Complete)
+**Completed:**
+- ✅ **Dashboard Screen:** Landing screen with financial summary, recent 5 transactions (mixed expenses/income), top 3 spending categories chart
+- ✅ **DashboardViewModel:** Complete state management with combined financial summary (income/expenses/net balance), month-over-month percentages
+- ✅ **Dashboard Components:** FinancialSummaryCard, RecentTransactionsWidget, TopCategoriesChart with Vico
+- ✅ **Income Tracking:** Full CRUD operations with IncomeViewModel, AddIncomeScreen, EditIncomeScreen (modal bottom sheets)
+- ✅ **Income Category System:** Separate categories for income (IDs 101-110) and expenses (IDs 1-13), using CategoryType enum
+- ✅ **Income Components:** IncomeFormFields, IncomeListScreen, IncomeListItem, refund linking support
+- ✅ **Database Migration v1→v2:** Added type column to categories table, seeded 10 income categories
+- ✅ **Database Migration v2→v3:** Added category_id column to income table with foreign key
+- ✅ **Navigation Restructuring:** 4-item bottom navigation (Home/Dashboard, Transactions, Analytics, Settings)
+- ✅ **TransactionListScreen:** Shows all transactions (expenses + income) in chronological order with edit/delete
+- ✅ **UI Improvements:** Color-coded amounts (green +income, red -expense), payment method display, fixed scientific notation
+- ✅ **Currency Utils:** Integer-only paiseToRupeeString() function for guaranteed decimal notation
+- ✅ **Enum Extensions:** toDisplayName() for PaymentMethod, toDisplayString() for IncomeSource with proper title case
+
+**Income Categories (10):**
+- Salary (briefcase), Freelance (laptop), Business (storefront), Investment (trending_up), Gift (gift)
+- Refund (arrow_u_up_left), Rental (buildings), Interest (percent), Bonus (trophy), Other (dots_three)
+
+**Deferred to Future Phases:**
+- Recurring transactions UI and background processing
 - Full-text search with Room FTS
 - Filter bottom sheet UI (logic implemented in ViewModel)
-- Dashboard screen implementation
+- Budget management screens
 
-### ⏳ Next: Phase 5 - Recurring Transactions, Search, Filters, Dashboard, Income Tracking
+### ⏳ Next: Phase 6 - Recurring Transactions, Search, Filters, Budget Management

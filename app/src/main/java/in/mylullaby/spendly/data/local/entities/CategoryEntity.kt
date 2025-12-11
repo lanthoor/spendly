@@ -6,7 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * Category entity for expense tracking.
+ * Category entity for expense/income tracking.
  *
  * Represents both predefined categories (e.g., Food & Dining, Travel) and
  * custom user-created categories.
@@ -17,12 +17,14 @@ import androidx.room.PrimaryKey
  * @property color ARGB color int
  * @property isCustom True for user-created categories, false for predefined
  * @property sortOrder Display order in category lists
+ * @property type Category type (EXPENSE or INCOME)
  */
 @Entity(
     tableName = "categories",
     indices = [
         Index(value = ["name"], unique = true),
-        Index(value = ["sort_order"])
+        Index(value = ["sort_order"]),
+        Index(value = ["type"])
     ]
 )
 data class CategoryEntity(
@@ -43,5 +45,8 @@ data class CategoryEntity(
     val isCustom: Boolean = false,
 
     @ColumnInfo(name = "sort_order")
-    val sortOrder: Int
+    val sortOrder: Int,
+
+    @ColumnInfo(name = "type")
+    val type: String = "EXPENSE" // Default to EXPENSE for backwards compatibility
 )

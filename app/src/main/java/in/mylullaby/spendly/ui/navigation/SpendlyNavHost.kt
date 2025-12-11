@@ -13,9 +13,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import `in`.mylullaby.spendly.ui.screens.dashboard.DashboardScreen
 import `in`.mylullaby.spendly.ui.screens.expenses.AddExpenseScreen
 import `in`.mylullaby.spendly.ui.screens.expenses.EditExpenseScreen
 import `in`.mylullaby.spendly.ui.screens.expenses.ExpenseListScreen
+import `in`.mylullaby.spendly.ui.screens.income.AddIncomeScreen
+import `in`.mylullaby.spendly.ui.screens.income.EditIncomeScreen
+import `in`.mylullaby.spendly.ui.screens.income.IncomeListScreen
+import `in`.mylullaby.spendly.ui.screens.transactions.TransactionListScreen
 
 /**
  * Main navigation host for the Spendly app.
@@ -35,14 +40,15 @@ fun SpendlyNavHost(
         modifier = modifier
     ) {
         // Dashboard (Home) Screen
-        // Temporarily shows ExpenseList until Dashboard is implemented in Phase 5
         composable(Screen.Dashboard.route) {
-            ExpenseListScreen(
-                onNavigateToAdd = {
-                    navController.navigate(Screen.AddExpense.route)
-                },
-                onNavigateToEdit = { expenseId ->
-                    navController.navigate(Screen.EditExpense.createRoute(expenseId))
+            DashboardScreen()
+        }
+
+        // All Transactions Screen (combined expenses and income)
+        composable(Screen.AllTransactions.route) {
+            TransactionListScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
                 }
             )
         }
@@ -81,6 +87,54 @@ fun SpendlyNavHost(
             EditExpenseScreen(
                 expenseId = expenseId,
                 onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Income List Screen
+        composable(Screen.IncomeList.route) {
+            IncomeListScreen(
+                onNavigateToAdd = {
+                    navController.navigate(Screen.AddIncome.route)
+                },
+                onNavigateToEdit = { incomeId ->
+                    navController.navigate(Screen.EditIncome.createRoute(incomeId))
+                }
+            )
+        }
+
+        // Add Income Screen
+        composable(Screen.AddIncome.route) {
+            AddIncomeScreen(
+                onDismiss = {
+                    navController.popBackStack()
+                },
+                onSuccess = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Edit Income Screen with income ID argument
+        composable(
+            route = Screen.EditIncome.route,
+            arguments = listOf(
+                navArgument(Screen.EditIncome.ARG_INCOME_ID) {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val incomeId = backStackEntry.arguments?.getLong(Screen.EditIncome.ARG_INCOME_ID) ?: 0L
+            EditIncomeScreen(
+                incomeId = incomeId,
+                onDismiss = {
+                    navController.popBackStack()
+                },
+                onSuccess = {
+                    navController.popBackStack()
+                },
+                onDelete = {
                     navController.popBackStack()
                 }
             )

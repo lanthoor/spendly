@@ -99,6 +99,27 @@ object CurrencyUtils {
     }
 
     /**
+     * Convert paise to rupee string for form input (ZERO precision loss).
+     *
+     * Uses integer division/modulo - no floating-point operations.
+     * Returns plain decimal format (never scientific notation).
+     *
+     * Examples:
+     * - 12345 paise → "123.45"
+     * - 100 paise → "1.00"
+     * - 99 paise → "0.99"
+     * - 10000000 paise (₹100,000) → "100000.00" (not "1E5")
+     *
+     * @param paise Amount in paise
+     * @return Plain decimal string (e.g., "123.45")
+     */
+    fun paiseToRupeeString(paise: Long): String {
+        val rupees = paise / PAISE_PER_RUPEE
+        val paiseRemainder = paise % PAISE_PER_RUPEE
+        return "%d.%02d".format(rupees, paiseRemainder)
+    }
+
+    /**
      * Validate rupee string format without converting.
      *
      * @param rupeeString String to validate

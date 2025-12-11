@@ -179,7 +179,7 @@ class ExpenseViewModel @Inject constructor(
                         _formState.update {
                             ExpenseFormState(
                                 id = expense.id,
-                                amount = expense.fromPaise().toString(),
+                                amount = CurrencyUtils.paiseToRupeeString(expense.amount),
                                 categoryId = expense.categoryId,
                                 date = expense.date,
                                 description = expense.description,

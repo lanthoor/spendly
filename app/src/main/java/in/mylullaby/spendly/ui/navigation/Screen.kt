@@ -11,6 +11,11 @@ sealed class Screen(val route: String) {
     data object Dashboard : Screen("dashboard")
 
     /**
+     * All transactions screen - shows combined list of expenses and income
+     */
+    data object AllTransactions : Screen("transactions")
+
+    /**
      * Expense list screen - shows all expenses with filtering options
      */
     data object ExpenseList : Screen("expenses")
@@ -34,6 +39,32 @@ sealed class Screen(val route: String) {
          * Argument key for the expense ID
          */
         const val ARG_EXPENSE_ID = "expenseId"
+    }
+
+    /**
+     * Income list screen - shows all income with filtering options
+     */
+    data object IncomeList : Screen("income")
+
+    /**
+     * Add new income screen - form for creating a new income
+     */
+    data object AddIncome : Screen("income/add")
+
+    /**
+     * Edit income screen - form for editing an existing income
+     * @param incomeId The ID of the income to edit
+     */
+    data object EditIncome : Screen("income/edit/{incomeId}") {
+        /**
+         * Creates the route with the actual income ID
+         */
+        fun createRoute(incomeId: Long): String = "income/edit/$incomeId"
+
+        /**
+         * Argument key for the income ID
+         */
+        const val ARG_INCOME_ID = "incomeId"
     }
 
     /**

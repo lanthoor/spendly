@@ -21,7 +21,9 @@ object DatabaseModule {
 
     /**
      * Provides the Spendly database instance.
-     * Uses fallbackToDestructiveMigration for development (proper migrations in task 235).
+     * Includes migrations:
+     * - 1→2: Add category type field
+     * - 2→3: Add categoryId to income
      */
     @Provides
     @Singleton
@@ -31,7 +33,11 @@ object DatabaseModule {
             SpendlyDatabase::class.java,
             "spendly_database"
         )
-            .fallbackToDestructiveMigration() // Temporary for development
+            .addMigrations(
+                SpendlyDatabase.MIGRATION_1_2,
+                SpendlyDatabase.MIGRATION_2_3
+            )
+            .fallbackToDestructiveMigration() // Fallback for other versions
             .build()
     }
 

@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "82abc69f85cb5e77ea5e00196cb58b1b",
+    "version": 3,
+    "identityHash": "5eb439115f3a71c4bb1869ae053356c2",
     "entities": [
       {
         "tableName": "categories",
@@ -279,7 +279,7 @@
       },
       {
         "tableName": "income",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` INTEGER NOT NULL, `source` TEXT NOT NULL, `date` INTEGER NOT NULL, `description` TEXT NOT NULL, `is_recurring` INTEGER NOT NULL, `linked_expense_id` INTEGER, `created_at` INTEGER NOT NULL, `modified_at` INTEGER NOT NULL, FOREIGN KEY(`linked_expense_id`) REFERENCES `expenses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` INTEGER NOT NULL, `category_id` INTEGER, `source` TEXT NOT NULL, `date` INTEGER NOT NULL, `description` TEXT NOT NULL, `is_recurring` INTEGER NOT NULL, `linked_expense_id` INTEGER, `created_at` INTEGER NOT NULL, `modified_at` INTEGER NOT NULL, FOREIGN KEY(`category_id`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`linked_expense_id`) REFERENCES `expenses`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -292,6 +292,12 @@
             "columnName": "amount",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "source",
@@ -353,6 +359,15 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_income_date` ON `${TABLE_NAME}` (`date`)"
           },
           {
+            "name": "index_income_category_id",
+            "unique": false,
+            "columnNames": [
+              "category_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_income_category_id` ON `${TABLE_NAME}` (`category_id`)"
+          },
+          {
             "name": "index_income_source",
             "unique": false,
             "columnNames": [
@@ -381,6 +396,17 @@
           }
         ],
         "foreignKeys": [
+          {
+            "table": "categories",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
           {
             "table": "expenses",
             "onDelete": "SET NULL",
@@ -746,7 +772,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '82abc69f85cb5e77ea5e00196cb58b1b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5eb439115f3a71c4bb1869ae053356c2')"
     ]
   }
 }

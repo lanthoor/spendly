@@ -5,6 +5,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Airplane
+import com.adamglin.phosphoricons.regular.Bank
+import com.adamglin.phosphoricons.regular.Briefcase
+import com.adamglin.phosphoricons.regular.CurrencyDollar
 import com.adamglin.phosphoricons.regular.DotsThree
 import com.adamglin.phosphoricons.regular.FilmSlate
 import com.adamglin.phosphoricons.regular.FirstAid
@@ -12,10 +15,13 @@ import com.adamglin.phosphoricons.regular.ForkKnife
 import com.adamglin.phosphoricons.regular.Gift
 import com.adamglin.phosphoricons.regular.GraduationCap
 import com.adamglin.phosphoricons.regular.House
+import com.adamglin.phosphoricons.regular.Laptop
 import com.adamglin.phosphoricons.regular.Lightbulb
 import com.adamglin.phosphoricons.regular.Question
+import com.adamglin.phosphoricons.regular.Receipt
 import com.adamglin.phosphoricons.regular.ShoppingBag
 import com.adamglin.phosphoricons.regular.ShoppingCart
+import com.adamglin.phosphoricons.regular.Storefront
 import com.adamglin.phosphoricons.regular.Tag
 import com.adamglin.phosphoricons.regular.TrendUp
 import com.adamglin.phosphoricons.regular.Wrench
@@ -69,6 +75,17 @@ object IconMapper {
 
             // Uncategorized (default)
             "category" -> PhosphorIcons.Regular.Tag
+
+            // Income/Money icon
+            "attach_money" -> PhosphorIcons.Regular.CurrencyDollar
+
+            // Income category icons
+            "briefcase" -> PhosphorIcons.Regular.Briefcase
+            "laptop" -> PhosphorIcons.Regular.Laptop
+            "storefront" -> PhosphorIcons.Regular.Storefront
+            "bank" -> PhosphorIcons.Regular.Bank
+            "receipt" -> PhosphorIcons.Regular.Receipt
+            "gift" -> PhosphorIcons.Regular.Gift
 
             // Fallback
             else -> PhosphorIcons.Regular.Question

@@ -98,6 +98,7 @@ class IncomeRepositoryImpl @Inject constructor(
         return Income(
             id = entity.id,
             amount = entity.amount,
+            categoryId = entity.categoryId,
             source = IncomeSource.valueOf(entity.source),
             date = entity.date,
             description = entity.description,
@@ -112,6 +113,7 @@ class IncomeRepositoryImpl @Inject constructor(
         return IncomeEntity(
             id = income.id,
             amount = income.amount,
+            categoryId = income.categoryId,
             source = income.source.name,
             date = income.date,
             description = income.description,

@@ -101,4 +101,29 @@ interface CategoryDao {
      */
     @Query("SELECT * FROM categories WHERE name = :name LIMIT 1")
     suspend fun getCategoryByName(name: String): CategoryEntity?
+
+    /**
+     * Get all categories of a specific type.
+     *
+     * @param type Category type ("EXPENSE" or "INCOME")
+     * @return Flow of category list filtered by type
+     */
+    @Query("SELECT * FROM categories WHERE type = :type ORDER BY sort_order ASC")
+    fun getCategoriesByType(type: String): Flow<List<CategoryEntity>>
+
+    /**
+     * Get all expense categories (predefined + custom).
+     *
+     * @return Flow of expense category list
+     */
+    @Query("SELECT * FROM categories WHERE type = 'EXPENSE' ORDER BY sort_order ASC")
+    fun getExpenseCategories(): Flow<List<CategoryEntity>>
+
+    /**
+     * Get all income categories (predefined + custom).
+     *
+     * @return Flow of income category list
+     */
+    @Query("SELECT * FROM categories WHERE type = 'INCOME' ORDER BY sort_order ASC")
+    fun getIncomeCategories(): Flow<List<CategoryEntity>>
 }

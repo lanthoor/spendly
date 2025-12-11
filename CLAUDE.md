@@ -187,13 +187,16 @@ app/src/
 - ✅ **Latest GitHub Actions** with commit-hash pinning for security
 
 **✅ Phase 2 Complete: Database Foundation (Tasks 17-27)**
-- ✅ **SpendlyDatabase:** Room database with 8 entities, version 1, schema export enabled
+- ✅ **SpendlyDatabase:** Room database with 8 entities, version 3 (migrations v1→v2→v3), schema export enabled
 - ✅ **8 Room Entities:** ExpenseEntity, IncomeEntity, CategoryEntity, BudgetEntity, ReceiptEntity, RecurringTransactionEntity, TagEntity, TransactionTagEntity
 - ✅ **8 DAOs with Flow-based queries:** Full CRUD operations, complex queries with aggregations, date range filtering, category-based queries
 - ✅ **Proper schema design:** Foreign keys with CASCADE/SET_NULL, composite indexes for performance, proper normalization
 - ✅ **Integer-only currency:** All amounts stored as Long (paise) for ZERO precision loss - no floating-point arithmetic
 - ✅ **Audit timestamps:** createdAt and modifiedAt fields on all transaction entities
 - ✅ **Many-to-many tags:** Junction table (TransactionTagEntity) for flexible tagging
+- ✅ **Database Migrations:**
+  - v1→v2: Added type column to categories, seeded 10 income categories (IDs 101-110)
+  - v2→v3: Added category_id column to income with foreign key to categories
 
 **✅ Phase 3 Complete: Repository Layer & Domain Models (Tasks 28-57)**
 - ✅ **6 domain models:** Expense, Income, Category, Budget, Tag, Receipt with proper type safety
@@ -215,7 +218,20 @@ app/src/
 - ✅ **Icons:** Phosphor Icons v1.0.0 throughout the app
 - ✅ **16 KB page size compatibility:** CameraX 1.5.2 + useLegacyPackaging = false
 
-**🚧 Next Phase: Recurring Transactions, Search, Filters, Dashboard, Income Tracking (Phase 5)**
+**✅ Phase 5 Complete: Dashboard, Income Tracking & Navigation (Partial)**
+- ✅ **Dashboard Screen:** DashboardScreen with financial summary, recent transactions widget, top categories chart
+- ✅ **DashboardViewModel:** Combined expense + income summary, month-over-month calculations, category spending
+- ✅ **Dashboard Components:** FinancialSummaryCard, RecentTransactionsWidget, TopCategoriesChart (Vico)
+- ✅ **Income Tracking:** IncomeViewModel, AddIncomeScreen, EditIncomeScreen, IncomeListScreen (all modal bottom sheets)
+- ✅ **Income Components:** IncomeFormFields, IncomeListItem with category support
+- ✅ **Category System:** Separate expense categories (IDs 1-13) and income categories (IDs 101-110) with CategoryType enum
+- ✅ **TransactionListScreen:** Combined expense + income list with edit/delete via modal sheets
+- ✅ **Navigation:** 4-item bottom navigation (Home/Dashboard, Transactions, Analytics, Settings) via NavigationSuiteScaffold
+- ✅ **UI Enhancements:** Color-coded amounts (green +income, red -expense), payment method display, no arrows
+- ✅ **Currency Fix:** paiseToRupeeString() with integer-only arithmetic (no scientific notation)
+- ✅ **Enum Extensions:** toDisplayName() for PaymentMethod, toDisplayString() for IncomeSource
+
+**🚧 Next Phase: Recurring Transactions, Search, Filters, Budget Management (Phase 6)**
 
 ### Tech Stack (Configured & Ready)
 - ✅ **Database:** Room v2.6.1 (SQLite wrapper) - SQLCipher encryption deferred to task 173
@@ -321,9 +337,10 @@ Refer to PLAN.md for complete schema. Key entities:
 **Core Tables:**
 - **Expense:** id: Long, amount: Long (paise), category_id: Long nullable, date: Long, description: String, payment_method: String, created_at: Long, modified_at: Long
 - **Receipt:** id: Long, expense_id: Long, file_path: String, file_type: String, file_size_bytes: Long (max 5MB), compressed: Boolean (one-to-many with Expense)
-- **Income:** id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), created_at: Long, modified_at: Long
-- **Category:** id: Long, name: String, icon: String (Material Icon name), color: Int, is_custom: Boolean, sort_order: Int
-  - **Predefined (14):** Food & Dining (restaurant), Travel (flight), Rent (home), Utilities (lightbulb), Services (build), Shopping (shopping_cart), Entertainment (movie), Healthcare (local_hospital), Gifts (card_giftcard), Education (school), Investments (trending_up), Groceries (local_grocery_store), Others (more_horiz), Uncategorized (category)
+- **Income:** id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), category_id: Long nullable, created_at: Long, modified_at: Long
+- **Category:** id: Long, name: String, icon: String (Phosphor Icon name), color: Int, is_custom: Boolean, sort_order: Int, type: String (EXPENSE or INCOME)
+  - **Predefined Expenses (13, IDs 1-13):** Food & Dining, Travel, Rent, Utilities, Services, Shopping, Entertainment, Healthcare, Gifts, Education, Investments, Groceries, Uncategorized
+  - **Predefined Income (10, IDs 101-110):** Salary, Freelance, Business, Investment, Gift, Refund, Rental, Interest, Bonus, Other
 - **Budget:** id: Long, category_id: Long nullable (null = overall), amount: Long (paise), month: Int, year: Int, notification_75_sent: Boolean, notification_100_sent: Boolean
 - **RecurringTransaction:** id: Long, transaction_type: String, amount: Long (paise), category_id: Long, description: String, frequency: String (daily/weekly/monthly), next_date: Long, last_processed: Long nullable
 - **Tag & TransactionTag:** Many-to-many relationship via junction table
@@ -359,8 +376,8 @@ Refer to PLAN.md for complete schema. Key entities:
 - **Payment methods (predefined):** Cash, UPI, Debit Card, Credit Card, Net Banking, Wallet
 - **Categories (14 predefined):** Food & Dining, Travel, Rent, Utilities, Services, Shopping, Entertainment, Healthcare, Gifts, Education, Investments, Groceries, Others, Uncategorized
 - **Receipt limits:** Unlimited per expense, max 5MB per file, compressed to 1920px, formats: JPG/PNG/WebP/PDF
-- **Dashboard:** Landing screen with 5 recent transactions, spending overview, budget status, top categories chart
-- **Navigation:** Home (Dashboard), Analytics (with Insights), Profile/Settings
+- **Dashboard:** Landing screen with 5 recent transactions, financial summary (income/expenses/net balance), top categories chart
+- **Navigation:** Home (Dashboard), Transactions (All), Analytics (placeholder), Settings (placeholder)
 - **Theme:** Material 3 with three options (Light/Dark/System Default)
 - **SMS Banks:** All major Indian banks + UPI (NPCI, BHIM, PayTM, PhonePe, GPay) + credit cards (Scapia, Federal Bank, etc.)
 - **Budget alerts:** Notify at 75% and 100% thresholds

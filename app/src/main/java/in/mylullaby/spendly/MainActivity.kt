@@ -10,6 +10,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChartPieSlice
 import com.adamglin.phosphoricons.regular.Gear
 import com.adamglin.phosphoricons.regular.House
+import com.adamglin.phosphoricons.regular.ListBullets
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -55,6 +56,7 @@ fun SpendlyApp(navController: NavHostController) {
     // Determine current destination based on route
     val currentDestination = when (currentRoute) {
         Screen.Dashboard.route -> AppDestinations.HOME
+        Screen.AllTransactions.route -> AppDestinations.TRANSACTIONS
         Screen.Analytics.route -> AppDestinations.ANALYTICS
         Screen.Settings.route -> AppDestinations.SETTINGS
         else -> AppDestinations.HOME // Default to home for expense sub-screens
@@ -76,6 +78,7 @@ fun SpendlyApp(navController: NavHostController) {
                         // Navigate to the corresponding screen
                         val route = when (destination) {
                             AppDestinations.HOME -> Screen.Dashboard.route
+                            AppDestinations.TRANSACTIONS -> Screen.AllTransactions.route
                             AppDestinations.ANALYTICS -> Screen.Analytics.route
                             AppDestinations.SETTINGS -> Screen.Settings.route
                         }
@@ -113,6 +116,7 @@ enum class AppDestinations(
     val icon: ImageVector,
 ) {
     HOME("Home", PhosphorIcons.Regular.House),
+    TRANSACTIONS("Transactions", PhosphorIcons.Regular.ListBullets),
     ANALYTICS("Analytics", PhosphorIcons.Regular.ChartPieSlice),
     SETTINGS("Settings", PhosphorIcons.Regular.Gear),
 }

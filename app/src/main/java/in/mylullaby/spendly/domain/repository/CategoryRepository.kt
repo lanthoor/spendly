@@ -1,6 +1,7 @@
 package `in`.mylullaby.spendly.domain.repository
 
 import `in`.mylullaby.spendly.domain.model.Category
+import `in`.mylullaby.spendly.domain.model.CategoryType
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -71,6 +72,27 @@ interface CategoryRepository {
      * @return true if predefined categories exist in the database
      */
     suspend fun isPredefinedSeeded(): Boolean
+
+    // Filter by type
+
+    /**
+     * Retrieves all categories of a specific type (EXPENSE or INCOME).
+     * @param type The category type to filter by
+     * @return Flow emitting list of categories of the specified type
+     */
+    fun getCategoriesByType(type: CategoryType): Flow<List<Category>>
+
+    /**
+     * Retrieves all expense categories.
+     * @return Flow emitting list of expense categories
+     */
+    fun getExpenseCategories(): Flow<List<Category>>
+
+    /**
+     * Retrieves all income categories.
+     * @return Flow emitting list of income categories
+     */
+    fun getIncomeCategories(): Flow<List<Category>>
 
     // Validation
 

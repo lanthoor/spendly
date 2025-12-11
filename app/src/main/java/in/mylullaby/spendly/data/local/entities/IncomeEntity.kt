@@ -10,7 +10,8 @@ import androidx.room.*
  *
  * @property id Unique identifier (auto-generated)
  * @property amount Amount in paise (₹1.00 = 100 paise)
- * @property source Income source (Salary/Freelance/Investments/Refund/Other)
+ * @property categoryId Foreign key to CategoryEntity (nullable for backwards compatibility)
+ * @property source Income source (Salary/Freelance/Investments/Refund/Other) - DEPRECATED, use categoryId
  * @property date Transaction date (Unix timestamp in milliseconds)
  * @property description Income description
  * @property isRecurring Whether this income is from a recurring setup
@@ -22,11 +23,18 @@ import androidx.room.*
     tableName = "income",
     indices = [
         Index(value = ["date"]),
+        Index(value = ["category_id"]),
         Index(value = ["source"]),
         Index(value = ["linked_expense_id"]),
         Index(value = ["created_at"])
     ],
     foreignKeys = [
+        ForeignKey(
+            entity = CategoryEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["category_id"],
+            onDelete = ForeignKey.SET_NULL // Keep income, set category to null
+        ),
         ForeignKey(
             entity = ExpenseEntity::class,
             parentColumns = ["id"],
@@ -43,8 +51,11 @@ data class IncomeEntity(
     @ColumnInfo(name = "amount")
     val amount: Long, // Paise
 
+    @ColumnInfo(name = "category_id")
+    val categoryId: Long?, // Foreign key to income category (nullable for backwards compatibility)
+
     @ColumnInfo(name = "source")
-    val source: String, // Salary/Freelance/Investments/Refund/Other
+    val source: String, // Salary/Freelance/Investments/Refund/Other - DEPRECATED
 
     @ColumnInfo(name = "date")
     val date: Long,

@@ -19,16 +19,16 @@
 16. ✓ Add status badge to README.md for build status (https://github.com/lanthoor/spendly)
 
 ## Database Design & Implementation (Phase 2 - Complete)
-1. ✓ Create Room database class and version management (SQLCipher encryption deferred to Security & Data Protection section)
-2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable (default Misc), date: Long (timestamp), description: String, payment_method: String (enum: Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), created_at: Long, modified_at: Long)
+1. ✓ Create Room database class and version management (v3, SQLCipher encryption deferred to Security & Data Protection section)
+2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable, date: Long (timestamp), description: String, payment_method: String (enum: Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), created_at: Long, modified_at: Long)
 3. ✓ Create Receipt entity (id: Long, expense_id: Long, file_path: String, file_type: String (JPG/PNG/WebP/PDF), file_size_bytes: Long max 5MB, compressed: Boolean)
-4. ✓ Create Income entity (id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), created_at: Long, modified_at: Long)
-5. ✓ Create Category entity (id: Long, name: String, icon: String (Material Icon name), color: Int, is_custom: Boolean, sort_order: Int) - includes 13 predefined categories
+4. ✓ Create Income entity (id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), category_id: Long nullable, created_at: Long, modified_at: Long)
+5. ✓ Create Category entity (id: Long, name: String, icon: String (Phosphor Icon name), color: Int, is_custom: Boolean, sort_order: Int, type: String) - includes 13 expense + 10 income categories
 6. ✓ Create Budget entity (id: Long, category_id: Long nullable (null = overall budget), amount: Long (paise), month: Int, year: Int, notification_75_sent: Boolean, notification_100_sent: Boolean)
 7. ✓ Create RecurringTransaction entity (id: Long, transaction_type: String (expense/income), amount: Long (paise), category_id: Long, description: String, frequency: String (daily/weekly/monthly), next_date: Long, last_processed: Long nullable)
 8. ✓ Create Tag entity and TransactionTag junction entity with cross-references (many-to-many)
 9. ✓ Create DAO interfaces for each entity with CRUD operations, use Flow for reactive queries
-**Note:** Room migrations moved to Performance Optimization section. Database backup/restore moved to Data Import/Export section.
+**Note:** Room migrations v1→v2 (category type), v2→v3 (income category_id) implemented. Database backup/restore moved to Data Import/Export section.
 
 ## Core Data Models & State Management (Phase 3 - Complete)
 1. ✓ Create Kotlin data classes for Expense model with amount helper functions (fromPaise, toPaise, displayAmount)
@@ -113,30 +113,35 @@
 - Tests: Build successful, unit tests passing
 
 ## Income Tracking Features
-1. Create IncomeViewModel with StateFlow
-2. Create income entry Compose form with refund/return linking option
-3. Implement add income functionality with Room, store amount in paise (Long)
-4. Implement edit income functionality
-5. Implement delete income functionality
-6. Create income list LazyColumn
-7. Implement recurring income setup Compose UI (daily, weekly, monthly)
-8. Create app startup check for recurring income processing (check last 3 months)
-9. Implement income source categorization (Salary, Freelance, Investments, Refund/Return, Other)
-10. Create Refund/Return income type with expense linking (linked_expense_id field)
-11. Create income vs expense comparison Compose view with charts
+1. ✓ Create IncomeViewModel with StateFlow
+2. ✓ Create income entry Compose form (IncomeFormFields with category support)
+3. ✓ Implement add income functionality with Room, store amount in paise (Long)
+4. ✓ Implement edit income functionality
+5. ✓ Implement delete income functionality
+6. ✓ Create income list LazyColumn (IncomeListScreen with modal bottom sheets)
+7. Implement recurring income setup Compose UI (daily, weekly, monthly) - **Deferred to Phase 6**
+8. Create app startup check for recurring income processing (check last 3 months) - **Deferred to Phase 6**
+9. ✓ Implement income source categorization - now uses category system instead of enum sources
+10. ✓ Create Refund/Return income type with expense linking (linked_expense_id field)
+11. ✓ Create income vs expense comparison view (Dashboard FinancialSummaryCard shows combined summary)
 
 ## Categories & Tags System
-1. Implement predefined categories seed data (13 categories): Food & Dining (restaurant icon), Travel (flight icon), Rent (home icon), Utilities (lightbulb icon), Services (build icon), Shopping (shopping_cart icon), Media (movie icon), Healthcare (local_hospital icon), Gifts (card_giftcard icon), Education (school icon), Investments (trending_up icon), Groceries (local_grocery_store icon), Misc (category icon)
-2. Create category management Compose screen
-3. Implement custom category creation form with Material Icons picker
-4. Implement custom category color picker using Compose ColorPicker
-5. Use Material Icons library for category icons (icon stored as String name)
-6. Implement category edit functionality in ViewModel
-7. Implement category delete with transaction reassignment dialog - user must select replacement category (including Misc option)
-8. Create tag management Compose screen
-9. Implement tag creation functionality
-10. Implement tag assignment to transactions using junction table (many-to-many)
-11. Create tag-based filtering using FilterChip and Room queries
+1. ✓ Implement predefined categories seed data - **Updated with separate expense/income categories:**
+   - ✓ Expense categories (13, IDs 1-13): Food & Dining, Travel, Rent, Utilities, Services, Shopping, Entertainment, Healthcare, Gifts, Education, Investments, Groceries, Uncategorized
+   - ✓ Income categories (10, IDs 101-110): Salary, Freelance, Business, Investment, Gift, Refund, Rental, Interest, Bonus, Other
+   - ✓ Uses Phosphor Icons instead of Material Icons
+   - ✓ CategoryType enum (EXPENSE/INCOME) in domain model
+   - ✓ Database migration v1→v2 added type column and seeded income categories
+2. Create category management Compose screen - **Deferred to future phase**
+3. Implement custom category creation form with Phosphor Icons picker - **Deferred to future phase**
+4. Implement custom category color picker using Compose ColorPicker - **Deferred to future phase**
+5. ✓ Use Phosphor Icons library for category icons (icon stored as String name)
+6. Implement category edit functionality in ViewModel - **Deferred to future phase**
+7. Implement category delete with transaction reassignment dialog - **Deferred to future phase**
+8. Create tag management Compose screen - **Deferred to future phase**
+9. Implement tag creation functionality - **Deferred to future phase**
+10. Implement tag assignment to transactions using junction table (many-to-many) - **Deferred to future phase**
+11. Create tag-based filtering using FilterChip and Room queries - **Deferred to future phase**
 
 ## Budget Management Features
 1. Create BudgetViewModel with budget calculation logic (amounts in paise)
@@ -170,14 +175,14 @@
 
 ## Dashboard & Main UI
 1. ✓ Design main dashboard layout with Scaffold - set as landing screen (first screen on app open)
-2. Create spending overview Card composable (total spent this month in INR, converted from paise)
-3. Create budget status Card composable
-4. Create recent transactions LazyColumn widget showing last 5 transactions with 'View All' link
-5. Create top spending categories Card with mini Vico chart
-6. Create FloatingActionButton for quick add expense
-7. Implement pull-to-refresh using PullToRefreshBox
+2. ✓ Create spending overview Card composable (FinancialSummaryCard with income/expenses/net balance)
+3. Create budget status Card composable - **Deferred to Phase 6**
+4. ✓ Create recent transactions LazyColumn widget (RecentTransactionsWidget showing last 5 transactions)
+5. ✓ Create top spending categories Card with mini Vico chart (TopCategoriesChart)
+6. ✓ Create FloatingActionButton for quick add expense (expandable FAB with income/expense options)
+7. ✓ Implement pull-to-refresh using PullToRefreshBox
 8. ✓ Use NavigationSuiteScaffold for adaptive navigation (bottom bar/rail/drawer)
-9. Update AppDestinations enum: Home (Dashboard), Analytics (with Insights), Profile/Settings
+9. ✓ Update AppDestinations enum: Home (Dashboard), Transactions (All), Analytics, Settings
 10. ✓ Implement responsive layout using WindowSizeClass for tablets
 
 ## Calendar & Timeline Views
