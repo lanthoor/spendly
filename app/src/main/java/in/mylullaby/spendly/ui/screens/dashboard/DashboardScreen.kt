@@ -223,6 +223,7 @@ fun DashboardScreen(
                                 RecentTransactionsWidget(
                                     transactions = state.recentTransactions,
                                     categories = state.allCategories,
+                                    accounts = state.allAccounts,
                                     onTransactionClick = { transaction ->
                                         when (transaction) {
                                             is RecentTransaction.ExpenseTransaction -> {

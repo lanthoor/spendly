@@ -50,10 +50,10 @@ interface ExpenseDao {
     fun getExpensesByCategory(categoryId: Long): Flow<List<ExpenseEntity>>
 
     /**
-     * Get all expenses for a specific payment method.
+     * Get all expenses for a specific account.
      */
-    @Query("SELECT * FROM expenses WHERE payment_method = :paymentMethod ORDER BY date DESC")
-    fun getExpensesByPaymentMethod(paymentMethod: String): Flow<List<ExpenseEntity>>
+    @Query("SELECT * FROM expenses WHERE account_id = :accountId ORDER BY date DESC")
+    fun getExpensesByAccount(accountId: Long): Flow<List<ExpenseEntity>>
 
     /**
      * Get the most recent expenses.

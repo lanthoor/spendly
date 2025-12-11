@@ -1,7 +1,6 @@
 package `in`.mylullaby.spendly.domain.repository
 
 import `in`.mylullaby.spendly.domain.model.Expense
-import `in`.mylullaby.spendly.utils.PaymentMethod
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -63,11 +62,11 @@ interface ExpenseRepository {
     fun getExpensesByCategory(categoryId: Long): Flow<List<Expense>>
 
     /**
-     * Retrieves expenses filtered by payment method.
-     * @param method The payment method
-     * @return Flow emitting list of expenses using the payment method
+     * Retrieves expenses filtered by account.
+     * @param accountId The account ID
+     * @return Flow emitting list of expenses associated with the account
      */
-    fun getExpensesByPaymentMethod(method: PaymentMethod): Flow<List<Expense>>
+    fun getExpensesByAccount(accountId: Long): Flow<List<Expense>>
 
     /**
      * Retrieves expenses that have any of the specified tags.

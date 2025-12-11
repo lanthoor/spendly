@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.ui.components.EmptyState
 import `in`.mylullaby.spendly.ui.components.IconMapper
@@ -47,7 +48,6 @@ import `in`.mylullaby.spendly.ui.screens.dashboard.RecentTransaction
 import `in`.mylullaby.spendly.ui.screens.expenses.EditExpenseScreen
 import `in`.mylullaby.spendly.ui.screens.income.EditIncomeScreen
 import `in`.mylullaby.spendly.utils.CurrencyUtils
-import `in`.mylullaby.spendly.utils.toDisplayName
 import `in`.mylullaby.spendly.utils.toDisplayString
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -130,6 +130,7 @@ fun TransactionListScreen(
                                 TransactionListItem(
                                     transaction = transaction,
                                     categories = state.allCategories,
+                                    accounts = state.allAccounts,
                                     onClick = {
                                         when (transaction) {
                                             is RecentTransaction.ExpenseTransaction -> {
@@ -202,16 +203,19 @@ fun TransactionListScreen(
 private fun TransactionListItem(
     transaction: RecentTransaction,
     categories: List<Category>,
+    accounts: List<Account>,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault())
+    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val categoryMap = categories.associateBy { it.id }
+    val accountMap = accounts.associateBy { it.id }
 
     when (transaction) {
         is RecentTransaction.ExpenseTransaction -> {
             val expense = transaction.expense
             val category = expense.categoryId?.let { categoryMap[it] }
+            val account = accountMap[expense.accountId]
             val formattedDate = dateFormatter.format(Date(expense.date))
 
             Row(
@@ -240,12 +244,7 @@ private fun TransactionListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = expense.paymentMethod.toDisplayName(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = formattedDate,
+                        text = "$formattedDate • ${account?.name ?: "Unknown"}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -264,6 +263,7 @@ private fun TransactionListItem(
         is RecentTransaction.IncomeTransaction -> {
             val income = transaction.income
             val category = income.categoryId?.let { categoryMap[it] }
+            val account = accountMap[income.accountId]
             val formattedDate = dateFormatter.format(Date(income.date))
 
             Row(
@@ -292,12 +292,7 @@ private fun TransactionListItem(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = category?.name ?: income.source.toDisplayString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = formattedDate,
+                        text = "$formattedDate • ${account?.name ?: "Unknown"}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

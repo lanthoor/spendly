@@ -76,4 +76,25 @@ sealed class Screen(val route: String) {
      * Settings screen - app preferences and configuration
      */
     data object Settings : Screen("settings")
+
+    /**
+     * Account management screen - list all accounts
+     */
+    data object AccountList : Screen("accounts")
+
+    /**
+     * Edit account screen - form for editing an existing account
+     * @param accountId The ID of the account to edit
+     */
+    data object EditAccount : Screen("accounts/edit/{accountId}") {
+        /**
+         * Creates the route with the actual account ID
+         */
+        fun createRoute(accountId: Long): String = "accounts/edit/$accountId"
+
+        /**
+         * Argument key for the account ID
+         */
+        const val ARG_ACCOUNT_ID = "accountId"
+    }
 }

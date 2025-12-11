@@ -1,5 +1,6 @@
 package `in`.mylullaby.spendly.utils
 
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Income
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
@@ -89,7 +90,7 @@ class RecurringTransactionProcessor @Inject constructor(
                     categoryId = transaction.categoryId,
                     date = occurrenceDate,
                     description = transaction.description,
-                    paymentMethod = paymentMethod,
+                    accountId = Account.DEFAULT_ACCOUNT_ID,
                     createdAt = System.currentTimeMillis(),
                     modifiedAt = System.currentTimeMillis()
                 )
@@ -109,6 +110,7 @@ class RecurringTransactionProcessor @Inject constructor(
                     source = source,
                     date = occurrenceDate,
                     description = transaction.description,
+                    accountId = Account.DEFAULT_ACCOUNT_ID,
                     isRecurring = false, // The created transaction is not recurring itself
                     linkedExpenseId = null,
                     createdAt = System.currentTimeMillis(),

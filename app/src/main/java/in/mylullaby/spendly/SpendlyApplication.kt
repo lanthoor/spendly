@@ -10,6 +10,7 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import `in`.mylullaby.spendly.di.ApplicationScope
+import `in`.mylullaby.spendly.domain.repository.AccountRepository
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import `in`.mylullaby.spendly.utils.RecurringTransactionProcessor
 import `in`.mylullaby.spendly.workers.RecurringTransactionWorker
@@ -21,7 +22,7 @@ import javax.inject.Inject
  * Application class for Spendly expense tracker.
  *
  * Annotated with @HiltAndroidApp to enable Hilt dependency injection.
- * Seeds predefined categories on first launch.
+ * Seeds predefined categories and accounts on first launch.
  * Processes recurring transactions at startup.
  * Schedules daily WorkManager job for recurring transactions.
  */
@@ -30,6 +31,9 @@ class SpendlyApplication : Application() {
 
     @Inject
     lateinit var categoryRepository: CategoryRepository
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     @Inject
     lateinit var recurringTransactionProcessor: RecurringTransactionProcessor
@@ -46,6 +50,11 @@ class SpendlyApplication : Application() {
                 // Seed predefined categories on first launch
                 if (!categoryRepository.isPredefinedSeeded()) {
                     categoryRepository.seedPredefinedCategories()
+                }
+
+                // Seed predefined accounts on first launch (after categories)
+                if (!accountRepository.isPredefinedSeeded()) {
+                    accountRepository.seedPredefinedAccounts()
                 }
 
                 // Process recurring transactions at startup (check last 3 months)

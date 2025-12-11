@@ -19,16 +19,17 @@
 16. ✓ Add status badge to README.md for build status (https://github.com/lanthoor/spendly)
 
 ## Database Design & Implementation (Phase 2 - Complete)
-1. ✓ Create Room database class and version management (v3, SQLCipher encryption deferred to Security & Data Protection section)
-2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable, date: Long (timestamp), description: String, payment_method: String (enum: Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), created_at: Long, modified_at: Long)
+1. ✓ Create Room database class and version management (v4, SQLCipher encryption deferred to Security & Data Protection section)
+2. ✓ Create Expense entity with Room annotations (id: Long, amount: Long (paise), category_id: Long nullable, date: Long (timestamp), description: String, account_id: Long, created_at: Long, modified_at: Long)
 3. ✓ Create Receipt entity (id: Long, expense_id: Long, file_path: String, file_type: String (JPG/PNG/WebP/PDF), file_size_bytes: Long max 5MB, compressed: Boolean)
-4. ✓ Create Income entity (id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), category_id: Long nullable, created_at: Long, modified_at: Long)
+4. ✓ Create Income entity (id: Long, amount: Long (paise), source: String, date: Long, description: String, is_recurring: Boolean, linked_expense_id: Long nullable (for refunds), category_id: Long nullable, account_id: Long, created_at: Long, modified_at: Long)
 5. ✓ Create Category entity (id: Long, name: String, icon: String (Phosphor Icon name), color: Int, is_custom: Boolean, sort_order: Int, type: String) - includes 13 expense + 10 income categories
 6. ✓ Create Budget entity (id: Long, category_id: Long nullable (null = overall budget), amount: Long (paise), month: Int, year: Int, notification_75_sent: Boolean, notification_100_sent: Boolean)
 7. ✓ Create RecurringTransaction entity (id: Long, transaction_type: String (expense/income), amount: Long (paise), category_id: Long, description: String, frequency: String (daily/weekly/monthly), next_date: Long, last_processed: Long nullable)
 8. ✓ Create Tag entity and TransactionTag junction entity with cross-references (many-to-many)
-9. ✓ Create DAO interfaces for each entity with CRUD operations, use Flow for reactive queries
-**Note:** Room migrations v1→v2 (category type), v2→v3 (income category_id) implemented. Database backup/restore moved to Data Import/Export section.
+9. ✓ Create Account entity (id: Long, name: String, type: String, icon: String, color: Int, is_custom: Boolean, sort_order: Int, created_at: Long, modified_at: Long)
+10. ✓ Create DAO interfaces for each entity with CRUD operations, use Flow for reactive queries
+**Note:** Database v4 uses destructive migration for development. Migration logic removed - will be added before app release. Database backup/restore moved to Data Import/Export section.
 
 ## Core Data Models & State Management (Phase 3 - Complete)
 1. ✓ Create Kotlin data classes for Expense model with amount helper functions (fromPaise, toPaise, displayAmount)
@@ -125,6 +126,50 @@
 10. ✓ Create Refund/Return income type with expense linking (linked_expense_id field)
 11. ✓ Create income vs expense comparison view (Dashboard FinancialSummaryCard shows combined summary)
 
+## Accounts System (Phase 6 - Complete)
+1. ✓ Create AccountEntity with fields: id, name, type, icon, color, is_custom, sort_order, created_at, modified_at
+2. ✓ Create AccountDao with CRUD operations, Flow-based queries, transaction count queries, and reassignment methods
+3. ✓ Create Account domain model with DEFAULT_ACCOUNT_ID constant and PREDEFINED list
+4. ✓ Create AccountRepository interface with CRUD, seeding, and validation methods (with excludeId for edit mode)
+5. ✓ Implement AccountRepositoryImpl with entity-to-domain mapping, deletion with reassignment, and name uniqueness check
+6. ✓ Add AccountType enum to Enums.kt: BANK, CARD, WALLET, CASH, LOAN, INVESTMENT
+7. ✓ Update SpendlyDatabase: increment version to 4, add AccountEntity, add accountDao(), fallbackToDestructiveMigration, remove migration logic
+8. ✓ Update DatabaseModule: add provideAccountDao(), remove addMigrations() call
+9. ✓ Update RepositoryModule: add bindAccountRepository()
+10. ✓ Update SpendlyApplication: seed predefined "My Account" (Bank type) on first launch
+11. ✓ Update ExpenseEntity: replace paymentMethod with accountId, add FK constraint, update indexes
+12. ✓ Update IncomeEntity: add accountId field, add FK constraint, add index
+13. ✓ Update Expense domain model: replace paymentMethod with accountId
+14. ✓ Update Income domain model: add accountId field
+15. ✓ Update ExpenseRepository: replace getExpensesByPaymentMethod with getExpensesByAccount
+16. ✓ Update IncomeRepository: add getIncomeByAccount
+17. ✓ Update ExpenseRepositoryImpl: update entity mapping for accountId
+18. ✓ Update IncomeRepositoryImpl: update entity mapping for accountId
+19. ✓ Create AccountDropdown component
+20. ✓ Create AccountSelectionDialog component with 3-column grid
+21. ✓ Create AccountViewModel with state management and form validation
+22. ✓ Create AccountListScreen with grouped account display
+23. ✓ Create AddAccountScreen modal bottom sheet
+24. ✓ Create EditAccountScreen modal bottom sheet with delete
+25. ✓ Create AccountFormFields reusable component
+26. ✓ Create AccountListItem component
+27. ✓ Create AccountTypeSelectionDialog
+28. ✓ Create DeleteAccountDialog with reassignment
+29. ✓ Update ExpenseViewModel: inject AccountRepository, load accounts, update form state with accountId
+30. ✓ Update IncomeViewModel: inject AccountRepository, load accounts, update form state with accountId
+31. ✓ Update ExpenseFormFields: replace PaymentMethodDropdown with AccountDropdown
+32. ✓ Update IncomeFormFields: add AccountDropdown
+33. ✓ Update ExpenseListItem: show account name in subheading (format: "date • account name")
+34. ✓ Update IncomeListItem: show account name in subheading (format: "date • account name")
+35. ✓ Update RecentTransactionsWidget: show account name in subheading for recent transactions
+36. ✓ Update TransactionListScreen: show account name in subheading for all transactions
+37. ✓ Update DashboardViewModel: inject AccountRepository, load accounts, pass to UI
+38. ✓ Update Screen.kt: add AccountList and AccountEdit routes
+39. ✓ Update SpendlyNavHost: wire up account management screens
+40. ✓ Deprecate PaymentMethodDropdown and PaymentMethodSelectionDialog
+41. ✓ Fix account edit validation: exclude current account from uniqueness check
+42. ✓ Update documentation: README.md, PLAN.md, CLAUDE.md
+
 ## Categories & Tags System
 1. ✓ Implement predefined categories seed data - **Updated with separate expense/income categories:**
    - ✓ Expense categories (13, IDs 1-13): Food & Dining, Travel, Rent, Utilities, Services, Shopping, Entertainment, Healthcare, Gifts, Education, Investments, Groceries, Uncategorized
@@ -167,7 +212,7 @@
 8. Create monthly summary report generator using Kotlin
 9. Create yearly summary report generator
 10. Implement PDF export using PdfDocument API for monthly/yearly summaries
-11. Implement CSV export - fields: Date, Amount, Category, Description, Payment Method, Tags (comma-separated)
+11. Implement CSV export - fields: Date, Amount, Category, Description, Account, Tags (comma-separated)
 12. Create spending insights section within Analytics screen showing:
     - Top spending category for selected period
     - Month-over-month spending trend (increase/decrease %)
@@ -200,7 +245,7 @@
 2. Create advanced filter ModalBottomSheet or Dialog
 3. Implement filter by multiple categories using FilterChip group
 4. Implement filter by amount range using RangeSlider
-5. Implement filter by payment method using dropdown
+5. Implement filter by account using dropdown
 6. Implement filter by tags using FilterChip
 7. Create saved filter presets using DataStore
 8. Implement search result highlighting using AnnotatedString
@@ -224,7 +269,7 @@
 1. Implement database backup and restore using Room export/import to JSON with metadata (version, export_date, currency: INR) - moved from Phase 2
 2. Implement JSON export - single file with metadata section (version, export_date, currency: INR) and nested arrays for all entities
 3. Implement JSON import functionality with validation and version checking
-4. Implement CSV export for expenses - columns: Date, Amount (in ₹), Category, Description, Payment Method, Tags (comma-separated)
+4. Implement CSV export for expenses - columns: Date, Amount (in ₹), Category, Description, Account, Tags (comma-separated)
 5. Implement CSV export for income - columns: Date, Amount (in ₹), Source, Description, Linked Expense ID
 6. Implement CSV import with column mapping UI
 7. Create data export settings (select date range, categories, transaction types)
@@ -249,7 +294,7 @@
 ## Settings & Preferences
 1. Create settings screen layout using Compose (part of Profile navigation destination)
 2. ~~Remove currency preference setting (INR only)~~
-3. Implement default payment method setting (Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet)
+3. Implement default account setting (select from user's accounts)
 4. Implement notification preferences (enable/disable, budget alerts 75%/100%)
 5. Implement theme selector (Light/Dark/System Default)
 6. Implement calendar view mode preference (expenses/income/both)

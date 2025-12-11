@@ -78,4 +78,13 @@ abstract class RepositoryModule {
     abstract fun bindRecurringTransactionRepository(
         impl: RecurringTransactionRepositoryImpl
     ): RecurringTransactionRepository
+
+    /**
+     * Binds AccountRepositoryImpl to AccountRepository interface.
+     */
+    @Binds
+    @Singleton
+    abstract fun bindAccountRepository(
+        impl: AccountRepositoryImpl
+    ): AccountRepository
 }

@@ -7,6 +7,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Airplane
 import com.adamglin.phosphoricons.regular.Bank
 import com.adamglin.phosphoricons.regular.Briefcase
+import com.adamglin.phosphoricons.regular.CreditCard
 import com.adamglin.phosphoricons.regular.CurrencyDollar
 import com.adamglin.phosphoricons.regular.DotsThree
 import com.adamglin.phosphoricons.regular.FilmSlate
@@ -17,6 +18,7 @@ import com.adamglin.phosphoricons.regular.GraduationCap
 import com.adamglin.phosphoricons.regular.House
 import com.adamglin.phosphoricons.regular.Laptop
 import com.adamglin.phosphoricons.regular.Lightbulb
+import com.adamglin.phosphoricons.regular.Money
 import com.adamglin.phosphoricons.regular.Question
 import com.adamglin.phosphoricons.regular.Receipt
 import com.adamglin.phosphoricons.regular.ShoppingBag
@@ -24,6 +26,7 @@ import com.adamglin.phosphoricons.regular.ShoppingCart
 import com.adamglin.phosphoricons.regular.Storefront
 import com.adamglin.phosphoricons.regular.Tag
 import com.adamglin.phosphoricons.regular.TrendUp
+import com.adamglin.phosphoricons.regular.Wallet
 import com.adamglin.phosphoricons.regular.Wrench
 
 /**
@@ -86,6 +89,12 @@ object IconMapper {
             "bank" -> PhosphorIcons.Regular.Bank
             "receipt" -> PhosphorIcons.Regular.Receipt
             "gift" -> PhosphorIcons.Regular.Gift
+
+            // Account type icons
+            "creditcard" -> PhosphorIcons.Regular.CreditCard
+            "wallet" -> PhosphorIcons.Regular.Wallet
+            "money" -> PhosphorIcons.Regular.Money
+            "trendingup" -> PhosphorIcons.Regular.TrendUp
 
             // Fallback
             else -> PhosphorIcons.Regular.Question

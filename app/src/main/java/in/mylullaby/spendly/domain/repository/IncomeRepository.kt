@@ -62,6 +62,13 @@ interface IncomeRepository {
     fun getIncomeBySource(source: IncomeSource): Flow<List<Income>>
 
     /**
+     * Retrieves income filtered by account.
+     * @param accountId The account ID
+     * @return Flow emitting list of income associated with the account
+     */
+    fun getIncomeByAccount(accountId: Long): Flow<List<Income>>
+
+    /**
      * Retrieves all refund income (income linked to expenses).
      * @return Flow emitting list of refund income
      */

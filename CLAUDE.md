@@ -187,23 +187,21 @@ app/src/
 - ✅ **Latest GitHub Actions** with commit-hash pinning for security
 
 **✅ Phase 2 Complete: Database Foundation (Tasks 17-27)**
-- ✅ **SpendlyDatabase:** Room database with 8 entities, version 3 (migrations v1→v2→v3), schema export enabled
-- ✅ **8 Room Entities:** ExpenseEntity, IncomeEntity, CategoryEntity, BudgetEntity, ReceiptEntity, RecurringTransactionEntity, TagEntity, TransactionTagEntity
-- ✅ **8 DAOs with Flow-based queries:** Full CRUD operations, complex queries with aggregations, date range filtering, category-based queries
+- ✅ **SpendlyDatabase:** Room database with 9 entities, version 4, schema export enabled
+- ✅ **9 Room Entities:** ExpenseEntity, IncomeEntity, CategoryEntity, BudgetEntity, ReceiptEntity, RecurringTransactionEntity, TagEntity, TransactionTagEntity, AccountEntity
+- ✅ **9 DAOs with Flow-based queries:** Full CRUD operations, complex queries with aggregations, date range filtering, category-based queries, account filtering
 - ✅ **Proper schema design:** Foreign keys with CASCADE/SET_NULL, composite indexes for performance, proper normalization
 - ✅ **Integer-only currency:** All amounts stored as Long (paise) for ZERO precision loss - no floating-point arithmetic
 - ✅ **Audit timestamps:** createdAt and modifiedAt fields on all transaction entities
 - ✅ **Many-to-many tags:** Junction table (TransactionTagEntity) for flexible tagging
-- ✅ **Database Migrations:**
-  - v1→v2: Added type column to categories, seeded 10 income categories (IDs 101-110)
-  - v2→v3: Added category_id column to income with foreign key to categories
+- ✅ **Database Strategy:** Destructive migration for development (fallbackToDestructiveMigration), migration logic removed until pre-release
 
 **✅ Phase 3 Complete: Repository Layer & Domain Models (Tasks 28-57)**
-- ✅ **6 domain models:** Expense, Income, Category, Budget, Tag, Receipt with proper type safety
-- ✅ **6 repository interfaces:** ExpenseRepository, IncomeRepository, CategoryRepository, BudgetRepository, TagRepository, ReceiptRepository
-- ✅ **6 repository implementations:** Full CRUD with entity-to-model mapping, file management for receipts
-- ✅ **Hilt DI modules:** DatabaseModule (8 DAOs), RepositoryModule (6 repositories), DataStoreModule, AppModule
-- ✅ **SpendlyApplication:** Category seeding on first launch with @HiltAndroidApp
+- ✅ **7 domain models:** Expense, Income, Category, Budget, Tag, Receipt, Account with proper type safety
+- ✅ **7 repository interfaces:** ExpenseRepository, IncomeRepository, CategoryRepository, BudgetRepository, TagRepository, ReceiptRepository, AccountRepository
+- ✅ **7 repository implementations:** Full CRUD with entity-to-model mapping, file management for receipts, account deletion with reassignment
+- ✅ **Hilt DI modules:** DatabaseModule (9 DAOs), RepositoryModule (7 repositories), DataStoreModule, AppModule
+- ✅ **SpendlyApplication:** Category and account seeding on first launch with @HiltAndroidApp
 
 **✅ Phase 4 Complete: Expense Management UI (Tasks 59-77)**
 - ✅ **Navigation:** Screen sealed class with type-safe routes + SpendlyNavHost
@@ -231,7 +229,18 @@ app/src/
 - ✅ **Currency Fix:** paiseToRupeeString() with integer-only arithmetic (no scientific notation)
 - ✅ **Enum Extensions:** toDisplayName() for PaymentMethod, toDisplayString() for IncomeSource
 
-**🚧 Next Phase: Recurring Transactions, Search, Filters, Budget Management (Phase 6)**
+**✅ Phase 6 Complete: Accounts System**
+- ✅ **Account Management:** Full CRUD for accounts with customizable types (BANK/CARD/WALLET/CASH/LOAN/INVESTMENT)
+- ✅ **AccountEntity & AccountDao:** Database layer with proper indexes, foreign key constraints, transaction reassignment queries
+- ✅ **Account Domain Model:** AccountRepository with seeding logic for "My Account" (default Bank account), name uniqueness validation with excludeId
+- ✅ **Expense/Income Integration:** Replaced payment method field with account references (accountId) in all transactions
+- ✅ **Account UI Components:** AccountDropdown, AccountSelectionDialog with 3-column grid and type badges
+- ✅ **Account Management Screens:** AccountListScreen, AddAccountScreen, EditAccountScreen with deletion reassignment
+- ✅ **Transaction Display:** Account names shown in subheadings (format: "date • account name") for recent and all transactions
+- ✅ **Bug Fixes:** Account edit validation correctly excludes current account from uniqueness check
+- ✅ **Database Strategy:** v4 with destructive migration for development, migration logic removed until pre-release
+
+**🚧 Next Phase: Recurring Transactions, Search, Filters, Budget Management (Phase 7)**
 
 ### Tech Stack (Configured & Ready)
 - ✅ **Database:** Room v2.6.1 (SQLite wrapper) - SQLCipher encryption deferred to task 173
@@ -255,7 +264,7 @@ app/src/
 - All data stored locally with no cloud sync
 
 ### Key Functionality
-1. **Expense & Income Tracking:** CRUD operations with categories, tags, payment methods (Cash/UPI/Debit Card/Credit Card/Net Banking/Wallet), unlimited receipt attachments (JPG/PNG/WebP/PDF, max 5MB per file, compressed to 1920px)
+1. **Expense & Income Tracking:** CRUD operations with categories, tags, accounts (customizable with types: BANK/CARD/WALLET/CASH/LOAN/INVESTMENT), unlimited receipt attachments (JPG/PNG/WebP/PDF, max 5MB per file, compressed to 1920px)
 2. **Budget Management:** Per-category or overall monthly budgets with overspending alerts at 75% and 100% thresholds
 3. **Analytics:** Vico charts (pie/bar/line) for spending trends, category breakdowns, monthly/yearly comparisons. Insights include: top spending category, month-over-month trends, budget vs actual
 4. **SMS Auto-Detection:** Parse bank SMS from all major Indian banks + UPI + credit cards. Auto-creates transactions (fully editable/deletable)
@@ -373,7 +382,8 @@ Refer to PLAN.md for complete schema. Key entities:
 - **Currency:** INR only (no multi-currency support). All amounts in paise (Long).
 - **Android-only:** No iOS version planned
 - **Local storage only:** All data persists in SQLite (encrypted with SQLCipher) and internal storage (encrypted)
-- **Payment methods (predefined):** Cash, UPI, Debit Card, Credit Card, Net Banking, Wallet
+- **Accounts (customizable):** Users can create accounts with types: BANK, CARD, WALLET, CASH, LOAN, INVESTMENT
+- **Default account:** "My Account" (Bank type) - all transactions default to this account
 - **Categories (14 predefined):** Food & Dining, Travel, Rent, Utilities, Services, Shopping, Entertainment, Healthcare, Gifts, Education, Investments, Groceries, Others, Uncategorized
 - **Receipt limits:** Unlimited per expense, max 5MB per file, compressed to 1920px, formats: JPG/PNG/WebP/PDF
 - **Dashboard:** Landing screen with 5 recent transactions, financial summary (income/expenses/net balance), top categories chart
@@ -385,7 +395,7 @@ Refer to PLAN.md for complete schema. Key entities:
 - **Category deletion:** Requires user to reassign transactions to another category (including Uncategorized)
 - **Export formats:**
   - JSON: Single file with metadata (version, export_date, currency: INR) and all entities
-  - CSV: Date, Amount (in ₹), Category, Description, Payment Method, Tags (comma-separated)
+  - CSV: Date, Amount (in ₹), Category, Description, Account, Tags (comma-separated)
 - never commit without explicit instruction
 - use concise and short commit messages. no need to put test coverage/etc., next phase details, challenges, etc. in the commit message. also the first line should be less than 60 characters long.
 - update PLAN.md and README.md after each phase completion

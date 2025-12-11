@@ -3,7 +3,10 @@ package `in`.mylullaby.spendly.utils
 /**
  * Payment methods supported by the app.
  * Used for expense transactions.
+ *
+ * @deprecated Replaced by Account system. Use AccountType instead.
  */
+@Deprecated("Replaced by Account system. Use AccountType instead.", ReplaceWith("AccountType"))
 enum class PaymentMethod {
     CASH,
     UPI,
@@ -151,5 +154,83 @@ enum class TransactionType {
                 default
             }
         }
+    }
+}
+
+/**
+ * Account types supported by the app.
+ * Used to categorize different financial accounts users can create.
+ *
+ * Types:
+ * - BANK: Savings/checking bank accounts
+ * - CARD: Credit/debit cards
+ * - WALLET: Digital wallets (PayTM, GPay, PhonePe, etc.)
+ * - CASH: Physical cash
+ * - LOAN: Borrowed money accounts
+ * - INVESTMENT: Investment/brokerage accounts
+ */
+enum class AccountType {
+    BANK,
+    CARD,
+    WALLET,
+    CASH,
+    LOAN,
+    INVESTMENT;
+
+    companion object {
+        fun fromString(value: String): AccountType? {
+            return entries.find { it.name == value }
+        }
+
+        /**
+         * Safe parsing with fallback to default value.
+         * Prevents IllegalArgumentException crashes from invalid database values.
+         * Logs warning when unknown value is encountered.
+         */
+        fun fromStringOrDefault(value: String, default: AccountType = BANK): AccountType {
+            return fromString(value) ?: run {
+                android.util.Log.w("AccountType", "Unknown account type: $value, defaulting to ${default.name}")
+                default
+            }
+        }
+    }
+}
+
+/**
+ * Convert AccountType enum to display string in title case.
+ *
+ * Examples:
+ * - BANK -> "Bank"
+ * - CARD -> "Card"
+ * - WALLET -> "Wallet"
+ * - CASH -> "Cash"
+ * - LOAN -> "Loan"
+ * - INVESTMENT -> "Investment"
+ */
+fun AccountType.toDisplayName(): String {
+    return name.lowercase()
+        .split('_')
+        .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
+}
+
+/**
+ * Get the default Phosphor icon name for each account type.
+ *
+ * Returns:
+ * - BANK -> "bank"
+ * - CARD -> "creditcard"
+ * - WALLET -> "wallet"
+ * - CASH -> "money"
+ * - LOAN -> "receipt"
+ * - INVESTMENT -> "trendingup"
+ */
+fun AccountType.getDefaultIcon(): String {
+    return when (this) {
+        AccountType.BANK -> "bank"
+        AccountType.CARD -> "creditcard"
+        AccountType.WALLET -> "wallet"
+        AccountType.CASH -> "money"
+        AccountType.LOAN -> "receipt"
+        AccountType.INVESTMENT -> "trendingup"
     }
 }

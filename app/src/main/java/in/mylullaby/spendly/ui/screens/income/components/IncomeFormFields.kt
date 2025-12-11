@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
+import `in`.mylullaby.spendly.ui.components.AccountDropdown
 import `in`.mylullaby.spendly.ui.components.AmountTextField
 import `in`.mylullaby.spendly.ui.components.CategoryDropdown
 import `in`.mylullaby.spendly.ui.components.DatePickerField
@@ -23,6 +25,7 @@ import `in`.mylullaby.spendly.ui.screens.income.IncomeFormState
  * @param formState Current form state
  * @param categories List of income categories to display
  * @param selectedCategory Currently selected category
+ * @param accounts List of accounts to display
  * @param onFieldChange Callback when any field changes
  * @param modifier Optional modifier
  * @param enabled Whether fields are enabled
@@ -32,6 +35,7 @@ fun IncomeFormFields(
     formState: IncomeFormState,
     categories: List<Category>,
     selectedCategory: Category?,
+    accounts: List<Account>,
     onFieldChange: (IncomeFormField, Any) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
@@ -91,6 +95,20 @@ fun IncomeFormFields(
             minLines = 2,
             maxLines = 4,
             singleLine = false
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Account dropdown
+        AccountDropdown(
+            selectedAccount = accounts.find { it.id == formState.accountId },
+            accounts = accounts,
+            onAccountSelected = { account ->
+                onFieldChange(IncomeFormField.ACCOUNT_ID, account.id)
+            },
+            label = "Account",
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled
         )
     }
 }

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.ui.components.IconMapper
-import `in`.mylullaby.spendly.utils.PaymentMethod
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -72,23 +71,11 @@ fun ExpenseListItem(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = formattedDate,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = " • ",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = expense.paymentMethod.name.replace('_', ' '),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -114,7 +101,7 @@ private fun ExpenseListItemPreview() {
         categoryId = 1,
         date = System.currentTimeMillis(),
         description = "Lunch at restaurant",
-        paymentMethod = PaymentMethod.UPI,
+        accountId = 1,
         createdAt = System.currentTimeMillis(),
         modifiedAt = System.currentTimeMillis()
     )

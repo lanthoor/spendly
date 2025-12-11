@@ -57,6 +57,7 @@ fun EditIncomeScreen(
     val formState by viewModel.formState.collectAsState()
     val incomeCategories by viewModel.incomeCategories.collectAsState()
     val expenses by viewModel.expenses.collectAsState()
+    val accounts by viewModel.accounts.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -140,6 +141,7 @@ fun EditIncomeScreen(
                     formState = formState,
                     categories = incomeCategories,
                     selectedCategory = formState.selectedCategory,
+                    accounts = accounts,
                     onFieldChange = { field, value ->
                         viewModel.updateFormField(field, value)
                     },

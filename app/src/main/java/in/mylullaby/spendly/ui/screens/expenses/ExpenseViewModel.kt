@@ -5,16 +5,17 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Receipt
+import `in`.mylullaby.spendly.domain.repository.AccountRepository
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
 import `in`.mylullaby.spendly.domain.repository.ReceiptRepository
 import `in`.mylullaby.spendly.utils.CurrencyUtils
 import `in`.mylullaby.spendly.utils.FileUtils
 import `in`.mylullaby.spendly.utils.ImageCompressor
-import `in`.mylullaby.spendly.utils.PaymentMethod
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -41,7 +42,8 @@ import javax.inject.Inject
 class ExpenseViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository,
-    private val receiptRepository: ReceiptRepository
+    private val receiptRepository: ReceiptRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     // UI State for expense list screen
@@ -58,6 +60,15 @@ class ExpenseViewModel @Inject constructor(
 
     // Categories (loaded once and cached)
     val categories: StateFlow<List<Category>> = categoryRepository.getAllCategories()
+        .catch { emit(emptyList()) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    // Accounts (loaded once and cached)
+    val accounts: StateFlow<List<Account>> = accountRepository.getAllAccounts()
         .catch { emit(emptyList()) }
         .stateIn(
             scope = viewModelScope,
@@ -107,10 +118,10 @@ class ExpenseViewModel @Inject constructor(
                         val categoryId = filters.categoryIds.first()
                         expenseRepository.getExpensesByCategory(categoryId)
                     }
-                    // Payment method filter (single method for now)
-                    filters.paymentMethods.isNotEmpty() -> {
-                        val method = filters.paymentMethods.first()
-                        expenseRepository.getExpensesByPaymentMethod(method)
+                    // Account filter (single account for now)
+                    filters.accountIds.isNotEmpty() -> {
+                        val accountId = filters.accountIds.first()
+                        expenseRepository.getExpensesByAccount(accountId)
                     }
                     // No filters - get all expenses
                     else -> expenseRepository.getAllExpenses()
@@ -162,9 +173,9 @@ class ExpenseViewModel @Inject constructor(
             }
         }
 
-        // Apply payment method filter if set
-        if (filters.paymentMethods.isNotEmpty()) {
-            filtered = filtered.filter { it.paymentMethod in filters.paymentMethods }
+        // Apply account filter if set
+        if (filters.accountIds.isNotEmpty()) {
+            filtered = filtered.filter { it.accountId in filters.accountIds }
         }
 
         return filtered
@@ -206,7 +217,7 @@ class ExpenseViewModel @Inject constructor(
                                 categoryId = expense.categoryId,
                                 date = expense.date,
                                 description = expense.description,
-                                paymentMethod = expense.paymentMethod,
+                                accountId = expense.accountId,
                                 createdAt = expense.createdAt,
                                 isEditMode = true
                             )
@@ -391,7 +402,7 @@ class ExpenseViewModel @Inject constructor(
                         descriptionError = validateDescription(descStr)
                     )
                 }
-                FormField.PAYMENT_METHOD -> currentState.copy(paymentMethod = value as PaymentMethod)
+                FormField.ACCOUNT_ID -> currentState.copy(accountId = value as Long)
             }
         }
     }
@@ -459,7 +470,7 @@ class ExpenseViewModel @Inject constructor(
                 categoryId = state.categoryId,
                 date = state.date,
                 description = state.description.trim(),
-                paymentMethod = state.paymentMethod,
+                accountId = state.accountId,
                 createdAt = state.createdAt ?: currentTime,
                 modifiedAt = currentTime
             )
@@ -496,7 +507,7 @@ class ExpenseViewModel @Inject constructor(
                 categoryId = null,
                 date = 0,
                 description = "",
-                paymentMethod = PaymentMethod.CASH,
+                accountId = Account.DEFAULT_ACCOUNT_ID,
                 createdAt = 0,
                 modifiedAt = 0
             )
@@ -555,7 +566,7 @@ data class ExpenseFormState(
     val date: Long = System.currentTimeMillis(),
     val description: String = "",
     val descriptionError: String? = null,
-    val paymentMethod: PaymentMethod = PaymentMethod.CASH,
+    val accountId: Long = Account.DEFAULT_ACCOUNT_ID,
     val createdAt: Long? = null,
     val isEditMode: Boolean = false,
     val isSubmitting: Boolean = false,
@@ -571,7 +582,7 @@ data class ExpenseFilters(
     val startDate: Long? = null,
     val endDate: Long? = null,
     val categoryIds: Set<Long> = emptySet(),
-    val paymentMethods: Set<PaymentMethod> = emptySet(),
+    val accountIds: Set<Long> = emptySet(),
     val includeUncategorized: Boolean = true
 )
 
@@ -583,5 +594,5 @@ enum class FormField {
     CATEGORY_ID,
     DATE,
     DESCRIPTION,
-    PAYMENT_METHOD
+    ACCOUNT_ID
 }

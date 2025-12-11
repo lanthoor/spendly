@@ -1,7 +1,6 @@
 package `in`.mylullaby.spendly.domain.model
 
 import `in`.mylullaby.spendly.utils.CurrencyUtils
-import `in`.mylullaby.spendly.utils.PaymentMethod
 
 /**
  * Domain model representing an expense transaction.
@@ -13,7 +12,7 @@ data class Expense(
     val categoryId: Long?, // nullable - defaults to Uncategorized
     val date: Long, // timestamp in milliseconds
     val description: String,
-    val paymentMethod: PaymentMethod,
+    val accountId: Long, // required - defaults to Account.DEFAULT_ACCOUNT_ID (1)
     val createdAt: Long,
     val modifiedAt: Long,
     val receipts: List<Receipt> = emptyList()

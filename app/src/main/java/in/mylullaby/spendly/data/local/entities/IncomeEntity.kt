@@ -14,6 +14,7 @@ import androidx.room.*
  * @property source Income source (Salary/Freelance/Investments/Refund/Other) - DEPRECATED, use categoryId
  * @property date Transaction date (Unix timestamp in milliseconds)
  * @property description Income description
+ * @property accountId Foreign key to AccountEntity (required)
  * @property isRecurring Whether this income is from a recurring setup
  * @property linkedExpenseId Foreign key to ExpenseEntity (for refunds)
  * @property createdAt Record creation timestamp
@@ -24,6 +25,7 @@ import androidx.room.*
     indices = [
         Index(value = ["date"]),
         Index(value = ["category_id"]),
+        Index(value = ["account_id"]),
         Index(value = ["source"]),
         Index(value = ["linked_expense_id"]),
         Index(value = ["created_at"])
@@ -34,6 +36,12 @@ import androidx.room.*
             parentColumns = ["id"],
             childColumns = ["category_id"],
             onDelete = ForeignKey.SET_NULL // Keep income, set category to null
+        ),
+        ForeignKey(
+            entity = AccountEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["account_id"],
+            onDelete = ForeignKey.RESTRICT // Prevent account deletion with income
         ),
         ForeignKey(
             entity = ExpenseEntity::class,
@@ -62,6 +70,9 @@ data class IncomeEntity(
 
     @ColumnInfo(name = "description")
     val description: String,
+
+    @ColumnInfo(name = "account_id")
+    val accountId: Long, // Foreign key to AccountEntity (defaults to 1 = "My Account")
 
     @ColumnInfo(name = "is_recurring")
     val isRecurring: Boolean = false,

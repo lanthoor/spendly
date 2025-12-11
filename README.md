@@ -6,8 +6,9 @@
 
 ### 1. **Expense Management**
 - Add, edit, and delete expense entries
-- Capture: amount (stored as paise/smallest unit), category (optional, defaults to Misc), date, description, payment method
-- **Payment methods:** Cash, UPI, Debit Card, Credit Card, Net Banking, Wallet (predefined)
+- Capture: amount (stored as paise/smallest unit), category (optional, defaults to Misc), date, description, account
+- **Accounts:** Customizable accounts with types: Bank, Card, Wallet, Cash, Loan, Investment
+- **Default account:** "My Account" (Bank type) - all transactions default to this account
 - Support for recurring expenses (daily, weekly, monthly) - processed at app startup, checks last 3 months
 - Attach unlimited receipts (JPG, PNG, WebP, PDF) - compressed to 1920px max, 5MB per file
 - Automatic detection of expenses from SMS (auto-creates transactions, fully editable/deletable)
@@ -15,7 +16,7 @@
 - Default sort: Newest first
 
 ### 2. **Income Tracking**
-- Record income sources and amounts
+- Record income sources and amounts into specific accounts
 - Track salary, freelance, investments, refunds/returns (linked to original expenses)
 - Recurring income support (processed at app startup)
 - Automatic detection of income from SMS
@@ -42,7 +43,7 @@
 - Monthly/yearly comparisons
 - **Export reports:**
   - PDF: Monthly/yearly summaries
-  - CSV: All fields (Date, Amount, Category, Description, Payment Method, Tags)
+  - CSV: All fields (Date, Amount, Category, Description, Account, Tags)
 
 ### 6. **Data Management**
 - Local SQLite database storage
@@ -93,8 +94,8 @@
 - ProGuard rules configured for all libraries
 
 ### ✅ Phase 2: Database Foundation (Complete)
-- SpendlyDatabase with 8 entities: Expense, Income, Category, Budget, Receipt, RecurringTransaction, Tag, TransactionTag
-- 8 DAOs with Flow-based reactive queries
+- SpendlyDatabase with 9 entities: Expense, Income, Category, Budget, Receipt, RecurringTransaction, Tag, TransactionTag, Account
+- 9 DAOs with Flow-based reactive queries
 - Complete CRUD operations with complex queries
 - Foreign keys with CASCADE/SET_NULL
 - Integer-only currency (amounts in paise as Long)
@@ -104,8 +105,8 @@
 - 6 domain models: Expense, Income, Category, Budget, Tag, Receipt
 - 5 repository interfaces: ExpenseRepository, IncomeRepository, CategoryRepository, BudgetRepository, TagRepository
 - 5 repository implementations with full CRUD operations
-- Hilt DI modules configured: DatabaseModule, RepositoryModule, DataStoreModule, AppModule
-- SpendlyApplication with @HiltAndroidApp and category seeding on first launch
+- Hilt DI modules configured: DatabaseModule (9 DAOs), RepositoryModule (6 repositories), DataStoreModule, AppModule
+- SpendlyApplication with @HiltAndroidApp, category and account seeding on first launch
 
 ### ✅ Phase 4: Expense Management UI (Complete)
 **Completed:**
@@ -116,10 +117,10 @@
 - ✅ AddExpenseScreen: Modal bottom sheet with complete create flow and validation
 - ✅ ExpenseListScreen: List view with empty/loading/error states, opens Add/Edit in bottom sheets
 - ✅ EditExpenseScreen: Modal bottom sheet with complete update flow, pre-populated form, and receipt management
-- ✅ ExpenseListItem: Material 3 list item with category icon, date, amount, payment method
+- ✅ ExpenseListItem: Material 3 list item with category icon, date, amount, account name
 - ✅ DeleteConfirmDialog: Confirmation dialog with cascade deletion
 - ✅ CategorySelectionDialog: 3-column grid layout with icons, colors, and visual selection indicators
-- ✅ PaymentMethodSelectionDialog: 3-column grid layout with payment method icons and visual selection
+- ✅ AccountSelectionDialog: 3-column grid layout with account icons and visual selection
 - ✅ MainActivity integration with NavigationSuiteScaffold
 - ✅ Phosphor Icons integration (replaced Material Icons throughout app)
 - ✅ InteractionSource-based click handling for read-only text fields
@@ -154,9 +155,9 @@
 - ✅ **Database Migration v2→v3:** Added category_id column to income table with foreign key
 - ✅ **Navigation Restructuring:** 4-item bottom navigation (Home/Dashboard, Transactions, Analytics, Settings)
 - ✅ **TransactionListScreen:** Shows all transactions (expenses + income) in chronological order with edit/delete
-- ✅ **UI Improvements:** Color-coded amounts (green +income, red -expense), payment method display, fixed scientific notation
+- ✅ **UI Improvements:** Color-coded amounts (green +income, red -expense), account name display, fixed scientific notation
 - ✅ **Currency Utils:** Integer-only paiseToRupeeString() function for guaranteed decimal notation
-- ✅ **Enum Extensions:** toDisplayName() for PaymentMethod, toDisplayString() for IncomeSource with proper title case
+- ✅ **Enum Extensions:** toDisplayName() for AccountType, toDisplayString() for IncomeSource with proper title case
 
 **Income Categories (10):**
 - Salary (briefcase), Freelance (laptop), Business (storefront), Investment (trending_up), Gift (gift)
@@ -168,4 +169,16 @@
 - Filter bottom sheet UI (logic implemented in ViewModel)
 - Budget management screens
 
-### ⏳ Next: Phase 6 - Recurring Transactions, Search, Filters, Budget Management
+### ✅ Phase 6: Accounts System (Complete)
+**Completed:**
+- ✅ **Account Management:** Full CRUD for accounts with customizable types (Bank, Card, Wallet, Cash, Loan, Investment)
+- ✅ **AccountEntity & AccountDao:** Database layer with proper indexes and foreign key constraints
+- ✅ **Account Domain Model:** AccountRepository with seeding logic for "My Account" (default), name uniqueness validation with exclude logic
+- ✅ **Expense/Income Integration:** Replaced payment method with account references in transactions
+- ✅ **Account UI Components:** AccountDropdown, AccountSelectionDialog with type badges
+- ✅ **Account Management Screens:** AccountListScreen, AddAccountScreen, EditAccountScreen with deletion reassignment
+- ✅ **Transaction Display:** Account names displayed in subheadings (format: "date • account name") in recent transactions and all transactions
+- ✅ **Bug Fixes:** Account edit validation now correctly excludes current account from uniqueness check
+- ✅ **Database Strategy:** Destructive migration for development (v4), migration logic removed until pre-release
+
+### ⏳ Next: Phase 7 - Recurring Transactions, Search, Filters, Budget Management

@@ -36,6 +36,7 @@ fun AddExpenseScreen(
 ) {
     val formState by viewModel.formState.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val accounts by viewModel.accounts.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     // Reset form when screen opens
@@ -66,6 +67,7 @@ fun AddExpenseScreen(
                 ExpenseFormFields(
                     formState = formState,
                     categories = categories,
+                    accounts = accounts,
                     onFieldChange = { field, value ->
                         viewModel.updateFormField(field, value)
                     },

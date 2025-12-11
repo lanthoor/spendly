@@ -14,6 +14,7 @@ data class Income(
     val source: IncomeSource, // DEPRECATED - use categoryId instead
     val date: Long, // timestamp in milliseconds
     val description: String,
+    val accountId: Long, // required - defaults to Account.DEFAULT_ACCOUNT_ID (1)
     val isRecurring: Boolean = false,
     val linkedExpenseId: Long? = null, // for refunds
     val createdAt: Long,

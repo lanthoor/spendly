@@ -3,9 +3,11 @@ package `in`.mylullaby.spendly.ui.screens.income
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Income
+import `in`.mylullaby.spendly.domain.repository.AccountRepository
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
 import `in`.mylullaby.spendly.domain.repository.IncomeRepository
@@ -32,7 +34,8 @@ import javax.inject.Inject
 class IncomeViewModel @Inject constructor(
     private val incomeRepository: IncomeRepository,
     private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     // UI State for income list screen
@@ -58,6 +61,15 @@ class IncomeViewModel @Inject constructor(
 
     // All expenses (for refund linking)
     val expenses: StateFlow<List<Expense>> = expenseRepository.getAllExpenses()
+        .catch { emit(emptyList()) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    // All accounts
+    val accounts: StateFlow<List<Account>> = accountRepository.getAllAccounts()
         .catch { emit(emptyList()) }
         .stateIn(
             scope = viewModelScope,
@@ -179,6 +191,7 @@ class IncomeViewModel @Inject constructor(
                                 id = income.id,
                                 amount = CurrencyUtils.paiseToRupeeString(income.amount),
                                 selectedCategory = category,
+                                accountId = income.accountId,
                                 source = income.source,
                                 date = income.date,
                                 description = income.description,
@@ -216,6 +229,7 @@ class IncomeViewModel @Inject constructor(
                     )
                 }
                 IncomeFormField.CATEGORY -> currentState.copy(selectedCategory = value as Category)
+                IncomeFormField.ACCOUNT_ID -> currentState.copy(accountId = value as Long)
                 IncomeFormField.SOURCE -> currentState.copy(source = value as IncomeSource)
                 IncomeFormField.DATE -> currentState.copy(date = value as Long)
                 IncomeFormField.DESCRIPTION -> {
@@ -295,6 +309,7 @@ class IncomeViewModel @Inject constructor(
                 id = state.id,
                 amount = amountInPaise,
                 categoryId = state.selectedCategory?.id,
+                accountId = state.accountId,
                 source = state.source,
                 date = state.date,
                 description = state.description.trim(),
@@ -334,6 +349,7 @@ class IncomeViewModel @Inject constructor(
                 id = id,
                 amount = 0,
                 categoryId = null,
+                accountId = Account.DEFAULT_ACCOUNT_ID,
                 source = IncomeSource.OTHER,
                 date = 0,
                 description = "",
@@ -394,6 +410,7 @@ data class IncomeFormState(
     val amount: String = "",
     val amountError: String? = null,
     val selectedCategory: Category? = null,
+    val accountId: Long = Account.DEFAULT_ACCOUNT_ID,
     val source: IncomeSource = IncomeSource.SALARY, // DEPRECATED - use selectedCategory
     val date: Long = System.currentTimeMillis(),
     val description: String = "",
@@ -422,6 +439,7 @@ data class IncomeFilters(
 enum class IncomeFormField {
     AMOUNT,
     CATEGORY,
+    ACCOUNT_ID,
     SOURCE, // DEPRECATED - use CATEGORY
     DATE,
     DESCRIPTION,

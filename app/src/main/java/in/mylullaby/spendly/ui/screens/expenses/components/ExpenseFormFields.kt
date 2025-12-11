@@ -11,14 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
+import `in`.mylullaby.spendly.ui.components.AccountDropdown
 import `in`.mylullaby.spendly.ui.components.AmountTextField
 import `in`.mylullaby.spendly.ui.components.CategoryDropdown
 import `in`.mylullaby.spendly.ui.components.DatePickerField
-import `in`.mylullaby.spendly.ui.components.PaymentMethodDropdown
 import `in`.mylullaby.spendly.ui.screens.expenses.ExpenseFormState
 import `in`.mylullaby.spendly.ui.screens.expenses.FormField
-import `in`.mylullaby.spendly.utils.PaymentMethod
+import `in`.mylullaby.spendly.utils.AccountType
 
 /**
  * Reusable form fields for adding and editing expenses.
@@ -26,6 +27,7 @@ import `in`.mylullaby.spendly.utils.PaymentMethod
  *
  * @param formState Current form state
  * @param categories List of available categories
+ * @param accounts List of available accounts
  * @param onFieldChange Callback when any field changes
  * @param modifier Optional modifier
  * @param enabled Whether fields are enabled
@@ -34,6 +36,7 @@ import `in`.mylullaby.spendly.utils.PaymentMethod
 fun ExpenseFormFields(
     formState: ExpenseFormState,
     categories: List<Category>,
+    accounts: List<Account>,
     onFieldChange: (FormField, Any) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
@@ -100,11 +103,15 @@ fun ExpenseFormFields(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Payment method dropdown
-        PaymentMethodDropdown(
-            selectedMethod = formState.paymentMethod,
-            onMethodSelected = { onFieldChange(FormField.PAYMENT_METHOD, it) },
-            label = "Payment Method",
+        // Account dropdown
+        val selectedAccount = accounts.find { it.id == formState.accountId }
+        AccountDropdown(
+            selectedAccount = selectedAccount,
+            accounts = accounts,
+            onAccountSelected = { account ->
+                onFieldChange(FormField.ACCOUNT_ID, account.id)
+            },
+            label = "Account",
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled
         )
@@ -119,14 +126,29 @@ private fun ExpenseFormFieldsPreview() {
         Category(2, "Travel", "flight", 0xFF4ECDC4.toInt(), false, 2)
     )
 
+    val sampleAccounts = listOf(
+        Account(
+            id = 1,
+            name = "My Account",
+            type = AccountType.BANK,
+            icon = "bank",
+            color = 0xFF00BFA5.toInt(),
+            isCustom = false,
+            sortOrder = 1,
+            createdAt = 0,
+            modifiedAt = 0
+        )
+    )
+
     ExpenseFormFields(
         formState = ExpenseFormState(
             amount = "100.50",
             categoryId = 1,
             description = "Lunch at restaurant",
-            paymentMethod = PaymentMethod.UPI
+            accountId = 1
         ),
         categories = sampleCategories,
+        accounts = sampleAccounts,
         onFieldChange = { _, _ -> },
         modifier = Modifier.padding(16.dp)
     )

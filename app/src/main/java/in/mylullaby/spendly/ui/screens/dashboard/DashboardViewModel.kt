@@ -3,9 +3,11 @@ package `in`.mylullaby.spendly.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import `in`.mylullaby.spendly.domain.model.Account
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Income
+import `in`.mylullaby.spendly.domain.repository.AccountRepository
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
 import `in`.mylullaby.spendly.domain.repository.IncomeRepository
@@ -25,15 +27,17 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
     private val incomeRepository: IncomeRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
 
     // Combined dashboard state
     val dashboardState: StateFlow<DashboardUiState> = combine(
         expenseRepository.getAllExpenses(),
         incomeRepository.getAllIncome(),
-        categoryRepository.getAllCategories()
-    ) { expenses, incomes, categories ->
+        categoryRepository.getAllCategories(),
+        accountRepository.getAllAccounts()
+    ) { expenses, incomes, categories, accounts ->
         val now = System.currentTimeMillis()
         val currentMonthStart = getMonthStartMillis(now)
         val currentMonthEnd = getMonthEndMillis(now)
@@ -77,6 +81,7 @@ class DashboardViewModel @Inject constructor(
             recentTransactions = recentTransactions,
             topCategories = topCategories,
             allCategories = categories,
+            allAccounts = accounts,
             hasTransactions = expenses.isNotEmpty() || incomes.isNotEmpty()
         )
     }
@@ -192,6 +197,7 @@ sealed class DashboardUiState {
         val recentTransactions: List<RecentTransaction>,
         val topCategories: List<CategorySpending>,
         val allCategories: List<Category>,
+        val allAccounts: List<Account>,
         val hasTransactions: Boolean
     ) : DashboardUiState()
     data class Error(val message: String) : DashboardUiState()

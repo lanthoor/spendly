@@ -47,6 +47,12 @@ interface IncomeDao {
     fun getIncomeBySource(source: String): Flow<List<IncomeEntity>>
 
     /**
+     * Get all income for a specific account.
+     */
+    @Query("SELECT * FROM income WHERE account_id = :accountId ORDER BY date DESC")
+    fun getIncomeByAccount(accountId: Long): Flow<List<IncomeEntity>>
+
+    /**
      * Get income linked to a specific expense (refunds).
      */
     @Query("SELECT * FROM income WHERE linked_expense_id = :expenseId")

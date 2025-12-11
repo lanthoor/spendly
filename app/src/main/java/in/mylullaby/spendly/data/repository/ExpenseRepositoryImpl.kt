@@ -12,7 +12,6 @@ import `in`.mylullaby.spendly.domain.model.Expense
 import `in`.mylullaby.spendly.domain.model.Receipt
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
 import `in`.mylullaby.spendly.utils.FileUtils
-import `in`.mylullaby.spendly.utils.PaymentMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -98,8 +97,8 @@ class ExpenseRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getExpensesByPaymentMethod(method: PaymentMethod): Flow<List<Expense>> {
-        return expenseDao.getExpensesByPaymentMethod(method.name).map { entities ->
+    override fun getExpensesByAccount(accountId: Long): Flow<List<Expense>> {
+        return expenseDao.getExpensesByAccount(accountId).map { entities ->
             entities.map { expenseFrom(it) }
         }
     }
@@ -149,7 +148,7 @@ class ExpenseRepositoryImpl @Inject constructor(
             categoryId = entity.categoryId,
             date = entity.date,
             description = entity.description,
-            paymentMethod = PaymentMethod.fromStringOrDefault(entity.paymentMethod, PaymentMethod.CASH),
+            accountId = entity.accountId,
             createdAt = entity.createdAt,
             modifiedAt = entity.modifiedAt,
             receipts = receipts
@@ -163,7 +162,7 @@ class ExpenseRepositoryImpl @Inject constructor(
             categoryId = expense.categoryId,
             date = expense.date,
             description = expense.description,
-            paymentMethod = expense.paymentMethod.name,
+            accountId = expense.accountId,
             createdAt = expense.createdAt,
             modifiedAt = expense.modifiedAt
         )

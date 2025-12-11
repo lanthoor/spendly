@@ -25,14 +25,15 @@ object DatabaseModule {
     /**
      * Provides the Spendly database instance.
      *
-     * Security features:
+     * **Development Mode**: Uses destructive migration strategy.
+     * When database version changes, all data is dropped and tables are recreated.
+     * This is safe since the app is not released yet.
+     *
+     * **Security Features**:
      * - Foreign key constraints explicitly enabled
      * - Write-ahead logging for better concurrency
-     * - No destructive migration fallback (prevents accidental data loss)
      *
-     * Migrations:
-     * - 1→2: Add category type field
-     * - 2→3: Add categoryId to income
+     * **Before Release**: Migration logic will be added to preserve user data.
      */
     @Provides
     @Singleton
@@ -40,12 +41,9 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             SpendlyDatabase::class.java,
-            "spendly_database"
+            SpendlyDatabase.DATABASE_NAME
         )
-            .addMigrations(
-                SpendlyDatabase.MIGRATION_1_2,
-                SpendlyDatabase.MIGRATION_2_3
-            )
+            .fallbackToDestructiveMigration() // Development mode - drops all data on schema change
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     super.onOpen(db)
@@ -55,10 +53,8 @@ object DatabaseModule {
                 }
 
                 override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
-                    // This should NEVER happen in production
-                    // Prevents accidental data loss from missing migration paths
-                    Log.e("DatabaseModule", "CRITICAL: Destructive migration attempted!")
-                    throw IllegalStateException("Migration path missing - data loss prevented")
+                    // Log destructive migration for development awareness
+                    Log.w("DatabaseModule", "Database schema changed - all data cleared (development mode)")
                 }
             })
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
@@ -120,4 +116,11 @@ object DatabaseModule {
     @Provides
     fun provideTransactionTagDao(database: SpendlyDatabase): TransactionTagDao =
         database.transactionTagDao()
+
+    /**
+     * Provides AccountDao from the database.
+     */
+    @Provides
+    fun provideAccountDao(database: SpendlyDatabase): AccountDao =
+        database.accountDao()
 }

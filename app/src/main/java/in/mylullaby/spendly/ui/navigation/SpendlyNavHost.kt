@@ -13,6 +13,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import `in`.mylullaby.spendly.ui.screens.accounts.AccountListScreen
+import `in`.mylullaby.spendly.ui.screens.accounts.EditAccountScreen
 import `in`.mylullaby.spendly.ui.screens.dashboard.DashboardScreen
 import `in`.mylullaby.spendly.ui.screens.expenses.AddExpenseScreen
 import `in`.mylullaby.spendly.ui.screens.expenses.EditExpenseScreen
@@ -20,6 +22,7 @@ import `in`.mylullaby.spendly.ui.screens.expenses.ExpenseListScreen
 import `in`.mylullaby.spendly.ui.screens.income.AddIncomeScreen
 import `in`.mylullaby.spendly.ui.screens.income.EditIncomeScreen
 import `in`.mylullaby.spendly.ui.screens.income.IncomeListScreen
+import `in`.mylullaby.spendly.ui.screens.settings.SettingsScreen
 import `in`.mylullaby.spendly.ui.screens.transactions.TransactionListScreen
 
 /**
@@ -148,8 +151,44 @@ fun SpendlyNavHost(
 
         // Settings Screen
         composable(Screen.Settings.route) {
-            // Placeholder for Phase 7 - Settings implementation
-            PlaceholderScreen(text = "Settings\nComing in Phase 7")
+            SettingsScreen(
+                onNavigateToAccounts = {
+                    navController.navigate(Screen.AccountList.route)
+                }
+            )
+        }
+
+        // Account List Screen
+        composable(Screen.AccountList.route) {
+            AccountListScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToAddAccount = {
+                    // Add handled via bottom sheet in AccountListScreen
+                },
+                onNavigateToEditAccount = { accountId ->
+                    navController.navigate(Screen.EditAccount.createRoute(accountId))
+                }
+            )
+        }
+
+        // Edit Account Screen with account ID argument
+        composable(
+            route = Screen.EditAccount.route,
+            arguments = listOf(
+                navArgument(Screen.EditAccount.ARG_ACCOUNT_ID) {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val accountId = backStackEntry.arguments?.getLong(Screen.EditAccount.ARG_ACCOUNT_ID) ?: 0L
+            EditAccountScreen(
+                accountId = accountId,
+                onDismiss = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
