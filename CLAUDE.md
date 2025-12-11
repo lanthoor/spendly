@@ -117,30 +117,56 @@ app/src/
 │   │   │   │   ├── entities/                  # ✅ Room entities (8 entities)
 │   │   │   │   ├── dao/                       # ✅ Data Access Objects (8 DAOs)
 │   │   │   │   └── SpendlyDatabase.kt         # ✅ Room database configuration
-│   │   │   ├── repository/                    # ✅ Repository implementations (5 repositories)
+│   │   │   ├── repository/                    # ✅ Repository implementations (6 repositories)
 │   │   │   └── datastore/                     # DataStore preferences (to be implemented)
 │   │   ├── domain/                            # Domain layer
 │   │   │   ├── model/                         # ✅ Domain models (6 models)
-│   │   │   └── repository/                    # ✅ Repository interfaces (5 interfaces)
+│   │   │   └── repository/                    # ✅ Repository interfaces (6 interfaces)
 │   │   ├── ui/                                # Presentation layer
 │   │   │   ├── screens/                       # Feature screens
 │   │   │   │   ├── dashboard/                 # Dashboard/Home (to be implemented)
-│   │   │   │   ├── expenses/                  # Expense management (to be implemented)
+│   │   │   │   ├── expenses/                  # ✅ Expense management UI
+│   │   │   │   │   ├── ExpenseViewModel.kt    # ✅ State management with receipt handling
+│   │   │   │   │   ├── ExpenseListScreen.kt   # ✅ List view with bottom sheet integration
+│   │   │   │   │   ├── AddExpenseScreen.kt    # ✅ Modal bottom sheet for add
+│   │   │   │   │   ├── EditExpenseScreen.kt   # ✅ Modal bottom sheet for edit with receipts
+│   │   │   │   │   └── components/            # ✅ Expense-specific components
+│   │   │   │   │       ├── ExpenseFormFields.kt      # ✅ Reusable form component
+│   │   │   │   │       ├── ExpenseListItem.kt        # ✅ List item with category icon
+│   │   │   │   │       ├── CategorySelectionDialog.kt # ✅ 3-column grid dialog
+│   │   │   │   │       ├── PaymentMethodSelectionDialog.kt # ✅ 3-column grid dialog
+│   │   │   │   │       ├── DeleteConfirmDialog.kt    # ✅ Confirmation dialog
+│   │   │   │   │       ├── ReceiptThumbnail.kt       # ✅ Optimized image thumbnail
+│   │   │   │   │       ├── ReceiptPickerSheet.kt     # ✅ File/camera picker
+│   │   │   │   │       └── CameraCapture.kt          # ✅ Full-screen camera preview
 │   │   │   │   ├── income/                    # Income tracking (to be implemented)
 │   │   │   │   ├── budgets/                   # Budget management (to be implemented)
 │   │   │   │   ├── analytics/                 # Analytics & charts (to be implemented)
 │   │   │   │   └── settings/                  # Settings (to be implemented)
-│   │   │   ├── components/                    # Reusable composables (to be implemented)
-│   │   │   ├── navigation/                    # Navigation setup (to be implemented)
+│   │   │   ├── components/                    # ✅ Reusable composables
+│   │   │   │   ├── AmountTextField.kt         # ✅ Currency input with validation
+│   │   │   │   ├── CategoryDropdown.kt        # ✅ Category selection field
+│   │   │   │   ├── PaymentMethodDropdown.kt   # ✅ Payment method field
+│   │   │   │   ├── DatePickerField.kt         # ✅ Date selection field
+│   │   │   │   ├── SpendlyTopAppBar.kt        # ✅ Consistent app bar
+│   │   │   │   ├── EmptyState.kt              # ✅ Empty state component
+│   │   │   │   ├── LoadingIndicator.kt        # ✅ Loading component
+│   │   │   │   └── IconMapper.kt              # ✅ Category icon mapping
+│   │   │   ├── navigation/                    # ✅ Navigation setup
+│   │   │   │   ├── Screen.kt                  # ✅ Screen sealed class
+│   │   │   │   └── SpendlyNavHost.kt          # ✅ Navigation host
 │   │   │   └── theme/                         # ✅ Material 3 theming (Color, Type, Theme)
 │   │   ├── di/                                # ✅ Dependency injection modules (4 modules)
-│   │   │   ├── DatabaseModule.kt              # ✅ Database & DAO providers
-│   │   │   ├── RepositoryModule.kt            # ✅ Repository bindings
+│   │   │   ├── DatabaseModule.kt              # ✅ Database & DAO providers (8 DAOs)
+│   │   │   ├── RepositoryModule.kt            # ✅ Repository bindings (6 repositories)
 │   │   │   ├── DataStoreModule.kt             # ✅ DataStore preferences provider
 │   │   │   └── AppModule.kt                   # ✅ App-level dependencies
-│   │   └── utils/                             # Helper utilities
+│   │   └── utils/                             # ✅ Helper utilities
 │   │       ├── CurrencyUtils.kt               # ✅ Paise/Rupee conversion utilities
-│   │       └── Enums.kt                       # ✅ PaymentMethod, IncomeSource, etc.
+│   │       ├── Enums.kt                       # ✅ PaymentMethod, IncomeSource, etc.
+│   │       ├── FileUtils.kt                   # ✅ File operations and validation
+│   │       ├── ImageCompressor.kt             # ✅ EXIF-aware image compression
+│   │       └── PermissionUtils.kt             # ✅ Camera permission helper
 │   ├── res/                                   # Resources (layouts, drawables, values)
 │   └── AndroidManifest.xml
 ├── test/                                      # Unit tests
@@ -169,19 +195,37 @@ app/src/
 - ✅ **Audit timestamps:** createdAt and modifiedAt fields on all transaction entities
 - ✅ **Many-to-many tags:** Junction table (TransactionTagEntity) for flexible tagging
 
-**🚧 Next Phase: Repository Layer & Domain Models (Tasks 28+)**
-- Domain models for clean architecture
-- Repository interfaces in domain layer
-- Repository implementations in data layer
-- ViewModels and UI implementation
+**✅ Phase 3 Complete: Repository Layer & Domain Models (Tasks 28-57)**
+- ✅ **6 domain models:** Expense, Income, Category, Budget, Tag, Receipt with proper type safety
+- ✅ **6 repository interfaces:** ExpenseRepository, IncomeRepository, CategoryRepository, BudgetRepository, TagRepository, ReceiptRepository
+- ✅ **6 repository implementations:** Full CRUD with entity-to-model mapping, file management for receipts
+- ✅ **Hilt DI modules:** DatabaseModule (8 DAOs), RepositoryModule (6 repositories), DataStoreModule, AppModule
+- ✅ **SpendlyApplication:** Category seeding on first launch with @HiltAndroidApp
+
+**✅ Phase 4 Complete: Expense Management UI (Tasks 59-77)**
+- ✅ **Navigation:** Screen sealed class with type-safe routes + SpendlyNavHost
+- ✅ **ExpenseViewModel:** Complete state management (UI state, form state, filter state, receipt management)
+- ✅ **Core UI Screens:** ExpenseListScreen, AddExpenseScreen (modal bottom sheet), EditExpenseScreen (modal bottom sheet)
+- ✅ **Shared Components:** AmountTextField, CategoryDropdown, PaymentMethodDropdown, DatePickerField, ExpenseFormFields
+- ✅ **Dialogs:** CategorySelectionDialog (3-column grid), PaymentMethodSelectionDialog (3-column grid), DeleteConfirmDialog
+- ✅ **Receipt Management:** File picker (ActivityResultContracts), Camera capture (CameraX 1.5.2), Image compression (1920px, 85% quality)
+- ✅ **Receipt Components:** ReceiptThumbnail (Coil with size optimization), ReceiptPickerSheet, CameraCapture (async initialization)
+- ✅ **Utilities:** FileUtils (file ops, validation), ImageCompressor (EXIF-aware), PermissionUtils, CurrencyUtils, Enums
+- ✅ **Performance:** IO dispatcher for file ops, async camera init, thumbnail sizing (240px for 120dp), Coil caching
+- ✅ **Icons:** Phosphor Icons v1.0.0 throughout the app
+- ✅ **16 KB page size compatibility:** CameraX 1.5.2 + useLegacyPackaging = false
+
+**🚧 Next Phase: Recurring Transactions, Search, Filters, Dashboard, Income Tracking (Phase 5)**
 
 ### Tech Stack (Configured & Ready)
 - ✅ **Database:** Room v2.6.1 (SQLite wrapper) - SQLCipher encryption deferred to task 173
 - ✅ **Charts:** Vico v2.0.0-alpha.28 with Material 3 integration
 - ✅ **Dependency Injection:** Hilt v2.51.1 with Navigation Compose v1.2.0
 - ✅ **Preferences:** DataStore v1.1.1 (preferences and core)
-- ⏳ **Image Loading:** Coil (to be added when needed)
-- ⏳ **Background Work:** WorkManager for recurring transactions (to be added)
+- ✅ **Image Loading:** Coil v2.5.0 for receipt thumbnails with size optimization and caching
+- ✅ **Camera:** CameraX v1.5.2 for receipt capture with async initialization (16 KB page size compatible)
+- ✅ **Icons:** Phosphor Icons v1.0.0 (replaced Material Icons throughout app)
+- ✅ **Background Work:** WorkManager v2.9.0 + Hilt Work v1.1.0 configured (recurring transactions implementation pending)
 - ⏳ **Permissions:** SMS read for auto-detection (to be added)
 - ⏳ **Security:** BiometricPrompt, EncryptedSharedPreferences (to be added)
 - ⏳ **Pagination:** Paging 3 library (to be added)
@@ -211,6 +255,52 @@ app/src/
 - Bill splitting with friends
 - Investment portfolio tracking
 - iOS version
+
+## Receipt Management Architecture
+
+### File Storage Strategy
+- **Location:** Internal storage (`context.filesDir/receipts/`)
+- **Naming:** `receipt_{expenseId}_{timestamp}.{extension}`
+- **Size limit:** 5MB per file (validated before save)
+- **Formats:** JPG, PNG, WebP, PDF (validated by file extension)
+- **Security:** Files stored in app-private directory, deleted on app uninstall
+- **Encryption:** Deferred to Security Phase (task 173 in PLAN.md)
+
+### Image Compression
+- **Max dimension:** 1920px (width or height, aspect ratio preserved)
+- **Quality:** 85% JPEG compression
+- **EXIF handling:** Automatic rotation based on EXIF orientation tag
+- **OOM prevention:** BitmapFactory.Options with proper scaling
+- **Threading:** All compression on IO dispatcher using `withContext(Dispatchers.IO)`
+
+### Camera Integration
+- **Library:** CameraX v1.5.2 with async initialization
+- **Architecture:** DisposableEffect for lifecycle-aware setup/cleanup
+- **Preview:** Single PreviewView with `setSurfaceProvider()` connection
+- **Capture mode:** `CAPTURE_MODE_MINIMIZE_LATENCY` for faster photos
+- **Threading:** Listener runs on main executor, capture callbacks on main thread
+- **Loading states:** Shows CircularProgressIndicator during initialization
+
+### Image Loading Optimization
+- **Library:** Coil v2.5.0 with Material 3 integration
+- **Thumbnail sizing:** Decode to 240px for 120dp display (95% memory reduction)
+- **Crossfade:** Disabled (`crossfade(false)`) for better performance
+- **Caching:** Explicit memory + disk cache keys using file path
+- **Content scale:** `ContentScale.Crop` for consistent aspect ratio
+
+### Performance Best Practices
+1. **File I/O:** All file operations wrapped in `withContext(Dispatchers.IO)`
+2. **State updates:** UI state changes via `withContext(Dispatchers.Main)` after background work
+3. **Camera init:** Async initialization with DisposableEffect, proper cleanup in onDispose
+4. **Image decoding:** Size-constrained decoding (240px) instead of full resolution
+5. **Cache strategy:** Coil handles automatic memory management and bitmap recycling
+
+### URI Handling
+- **Dual-path logic:** Handles both `file://` and `content://` URIs
+- **File scheme:** Direct file path reading via `uri.path`
+- **Content scheme:** ContentResolver queries for metadata
+- **Extension detection:** MIME type first, fallback to display name parsing
+- **Size detection:** File.length() for file://, ContentResolver for content://
 
 ## Development Guidelines
 

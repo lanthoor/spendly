@@ -41,6 +41,11 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
 }
 
 // Room schema export configuration
@@ -80,6 +85,19 @@ dependencies {
 
     // Phosphor Icons
     implementation(libs.phosphor.compose)
+
+    // CameraX
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    // Coil for image loading
+    implementation(libs.coil.compose)
+
+    // WorkManager for recurring transactions
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

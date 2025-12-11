@@ -1,14 +1,22 @@
 package `in`.mylullaby.spendly.ui.screens.expenses
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import `in`.mylullaby.spendly.domain.model.Category
 import `in`.mylullaby.spendly.domain.model.Expense
+import `in`.mylullaby.spendly.domain.model.Receipt
 import `in`.mylullaby.spendly.domain.repository.CategoryRepository
 import `in`.mylullaby.spendly.domain.repository.ExpenseRepository
+import `in`.mylullaby.spendly.domain.repository.ReceiptRepository
 import `in`.mylullaby.spendly.utils.CurrencyUtils
+import `in`.mylullaby.spendly.utils.FileUtils
+import `in`.mylullaby.spendly.utils.ImageCompressor
 import `in`.mylullaby.spendly.utils.PaymentMethod
+import java.io.File
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,6 +28,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -29,7 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpenseViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val receiptRepository: ReceiptRepository
 ) : ViewModel() {
 
     // UI State for expense list screen
@@ -178,6 +188,8 @@ class ExpenseViewModel @Inject constructor(
                                 isEditMode = true
                             )
                         }
+                        // Load receipts for this expense
+                        loadReceiptsForExpense(id)
                     } else {
                         _formState.update {
                             it.copy(submitError = "Expense not found")
@@ -189,6 +201,144 @@ class ExpenseViewModel @Inject constructor(
                     it.copy(submitError = e.message ?: "Failed to load expense")
                 }
             }
+        }
+    }
+
+    /**
+     * Loads receipts for an expense
+     */
+    fun loadReceiptsForExpense(expenseId: Long) {
+        viewModelScope.launch {
+            try {
+                receiptRepository.getReceiptsByExpense(expenseId).collect { receipts ->
+                    _formState.update {
+                        it.copy(receipts = receipts, receiptError = null)
+                    }
+                }
+            } catch (e: Exception) {
+                _formState.update {
+                    it.copy(receiptError = "Failed to load receipts: ${e.message}")
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds a receipt to the current expense.
+     * Handles file validation, copying, compression, and database insertion.
+     *
+     * @param context Application context
+     * @param expenseId The expense ID (must be saved first)
+     * @param sourceUri URI of the file to attach
+     * @return Result with Receipt on success, or error
+     */
+    suspend fun addReceipt(
+        context: Context,
+        expenseId: Long,
+        sourceUri: Uri
+    ): Result<Receipt> = withContext(Dispatchers.IO) {
+        try {
+            // Validate expense ID
+            if (expenseId == 0L) {
+                return@withContext Result.failure(Exception("Please save the expense before adding receipts"))
+            }
+
+            // Get file extension and validate type
+            val extension = FileUtils.getFileExtension(sourceUri, context)
+            if (!FileUtils.isSupportedFileType(extension)) {
+                return@withContext Result.failure(Exception("Unsupported file type. Please select JPG, PNG, WebP, or PDF"))
+            }
+
+            // Get file size and validate
+            val fileSize = FileUtils.getFileSizeFromUri(sourceUri, context)
+            if (!FileUtils.validateFileSize(fileSize)) {
+                return@withContext Result.failure(Exception("File too large. Maximum ${FileUtils.formatFileSize(FileUtils.MAX_FILE_SIZE_BYTES)} allowed"))
+            }
+
+            // Check storage space
+            if (!FileUtils.hasEnoughStorage(context, fileSize + (1024 * 1024))) { // +1MB buffer
+                return@withContext Result.failure(Exception("Not enough storage space"))
+            }
+
+            // Generate unique filename
+            val timestamp = System.currentTimeMillis()
+            val fileName = FileUtils.generateReceiptFileName(expenseId, timestamp, extension)
+            val receiptsDir = FileUtils.getReceiptsDirectory(context)
+            val destFile = File(receiptsDir, fileName)
+
+            // Compress/copy file
+            val compressionResult = ImageCompressor.compressImage(
+                context = context,
+                sourceUri = sourceUri,
+                destFile = destFile,
+                fileExtension = extension
+            )
+
+            if (!compressionResult.success) {
+                return@withContext Result.failure(Exception(compressionResult.error ?: "Failed to process file"))
+            }
+
+            // Create receipt entity
+            val receipt = Receipt(
+                expenseId = expenseId,
+                filePath = "receipts/$fileName",
+                fileType = extension.uppercase(),
+                fileSizeBytes = compressionResult.fileSizeBytes,
+                compressed = compressionResult.wasCompressed
+            )
+
+            // Insert into database
+            val receiptId = receiptRepository.insertReceipt(receipt)
+            val savedReceipt = receipt.copy(id = receiptId)
+
+            // Update form state
+            withContext(Dispatchers.Main) {
+                _formState.update { currentState ->
+                    currentState.copy(
+                        receipts = currentState.receipts + savedReceipt,
+                        receiptError = null
+                    )
+                }
+            }
+
+            Result.success(savedReceipt)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                _formState.update {
+                    it.copy(receiptError = e.message ?: "Failed to add receipt")
+                }
+            }
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Deletes a receipt
+     */
+    suspend fun deleteReceipt(context: Context, receipt: Receipt): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            receiptRepository.deleteReceipt(receipt)
+
+            // Update form state
+            withContext(Dispatchers.Main) {
+                _formState.update { currentState ->
+                    currentState.copy(
+                        receipts = currentState.receipts.filter { it.id != receipt.id },
+                        receiptError = null
+                    )
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                _formState.update {
+                    it.copy(receiptError = "Failed to delete receipt: ${e.message}")
+                }
+            }
+            Result.failure(e)
         }
     }
 
@@ -382,7 +532,9 @@ data class ExpenseFormState(
     val createdAt: Long? = null,
     val isEditMode: Boolean = false,
     val isSubmitting: Boolean = false,
-    val submitError: String? = null
+    val submitError: String? = null,
+    val receipts: List<Receipt> = emptyList(),
+    val receiptError: String? = null
 )
 
 /**

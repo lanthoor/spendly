@@ -60,4 +60,13 @@ abstract class RepositoryModule {
     abstract fun bindTagRepository(
         impl: TagRepositoryImpl
     ): TagRepository
+
+    /**
+     * Binds ReceiptRepositoryImpl to ReceiptRepository interface.
+     */
+    @Binds
+    @Singleton
+    abstract fun bindReceiptRepository(
+        impl: ReceiptRepositoryImpl
+    ): ReceiptRepository
 }

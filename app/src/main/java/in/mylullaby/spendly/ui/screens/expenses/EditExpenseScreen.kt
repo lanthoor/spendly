@@ -1,36 +1,33 @@
 package `in`.mylullaby.spendly.ui.screens.expenses
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.Plus
 import com.adamglin.phosphoricons.regular.Trash
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import `in`.mylullaby.spendly.ui.components.LoadingIndicator
 import `in`.mylullaby.spendly.ui.components.SpendlyTopAppBar
+import `in`.mylullaby.spendly.ui.screens.expenses.components.CameraCapture
 import `in`.mylullaby.spendly.ui.screens.expenses.components.DeleteConfirmDialog
 import `in`.mylullaby.spendly.ui.screens.expenses.components.ExpenseFormFields
+import `in`.mylullaby.spendly.ui.screens.expenses.components.ReceiptPickerSheet
+import `in`.mylullaby.spendly.ui.screens.expenses.components.ReceiptThumbnail
+import `in`.mylullaby.spendly.utils.PermissionUtils
 import kotlinx.coroutines.launch
 
 /**
@@ -50,7 +47,31 @@ fun EditExpenseScreen(
     val formState by viewModel.formState.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showReceiptPicker by remember { mutableStateOf(false) }
+    var showCamera by remember { mutableStateOf(false) }
+
+    // File picker launcher
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            coroutineScope.launch {
+                viewModel.addReceipt(context, expenseId, uri)
+            }
+        }
+    }
+
+    // Camera permission launcher
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            showCamera = true
+        }
+    }
 
     // Load expense when screen opens
     LaunchedEffect(expenseId) {
@@ -139,6 +160,73 @@ fun EditExpenseScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Receipts Section
+            Text(
+                text = "Receipts",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Existing receipts
+                items(formState.receipts) { receipt ->
+                    ReceiptThumbnail(
+                        receipt = receipt,
+                        onDelete = {
+                            coroutineScope.launch {
+                                viewModel.deleteReceipt(context, receipt)
+                            }
+                        },
+                        onClick = {
+                            // TODO: Full-screen receipt viewer (future enhancement)
+                        }
+                    )
+                }
+
+                // Add receipt button
+                item {
+                    OutlinedCard(
+                        onClick = { showReceiptPicker = true },
+                        modifier = Modifier.size(120.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = PhosphorIcons.Regular.Plus,
+                                    contentDescription = "Add receipt",
+                                    modifier = Modifier.size(32.dp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = "Add Receipt",
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Receipt error
+            formState.receiptError?.let { error ->
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Save button
             Button(
                 onClick = {
@@ -171,6 +259,40 @@ fun EditExpenseScreen(
                 }
             }
         }
+    }
+
+    // Receipt picker sheet
+    if (showReceiptPicker) {
+        ReceiptPickerSheet(
+            onDismiss = { showReceiptPicker = false },
+            onSelectFromFiles = {
+                filePickerLauncher.launch("*/*")
+            },
+            onCapturePhoto = {
+                if (PermissionUtils.hasCameraPermission(context)) {
+                    showCamera = true
+                } else {
+                    cameraPermissionLauncher.launch(PermissionUtils.CAMERA_PERMISSION)
+                }
+            }
+        )
+    }
+
+    // Camera capture
+    if (showCamera) {
+        CameraCapture(
+            onPhotoCaptured = { uri ->
+                showCamera = false
+                coroutineScope.launch {
+                    val result = viewModel.addReceipt(context, expenseId, uri)
+                    if (result.isFailure) {
+                        // Error is already set in formState by viewModel
+                        android.util.Log.e("EditExpenseScreen", "Failed to add receipt: ${result.exceptionOrNull()?.message}")
+                    }
+                }
+            },
+            onDismiss = { showCamera = false }
+        )
     }
 }
 

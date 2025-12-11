@@ -63,11 +63,11 @@
 4. ✓ Implement edit expense functionality with Room update, track modified_at timestamp
 5. ✓ Implement delete expense with Material 3 confirmation dialog (DeleteConfirmDialog)
 6. ✓ Create expense list LazyColumn with default sort: newest first (date DESC)
-7. Implement receipt attachment using ActivityResultContracts for file picker (JPG, PNG, WebP, PDF) - **Deferred to Phase 5**
-8. Implement receipt photo capture using CameraX - **Deferred to Phase 5**
-9. Implement receipt image compression to 1920px max width, 85% quality, max 5MB per file - **Deferred to Phase 5**
-10. Create receipt storage using internal storage directory with encryption - **Deferred to Phase 5**
-11. Support unlimited receipts per expense (one-to-many relationship) - **Deferred to Phase 5**
+7. ✓ Implement receipt attachment using ActivityResultContracts for file picker (JPG, PNG, WebP, PDF)
+8. ✓ Implement receipt photo capture using CameraX v1.5.2 with async initialization
+9. ✓ Implement receipt image compression to 1920px max width, 85% quality, EXIF rotation handling
+10. ✓ Create receipt storage using internal storage directory (encryption deferred to Security phase)
+11. ✓ Support unlimited receipts per expense (one-to-many relationship with cascade delete)
 12. Implement recurring expense setup Compose UI (daily, weekly, monthly frequency) - **Deferred to Phase 5**
 13. Create app startup check for recurring expense processing (check last 3 months for missed occurrences) - **Deferred to Phase 5**
 14. Implement expense search functionality with Room FTS (Full-Text Search) - **Deferred to Phase 5**

@@ -110,12 +110,12 @@
 ### ✅ Phase 4: Expense Management UI (Complete)
 **Completed:**
 - ✅ Navigation architecture with type-safe routes (Screen sealed class + SpendlyNavHost)
-- ✅ ExpenseViewModel with complete state management (UI state, form state, filter state)
+- ✅ ExpenseViewModel with complete state management (UI state, form state, filter state, receipt management)
 - ✅ Shared UI components: AmountTextField, CategoryDropdown, PaymentMethodDropdown, DatePickerField, SpendlyTopAppBar, EmptyState, LoadingIndicator, IconMapper
 - ✅ ExpenseFormFields reusable component for Add/Edit screens
 - ✅ AddExpenseScreen: Modal bottom sheet with complete create flow and validation
 - ✅ ExpenseListScreen: List view with empty/loading/error states, opens Add/Edit in bottom sheets
-- ✅ EditExpenseScreen: Modal bottom sheet with complete update flow and pre-populated form
+- ✅ EditExpenseScreen: Modal bottom sheet with complete update flow, pre-populated form, and receipt management
 - ✅ ExpenseListItem: Material 3 list item with category icon, date, amount, payment method
 - ✅ DeleteConfirmDialog: Confirmation dialog with cascade deletion
 - ✅ CategorySelectionDialog: 3-column grid layout with icons, colors, and visual selection indicators
@@ -124,7 +124,12 @@
 - ✅ Phosphor Icons integration (replaced Material Icons throughout app)
 - ✅ InteractionSource-based click handling for read-only text fields
 - ✅ All UI screens use modal bottom sheets instead of navigation for better UX
-- ✅ Build successful, unit tests passing
+- ✅ **Receipt Management:** File picker, camera capture (CameraX 1.5.2), image compression (1920px max, 85% quality), internal storage
+- ✅ **Receipt UI Components:** ReceiptThumbnail (Coil with size optimization), ReceiptPickerSheet, CameraCapture with async initialization
+- ✅ **Receipt Repository:** Full CRUD operations with file deletion on receipt removal
+- ✅ **Performance Optimizations:** IO dispatcher for file operations, async camera init, thumbnail sizing (240px for 120dp display), proper caching
+- ✅ **Utilities:** FileUtils (file operations, size validation), ImageCompressor (EXIF-aware compression), PermissionUtils (camera permissions)
+- ✅ Build successful, unit tests passing, instrumented tests passing
 
 **UI/UX Improvements:**
 - Modal bottom sheets for Add/Edit expense (better mobile experience)
@@ -133,12 +138,14 @@
 - Icons displayed for all categories and payment methods
 - Proper InteractionSource handling for clickable read-only fields
 - Snackbar feedback with 2-second duration before navigation
+- Full-screen camera preview with loading indicators
+- Optimized image thumbnails with lazy loading
+- Info cards guiding users to save expenses before attaching receipts
 
 **Deferred to Phase 5:**
-- Receipt attachments (file picker, camera, compression, storage)
 - Recurring expense setup UI and background processing
 - Full-text search with Room FTS
 - Filter bottom sheet UI (logic implemented in ViewModel)
 - Dashboard screen implementation
 
-### ⏳ Next: Phase 5 - Dashboard, Receipts, Recurring Transactions, Income Tracking
+### ⏳ Next: Phase 5 - Recurring Transactions, Search, Filters, Dashboard, Income Tracking
