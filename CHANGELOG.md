@@ -40,10 +40,10 @@ All notable changes to Spendly will be documented in this file.
 
 ## Links
 
-- **Repository**: https://github.com/spendly-co-in/spendly
-- **Issues**: https://github.com/spendly-co-in/spendly/issues
+- **Repository**: https://github.com/lanthoor/spendly
+- **Issues**: https://github.com/lanthoor/spendly/issues
 
 ---
 
-[0.9.0-beta]: https://github.com/spendly-co-in/spendly/releases/tag/v0.9.0-beta
-[0.8.0-beta]: https://github.com/spendly-co-in/spendly/releases/tag/v0.8.0-beta
+[0.9.0-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.0-beta
+[0.8.0-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.8.0-beta

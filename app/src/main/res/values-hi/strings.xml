@@ -261,9 +261,9 @@
     <string name="label_version">संस्करण %1$s</string>
     <string name="desc_about_app">आपके व्यक्तिगत वित्त के प्रबंधन के लिए एक सरल, ऑफ़लाइन-पहले खर्च ट्रैकर। खर्च, आय, बजट ट्रैक करें और अपने खर्च के पैटर्न में अंतर्दृष्टि प्राप्त करें।</string>
     <string name="title_visit_website">वेबसाइट पर जाएं</string>
-    <string name="subtitle_website" translatable="false">https://spendly.co.in</string>
+    <string name="subtitle_website" translatable="false">https://lanthoor.dev/spendly</string>
     <string name="title_contact_us">हमसे संपर्क करें</string>
-    <string name="subtitle_contact_email" translatable="false">info@spendly.co.in</string>
+    <string name="subtitle_contact_email" translatable="false">support@lanthoor.dev</string>
 
     <string name="cd_cancel">रद्द करें</string>
     <string name="cd_capture">कैप्चर करें</string>
