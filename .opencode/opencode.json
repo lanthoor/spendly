@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "lmstudio (windai)",
+      "options": {
+        "baseURL": "http://192.168.0.101:1234/v1"
+      },
+      "models": {
+        "qwen/qwen3-coder-30b": {
+          "name": "Qwen3-Coder (windai)",
+          "limit": {
+            "context": 262144,
+            "output": 131072
+          }
+        }
+      }
+    }
+  }
+}

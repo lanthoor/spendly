@@ -1,0 +1,423 @@
+<resources>
+    <string name="app_name">Spendly</string>
+
+    <!-- Time field -->
+    <string name="label_time">Time</string>
+    <string name="cd_select_time">Select time</string>
+
+    <!-- General buttons -->
+    <string name="button_close">Close</string>
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save</string>
+    <string name="label_saving">Saving...</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_retry">Retry</string>
+    <string name="button_apply">Apply</string>
+    <string name="button_clear">Clear</string>
+    <string name="button_clear_all">Clear All</string>
+    <string name="button_export_json">Export to JSON</string>
+    <string name="button_import_json">Import from JSON</string>
+
+    <!-- Dialog / screen titles -->
+    <string name="title_financial_year_type">Financial Year Type</string>
+    <string name="title_select_date_range">Select Date Range</string>
+    <string name="screen_edit_budget_title">Edit Budget</string>
+    <string name="dialog_delete_budget_title">Delete Budget</string>
+    <string name="screen_transactions_title">All Transactions</string>
+    <string name="screen_data_management_title">Import &amp; Export</string>
+    <string name="title_export_success">Export Successful</string>
+    <string name="title_export_failed">Export Failed</string>
+    <string name="title_exporting_data">Exporting Data</string>
+    <string name="title_import_success">Import Successful</string>
+    <string name="title_import_failed">Import Failed</string>
+    <string name="title_importing_data">Importing Data</string>
+    <string name="screen_filter_transactions_title">Filter Transactions</string>
+    <string name="screen_edit_recurring_transaction_title">Edit Recurring Transaction</string>
+
+    <!-- Labels and small text -->
+    <string name="label_date">Date</string>
+    <string name="cd_select_date">Select date</string>
+    <string name="label_loading">Loading...</string>
+    <string name="error_initialization_failed">Initialization Failed</string>
+    <string name="label_budget_amount">Budget Amount</string>
+    <string name="label_overall_budget">Overall Budget</string>
+    <string name="label_select_category">Select Category</string>
+    <string name="label_category">Category</string>
+    <string name="label_export_data">Export Data</string>
+    <string name="label_backup_to_json">Backup to JSON file</string>
+    <string name="desc_export_data">Create a complete backup of all your expenses, income, receipts, budgets, and recurring transactions. The export includes all receipt files encoded in the JSON.</string>
+    <string name="label_import_data">Import Data</string>
+    <string name="label_restore_from_json">Restore from JSON file</string>
+    <string name="desc_import_data">Restore your data from a previous export. This will replace all existing data including transactions, receipts, budgets, and settings.</string>
+    <string name="label_important">Important</string>
+    <string name="desc_import_warning">Importing data will replace all your existing data. Make sure to export your current data first if you want to keep it.</string>
+
+    <!-- Empty / Error states -->
+    <string name="empty_no_transactions_title">No transactions yet</string>
+    <string name="empty_no_transactions_desc">Add your first expense or income to get started</string>
+    <string name="empty_no_matching_transactions_title">No matching transactions</string>
+    <string name="empty_no_matching_transactions_desc">Try adjusting your filters</string>
+    <string name="error_loading_transactions">Error loading transactions</string>
+
+    <!-- Progress / status strings -->
+    <string name="status_querying_data">Querying data...</string>
+    <string name="status_processing_receipts">Processing receipts...</string>
+    <string name="status_building_export">Building export...</string>
+    <string name="status_serializing_json">Serializing to JSON...</string>
+    <string name="status_writing_file">Writing file...</string>
+    <string name="status_parsing_json">Parsing JSON...</string>
+    <string name="status_validating_data">Validating data...</string>
+    <string name="status_clearing_old_data">Clearing old data...</string>
+    <string name="status_importing_master_data">Importing categories &amp; accounts...</string>
+    <string name="status_importing_expenses">Importing expenses...</string>
+    <string name="status_importing_receipts">Importing receipts...</string>
+    <string name="status_importing_income">Importing income...</string>
+    <string name="status_importing_budgets">Importing budgets...</string>
+    <string name="status_importing_recurring">Importing recurring transactions...</string>
+    <string name="status_finalizing">Finalizing...</string>
+
+    <!-- Progress messages / formatted -->
+    <string name="string_export_success_message">Successfully exported %1$d records
+File size: %2$s</string>
+    <string name="string_import_success_header">Successfully imported:\n</string>
+
+    <!-- Transaction filter labels -->
+    <string name="label_date_range">Date Range</string>
+    <string name="label_select_date_range">Select date range</string>
+    <string name="button_clear_date_range">Clear date range</string>
+    <string name="label_categories">Categories</string>
+    <string name="label_all">All</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_income">Income</string>
+
+    <!-- Category selector -->
+    <string name="title_select_categories">Select Categories</string>
+    <plurals name="plurals_selected_count">
+        <item quantity="one">1 selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+
+    <!-- Month names -->
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+    <string name="month_unknown">Unknown</string>
+
+    <!-- Recurring transaction messages -->
+    <string name="label_saving_recurring_transaction">Saving recurring transaction...</string>
+    <string name="msg_recurring_added_success">Recurring transaction added successfully</string>
+    <string name="msg_recurring_updated_success">Recurring transaction updated successfully</string>
+    <string name="msg_recurring_deleted_success">Recurring transaction deleted successfully</string>
+    <string name="msg_recurring_delete_failed">Failed to delete recurring transaction</string>
+
+    <string name="label_filter">Filter</string>
+
+    <!-- AddExpense strings -->
+    <string name="label_saving_expense">Saving expense...</string>
+    <string name="screen_add_expense_title">Add Expense</string>
+    <string name="screen_edit_account_title">Edit Account</string>
+    <string name="msg_save_receipts_first">Save the expense first to attach receipts. You can add photos or PDFs after saving.</string>
+
+    <!-- Account form strings -->
+    <string name="label_icon_preview">Icon Preview</string>
+    <string name="label_color">Color</string>
+    <string name="cd_created_from_sms">Created from SMS</string>
+    <string name="label_unknown">Unknown</string>
+
+    <!-- New settings and UI strings -->
+    <string name="title_select_time_period">Select Time Period</string>
+    <string name="tp_this_month">This Month</string>
+    <string name="tp_last_month">Last Month</string>
+    <string name="tp_last_3_months">Last 3 Months</string>
+    <string name="tp_last_6_months">Last 6 Months</string>
+    <string name="tp_this_year">This Year</string>
+    <string name="tp_last_year">Last Year</string>
+    <string name="tp_custom_date_range">Custom Date Range...</string>
+
+    <string name="title_select_month">Select Month</string>
+    <string name="cd_previous_year">Previous year</string>
+    <string name="cd_next_year">Next year</string>
+
+    <string name="label_lock_timeout">Lock Timeout</string>
+    <string name="cd_select_lock_timeout">Select lock timeout</string>
+
+    <string name="title_sms_permission_required">SMS Permission Required</string>
+    <string name="msg_sms_permission_required_desc">SMS permissions are required for auto-detecting transactions from bank SMS. Please grant permissions in app settings.</string>
+    <string name="button_open_settings">Open Settings</string>
+
+    <string name="section_account_management">Account Management</string>
+    <string name="settings_manage_accounts">Manage Accounts</string>
+    <string name="settings_manage_accounts_desc">Add, edit, or delete accounts</string>
+    <string name="settings_manage_budgets">Manage Budgets</string>
+    <string name="settings_manage_budgets_desc">Set monthly budgets for categories</string>
+    <string name="settings_recurring_transactions">Recurring Transactions</string>
+    <string name="settings_recurring_transactions_desc">Manage recurring expenses and income</string>
+
+    <string name="section_sms_auto_detection">SMS Auto-Detection</string>
+    <string name="settings_enable_sms_auto_detection">Enable SMS Auto-Detection</string>
+    <string name="settings_enable_sms_auto_detection_desc">Automatically detect transactions from bank SMS</string>
+    <string name="settings_scan_historical_sms">Scan historical SMS</string>
+    <string name="settings_scan_historical_sms_desc">Scan device SMS for past transactions (runs in background)</string>
+
+    <string name="section_security">Security</string>
+    <string name="settings_app_lock">App Lock</string>
+    <string name="settings_app_lock_desc">Require device authentication to open app</string>
+    <string name="msg_app_lock_timeout_desc">App will lock after being inactive for the selected duration</string>
+
+    <string name="section_appearance">Appearance</string>
+    <string name="label_theme">Theme</string>
+    <string name="settings_language">Language</string>
+    <string name="subtitle_language">Choose your preferred language</string>
+    <string name="title_language_settings">Language Settings</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_malayalam">മലയാളം</string>
+
+    <string name="settings_data_management_desc">Backup and restore your data</string>
+
+    <string name="section_about">About</string>
+    <string name="settings_about_spendly">About Spendly</string>
+    <string name="settings_about_desc">Version, links, and more</string>
+
+    <string name="title_device_security_required">Device Security Required</string>
+    <string name="msg_device_security_required_desc">Please set up a PIN, pattern, or biometric lock on your device first.</string>
+
+    <string name="msg_delete_budget_confirm">Are you sure you want to delete this budget? This action cannot be undone.</string>
+
+    <!-- Additional strings added during replacement sweep -->
+    <string name="label_unlock_to_continue">Unlock to continue</string>
+    <string name="msg_auth_not_available">Authentication not available</string>
+    <string name="button_authenticate">Authenticate</string>
+
+    <string name="placeholder_select_expense">Select an expense</string>
+    <string name="title_select_expense_for_refund">Select Expense for Refund</string>
+    <string name="cd_clear_selection">Clear selection</string>
+    <string name="cd_select_expense">Select expense</string>
+
+    <string name="screen_add_income_title">Add Income</string>
+    <string name="button_save_income">Save Income</string>
+    <string name="label_saving_income">Saving income...</string>
+
+    <string name="freq_daily">Daily</string>
+    <string name="freq_weekly">Weekly</string>
+    <string name="freq_monthly">Monthly</string>
+
+    <string name="screen_add_recurring_transaction_title">Add Recurring Transaction</string>
+
+    <string name="button_go_back">Go Back</string>
+    <string name="screen_edit_income_title">Edit Income</string>
+    <string name="button_update_income">Update Income</string>
+    <string name="cd_delete_income">Delete income</string>
+
+    <string name="label_amount">Amount</string>
+    <string name="label_amount_required">Amount is required</string>
+    <string name="label_currency_symbol">₹ </string>
+    <string name="label_description_counter">%1$d/200</string>
+
+    <string name="header_add_receipt">Add Receipt</string>
+    <string name="choose_from_files">Choose from files</string>
+    <string name="select_file_types_desc">Select JPG, PNG, WebP, or PDF</string>
+    <string name="placeholder_date_format">dd/mm/yy</string>
+    <string name="title_select_account_type">Select Account Type</string>
+    <string name="title_select_color">Select Color</string>
+    <string name="label_pick_color">Pick Color</string>
+    <string name="button_save_expense">Save Expense</string>
+    <string name="label_calendar_short">Cal</string>
+    <string name="label_financial_year_short">FY</string>
+    <string name="take_photo">Take photo</string>
+    <string name="capture_using_camera">Capture using camera</string>
+
+    <string name="title_delete_account">Delete Account?</string>
+    <string name="msg_delete_account_confirm">You are about to delete "%1$s".</string>
+    <string name="msg_account_no_transactions">This account has no transactions and can be safely deleted.</string>
+    <string name="label_reassign_to">Reassign to</string>
+    <string name="msg_transactions_reassign">All transactions will be reassigned to the selected account:</string>
+
+    <string name="title_delete_expense">Delete Expense?</string>
+    <string name="msg_delete_expense_body">This will permanently delete this expense and all associated receipts. This action cannot be undone.</string>
+
+    <string name="button_save_changes">Save Changes</string>
+
+    <string name="cd_receipt_image">Receipt image</string>
+    <string name="cd_add_recurring_transaction">Add recurring transaction</string>
+    <string name="cd_delete_account">Delete account</string>
+    <string name="cd_pdf_file">PDF file</string>
+    <string name="cd_delete_receipt">Delete receipt</string>
+    <string name="label_pdf">PDF</string>
+    <string name="label_compressed">Compressed</string>
+
+    <!-- About screen strings -->
+    <string name="title_about">About</string>
+    <string name="label_version">Version %1$s</string>
+    <string name="desc_about_app">A simple, offline-first expense tracker for managing your personal finances. Track expenses, income, budgets, and get insights into your spending patterns.</string>
+    <string name="title_visit_website">Visit Website</string>
+    <string name="subtitle_website">https://spendly.co.in</string>
+    <string name="title_contact_us">Contact Us</string>
+    <string name="subtitle_contact_email">info@spendly.co.in</string>
+
+    <string name="cd_cancel">Cancel</string>
+    <string name="cd_capture">Capture</string>
+    <string name="label_tap_to_capture">Tap to capture</string>
+
+    <string name="cd_pie_chart">Pie Chart</string>
+    <string name="cd_bar_chart">Bar Chart</string>
+    <string name="cd_line_chart">Line Chart</string>
+    <string name="cd_trend_chart">Trend Chart</string>
+    <string name="analytics_title">Unlock Your Spending Insights</string>
+    <string name="analytics_desc">Get ready to discover patterns, trends, and insights in your spending habits. Analytics features are coming soon to help you make smarter financial decisions.</string>
+
+    <string name="label_my_account">My Account</string>
+    <string name="cd_select_account">Select account</string>
+    <string name="cd_navigate_back">Navigate back</string>
+    <string name="label_others">Others</string>
+    <string name="cd_select_account_type">Select account type</string>
+    <string name="cd_select_category">Select category</string>
+
+    <string name="button_add_budget">Add Budget</string>
+    <string name="title_add_budget">Add Budget</string>
+    <string name="button_save_budget">Save Budget</string>
+    <string name="label_no_budgets_configured">No budgets configured</string>
+    <string name="label_spent">Spent</string>
+    <string name="label_budget">Budget</string>
+
+    <string name="label_enter_dates_manually">Enter dates manually</string>
+    <string name="label_or_select_from_calendar">Or select from calendar</string>
+
+    <string name="label_over_budget">%1$s over budget</string>
+    <string name="label_remaining">%1$s remaining</string>
+    <string name="label_of">of %1$s</string>
+
+    <string name="label_recent_transactions">Recent Transactions</string>
+    <string name="label_no_accounts_yet">No accounts yet. Add your first account!</string>
+    <string name="cd_add_account">Add account</string>
+    <string name="cd_previous_month">Previous month</string>
+    <string name="cd_select_month">Select month</string>
+    <string name="cd_next_month">Next month</string>
+
+    <!-- Additional form labels -->
+    <string name="label_description">Description</string>
+    <string name="label_account">Account</string>
+
+    <!-- Missing keys used during replacements -->
+    <string name="screen_edit_expense_title">Edit Expense</string>
+    <string name="cd_delete_expense">Delete expense</string>
+    <string name="cd_add_receipt">Add receipt</string>
+    <string name="msg_no_expenses_available">No expenses available. Add an expense first.</string>
+
+    <string name="label_category_optional">Category (optional)</string>
+    <string name="label_transaction_type">Transaction Type</string>
+    <string name="label_frequency">Frequency</string>
+    <string name="label_next_occurrence">Next Occurrence</string>
+    <string name="label_next_occurrence_with_date">Next: %1$s</string>
+    <string name="title_financial_summary">Financial Summary</string>
+    <string name="label_full_year">Full Year</string>
+    <string name="label_expenses">Expenses</string>
+    <string name="label_balance">Balance</string>
+
+    <!-- Plurals and other small strings added during replacements -->
+    <plurals name="plurals_account_transactions">
+        <item quantity="one">This account has 1 transaction (%2$d expense, %3$d income).</item>
+        <item quantity="other">This account has %1$d transactions (%2$d expenses, %3$d income).</item>
+    </plurals>
+
+    <string name="label_error_with_msg">Error: %1$s</string>
+    <string name="label_saving_changes">Saving changes...</string>
+
+    <!-- Analytics & additional UI strings (only unique keys added) -->
+    <string name="msg_no_data_available">No data available</string>
+    <string name="msg_add_transactions_for_analytics">Add some transactions to see analytics and insights</string>
+    <string name="msg_error_loading_analytics">Error loading analytics</string>
+    <string name="label_this_financial_year">this financial year</string>
+    <string name="label_this_year">this year</string>
+    <string name="label_total_spending">Total Spending</string>
+
+    <string name="label_spend_categories">Spend Categories</string>
+    <string name="msg_no_expense_data_yet">No expense data yet</string>
+    <plurals name="plurals_transactions">
+        <item quantity="one">%d transaction</item>
+        <item quantity="other">%d transactions</item>
+    </plurals>
+    <string name="action_show_less">Show Less</string>
+    <string name="action_show_all">Show All</string>
+
+    <string name="title_period_summary">Period Summary</string>
+    <string name="label_net_balance">Net Balance</string>
+
+    <string name="label_vs_last_month">vs Last Month</string>
+    <string name="label_vs_month_before_last">vs Month Before Last</string>
+    <string name="label_vs_prev_3_months">vs Previous 3 Months</string>
+    <string name="label_vs_prev_6_months">vs Previous 6 Months</string>
+    <string name="label_vs_last_year">vs Last Year</string>
+    <string name="label_vs_last_financial_year">vs Last Financial Year</string>
+    <string name="label_vs_year_before_last">vs Year Before Last</string>
+    <string name="label_vs_previous_period">vs Previous Period</string>
+
+    <!-- Empty state preview aliases -->
+    <string name="label_no_expenses_yet">No expenses yet</string>
+    <string name="msg_start_tracking_expenses">Start tracking your expenses by adding your first one</string>
+    <string name="label_no_results_found">No results found</string>
+    <string name="msg_try_adjusting_filters">Try adjusting your filters</string>
+
+    <!-- App bar preview title for Expenses -->
+    <string name="screen_expenses_title">Expenses</string>
+
+    <!-- Add transaction bottom sheet -->
+    <string name="title_add_transaction">Add Transaction</string>
+    <string name="button_add_expense">Add Expense</string>
+    <string name="button_add_income">Add Income</string>
+
+    <!-- Additional localized strings -->
+    <string name="analytics_chart_intro">Line chart showing spending trends.</string>
+    <string name="msg_tap_point_for_details">Tap a data point to see details.</string>
+    <string name="msg_currently_selected">Currently selected:</string>
+
+    <string name="analytics_pie_intro">Pie chart showing spending by category.</string>
+    <string name="pie_selection_animation">pie_selection_animation</string>
+    <string name="line_selection_animation">line_selection_animation</string>
+    <string name="msg_tap_slice_for_details">Tap a slice to see details.</string>
+
+    <string name="label_net_worth">Net Worth</string>
+    <string name="label_spending_trend">Spending Trend</string>
+
+    <!-- SMS notification strings -->
+    <string name="notification_transaction_added">%1$s Transaction Added</string>
+    <string name="label_received">received</string>
+    <string name="msg_at_merchant"> at %1$s</string>
+
+    <!-- Budget notifications -->
+    <string name="notification_channel_name">Budget Alerts</string>
+    <string name="notification_channel_description">Alerts when budget spending reaches 75% or 100%</string>
+    <string name="label_overall">Overall</string>
+    <string name="notification_budget_alert_title">Budget Alert: %1$s</string>
+    <string name="notification_budget_alert_text">You have reached %1$s of your %2$s budget</string>
+
+    <!-- Add / Edit account -->
+    <string name="title_add_account">Add Account</string>
+    <string name="button_add_account">Add Account</string>
+
+    <string name="label_default">Default</string>
+    <string name="msg_made_with_love">Made with ❤️ in India</string>
+    <string name="label_percentage">%1$d%%</string>
+
+    <!-- Expense screen messages -->
+    <string name="msg_expense_deleted">Expense deleted</string>
+    <string name="msg_failed_delete_expense">Failed to delete expense</string>
+    <string name="msg_expense_updated_success">Expense updated successfully</string>
+    <string name="msg_failed_save_changes">Failed to save changes</string>
+    <string name="header_receipts">Receipts</string>
+    <string name="label_budget_overview">Budget Overview</string>
+
+    <string name="title_spending_by_category">Spending by Category</string>
+    <string name="label_top_n">Top %1$d</string>
+    <string name="label_no_expense_data">No expense data available</string>
+</resources>

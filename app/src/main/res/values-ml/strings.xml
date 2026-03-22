@@ -1,0 +1,423 @@
+<resources>
+    <!-- App name - non-translatable -->
+    <string name="app_name" translatable="false">Spendly</string>
+
+    <!-- Time field -->
+    <string name="label_time">സമയം</string>
+    <string name="cd_select_time">സമയം തിരഞ്ഞെടുക്കുക</string>
+
+    <!-- General buttons -->
+    <string name="button_close">അടയ്ക്കുക</string>
+    <string name="button_ok">ശരി</string>
+    <string name="button_cancel">റദ്ദാക്കുക</string>
+    <string name="button_save">സംരക്ഷിക്കുക</string>
+    <string name="label_saving">സംരക്ഷിക്കുന്നു...</string>
+    <string name="button_delete">ഇല്ലാതാക്കുക</string>
+    <string name="button_retry">വീണ്ടും ശ്രമിക്കുക</string>
+    <string name="button_apply">പ്രയോഗിക്കുക</string>
+    <string name="button_clear">മായ്ക്കുക</string>
+    <string name="button_clear_all">എല്ലാം മായ്ക്കുക</string>
+    <string name="button_export_json">JSON-ലേക്ക് എക്സ്പോർട്ട് ചെയ്യുക</string>
+    <string name="button_import_json">JSON-ൽ നിന്ന് ഇമ്പോർട്ട് ചെയ്യുക</string>
+
+    <!-- Dialog / screen titles -->
+    <string name="title_financial_year_type">സാമ്പത്തിക വർഷ തരം</string>
+    <string name="title_select_date_range">തീയതി പരിധി തിരഞ്ഞെടുക്കുക</string>
+    <string name="screen_edit_budget_title">ബജറ്റ് എഡിറ്റ് ചെയ്യുക</string>
+    <string name="dialog_delete_budget_title">ബജറ്റ് ഇല്ലാതാക്കുക</string>
+    <string name="screen_transactions_title">എല്ലാ ഇടപാടുകളും</string>
+    <string name="screen_data_management_title">ഇമ്പോർട്ടും എക്സ്പോർട്ടും</string>
+    <string name="title_export_success">എക്സ്പോർട്ട് വിജയകരം</string>
+    <string name="title_export_failed">എക്സ്പോർട്ട് പരാജയപ്പെട്ടു</string>
+    <string name="title_exporting_data">ഡാറ്റ എക്സ്പോർട്ട് ചെയ്യുന്നു</string>
+    <string name="title_import_success">ഇമ്പോർട്ട് വിജയകരം</string>
+    <string name="title_import_failed">ഇമ്പോർട്ട് പരാജയപ്പെട്ടു</string>
+    <string name="title_importing_data">ഡാറ്റ ഇമ്പോർട്ട് ചെയ്യുന്നു</string>
+    <string name="screen_filter_transactions_title">ഇടപാടുകൾ ഫിൽട്ടർ ചെയ്യുക</string>
+    <string name="screen_edit_recurring_transaction_title">ആവർത്തിക്കുന്ന ഇടപാട് എഡിറ്റ് ചെയ്യുക</string>
+
+    <!-- Labels and small text -->
+    <string name="label_date">തീയതി</string>
+    <string name="cd_select_date">തീയതി തിരഞ്ഞെടുക്കുക</string>
+    <string name="label_loading">ലോഡ് ചെയ്യുന്നു...</string>
+    <string name="error_initialization_failed">ആരംഭിക്കൽ പരാജയപ്പെട്ടു</string>
+    <string name="label_budget_amount">ബജറ്റ് തുക</string>
+    <string name="label_overall_budget">മൊത്തം ബജറ്റ്</string>
+    <string name="label_select_category">വിഭാഗം തിരഞ്ഞെടുക്കുക</string>
+    <string name="label_category">വിഭാഗം</string>
+    <string name="label_export_data">ഡാറ്റ എക്സ്പോർട്ട് ചെയ്യുക</string>
+    <string name="label_backup_to_json">JSON ഫയലിലേക്ക് ബാക്കപ്പ് ചെയ്യുക</string>
+    <string name="desc_export_data">നിങ്ങളുടെ എല്ലാ ചെലവുകൾ, വരുമാനം, രസീതുകൾ, ബജറ്റുകൾ, ആവർത്തിക്കുന്ന ഇടപാടുകൾ എന്നിവയുടെ പൂർണ്ണമായ ബാക്കപ്പ് സൃഷ്ടിക്കുക। JSON-ൽ എൻകോഡ് ചെയ്ത എല്ലാ രസീത് ഫയലുകളും എക്സ്പോർട്ടിൽ ഉൾപ്പെടുന്നു.</string>
+    <string name="label_import_data">ഡാറ്റ ഇമ്പോർട്ട് ചെയ്യുക</string>
+    <string name="label_restore_from_json">JSON ഫയലിൽ നിന്ന് പുനഃസ്ഥാപിക്കുക</string>
+    <string name="desc_import_data">മുൻ എക്സ്പോർട്ടിൽ നിന്ന് നിങ്ങളുടെ ഡാറ്റ പുനഃസ്ഥാപിക്കുക. ഇത് ഇടപാടുകൾ, രസീതുകൾ, ബജറ്റുകൾ, ക്രമീകരണങ്ങൾ എന്നിവ ഉൾപ്പെടെ നിലവിലുള്ള എല്ലാ ഡാറ്റയും മാറ്റിസ്ഥാപിക്കും.</string>
+    <string name="label_important">പ്രധാനം</string>
+    <string name="desc_import_warning">ഡാറ്റ ഇമ്പോർട്ട് ചെയ്യുന്നത് നിങ്ങളുടെ നിലവിലുള്ള എല്ലാ ഡാറ്റയും മാറ്റിസ്ഥാപിക്കും. നിങ്ങൾ അത് സൂക്ഷിക്കാൻ ആഗ്രഹിക്കുന്നുവെങ്കിൽ ആദ്യം നിങ്ങളുടെ നിലവിലെ ഡാറ്റ എക്സ്പോർട്ട് ചെയ്യുന്നത് ഉറപ്പാക്കുക.</string>
+
+    <!-- Empty / Error states -->
+    <string name="empty_no_transactions_title">ഇതുവരെ ഇടപാടുകൾ ഇല്ല</string>
+    <string name="empty_no_transactions_desc">ആരംഭിക്കാൻ നിങ്ങളുടെ ആദ്യ ചെലവോ വരുമാനമോ ചേർക്കുക</string>
+    <string name="empty_no_matching_transactions_title">പൊരുത്തപ്പെടുന്ന ഇടപാടുകൾ ഇല്ല</string>
+    <string name="empty_no_matching_transactions_desc">നിങ്ങളുടെ ഫിൽട്ടറുകൾ ക്രമീകരിക്കാൻ ശ്രമിക്കുക</string>
+    <string name="error_loading_transactions">ഇടപാടുകൾ ലോഡ് ചെയ്യുന്നതിൽ പിശക്</string>
+
+    <!-- Progress / status strings -->
+    <string name="status_querying_data">ഡാറ്റ ചോദ്യം ചെയ്യുന്നു...</string>
+    <string name="status_processing_receipts">രസീതുകൾ പ്രോസസ്സ് ചെയ്യുന്നു...</string>
+    <string name="status_building_export">എക്സ്പോർട്ട് നിർമ്മിക്കുന്നു...</string>
+    <string name="status_serializing_json">JSON-ലേക്ക് സീരിയലൈസ് ചെയ്യുന്നു...</string>
+    <string name="status_writing_file">ഫയൽ എഴുതുന്നു...</string>
+    <string name="status_parsing_json">JSON പാഴ്സ് ചെയ്യുന്നു...</string>
+    <string name="status_validating_data">ഡാറ്റ സാധൂകരിക്കുന്നു...</string>
+    <string name="status_clearing_old_data">പഴയ ഡാറ്റ മായ്ക്കുന്നു...</string>
+    <string name="status_importing_master_data">വിഭാഗങ്ങളും അക്കൗണ്ടുകളും ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_importing_expenses">ചെലവുകൾ ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_importing_receipts">രസീതുകൾ ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_importing_income">വരുമാനം ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_importing_budgets">ബജറ്റുകൾ ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_importing_recurring">ആവർത്തിക്കുന്ന ഇടപാടുകൾ ഇമ്പോർട്ട് ചെയ്യുന്നു...</string>
+    <string name="status_finalizing">അന്തിമമാക്കുന്നു...</string>
+
+    <!-- Progress messages / formatted -->
+    <string name="string_export_success_message">%1$d റെക്കോർഡുകൾ വിജയകരമായി എക്സ്പോർട്ട് ചെയ്തു\nഫയൽ വലുപ്പം: %2$s</string>
+    <string name="string_import_success_header">വിജയകരമായി ഇമ്പോർട്ട് ചെയ്തു:\n</string>
+
+    <!-- Transaction filter labels -->
+    <string name="label_date_range">തീയതി പരിധി</string>
+    <string name="label_select_date_range">തീയതി പരിധി തിരഞ്ഞെടുക്കുക</string>
+    <string name="button_clear_date_range">തീയതി പരിധി മായ്ക്കുക</string>
+    <string name="label_categories">വിഭാഗങ്ങൾ</string>
+    <string name="label_all">എല്ലാം</string>
+    <string name="label_expense">ചെലവ്</string>
+    <string name="label_income">വരുമാനം</string>
+
+    <!-- Category selector -->
+    <string name="title_select_categories">വിഭാഗങ്ങൾ തിരഞ്ഞെടുക്കുക</string>
+    <plurals name="plurals_selected_count">
+        <item quantity="one">%d തിരഞ്ഞെടുത്തത്</item>
+        <item quantity="other">%d തിരഞ്ഞെടുത്തത്</item>
+    </plurals>
+
+    <!-- Month names -->
+    <string name="month_january">ജനുവരി</string>
+    <string name="month_february">ഫെബ്രുവരി</string>
+    <string name="month_march">മാർച്ച്</string>
+    <string name="month_april">ഏപ്രിൽ</string>
+    <string name="month_may">മെയ്</string>
+    <string name="month_june">ജൂൺ</string>
+    <string name="month_july">ജൂലൈ</string>
+    <string name="month_august">ഓഗസ്റ്റ്</string>
+    <string name="month_september">സെപ്റ്റംബർ</string>
+    <string name="month_october">ഒക്ടോബർ</string>
+    <string name="month_november">നവംബർ</string>
+    <string name="month_december">ഡിസംബർ</string>
+    <string name="month_unknown">അജ്ഞാതം</string>
+
+    <!-- Recurring transaction messages -->
+    <string name="label_saving_recurring_transaction">ആവർത്തിക്കുന്ന ഇടപാട് സംരക്ഷിക്കുന്നു...</string>
+    <string name="msg_recurring_added_success">ആവർത്തിക്കുന്ന ഇടപാട് വിജയകരമായി ചേർത്തു</string>
+    <string name="msg_recurring_updated_success">ആവർത്തിക്കുന്ന ഇടപാട് വിജയകരമായി അപ്ഡേറ്റ് ചെയ്തു</string>
+    <string name="msg_recurring_deleted_success">ആവർത്തിക്കുന്ന ഇടപാട് വിജയകരമായി ഇല്ലാതാക്കി</string>
+    <string name="msg_recurring_delete_failed">ആവർത്തിക്കുന്ന ഇടപാട് ഇല്ലാതാക്കുന്നതിൽ പരാജയപ്പെട്ടു</string>
+
+    <string name="label_filter">ഫിൽട്ടർ</string>
+
+    <!-- AddExpense strings -->
+    <string name="label_saving_expense">ചെലവ് സംരക്ഷിക്കുന്നു...</string>
+    <string name="screen_add_expense_title">ചെലവ് ചേർക്കുക</string>
+    <string name="screen_edit_account_title">അക്കൗണ്ട് എഡിറ്റ് ചെയ്യുക</string>
+    <string name="msg_save_receipts_first">രസീതുകൾ അറ്റാച്ച് ചെയ്യാൻ ആദ്യം ചെലവ് സംരക്ഷിക്കുക. സംരക്ഷിച്ച ശേഷം നിങ്ങൾക്ക് ഫോട്ടോകളോ PDF-കളോ ചേർക്കാം.</string>
+
+    <!-- Account form strings -->
+    <string name="label_icon_preview">ഐക്കൺ പ്രിവ്യൂ</string>
+    <string name="label_color">നിറം</string>
+    <string name="cd_created_from_sms">SMS-ൽ നിന്ന് സൃഷ്ടിച്ചത്</string>
+    <string name="label_unknown">അജ്ഞാതം</string>
+
+    <!-- New settings and UI strings -->
+    <string name="title_select_time_period">സമയ കാലയളവ് തിരഞ്ഞെടുക്കുക</string>
+    <string name="tp_this_month">ഈ മാസം</string>
+    <string name="tp_last_month">കഴിഞ്ഞ മാസം</string>
+    <string name="tp_last_3_months">കഴിഞ്ഞ 3 മാസം</string>
+    <string name="tp_last_6_months">കഴിഞ്ഞ 6 മാസം</string>
+    <string name="tp_this_year">ഈ വർഷം</string>
+    <string name="tp_last_year">കഴിഞ്ഞ വർഷം</string>
+    <string name="tp_custom_date_range">ഇഷ്‌ടാനുസൃത തീയതി പരിധി...</string>
+
+    <string name="title_select_month">മാസം തിരഞ്ഞെടുക്കുക</string>
+    <string name="cd_previous_year">മുൻ വർഷം</string>
+    <string name="cd_next_year">അടുത്ത വർഷം</string>
+
+    <string name="label_lock_timeout">ലോക്ക് ടൈം-ഔട്ട്</string>
+    <string name="cd_select_lock_timeout">ലോക്ക് ടൈം-ഔട്ട് തിരഞ്ഞെടുക്കുക</string>
+
+    <string name="title_sms_permission_required">SMS അനുമതി ആവശ്യമാണ്</string>
+    <string name="msg_sms_permission_required_desc">ബാങ്ക് SMS-ൽ നിന്ന് ഇടപാടുകൾ യാന്ത്രികമായി കണ്ടെത്തുന്നതിന് SMS അനുമതികൾ ആവശ്യമാണ്. ആപ്പ് ക്രമീകരണങ്ങളിൽ അനുമതികൾ നൽകുക.</string>
+    <string name="button_open_settings">ക്രമീകരണങ്ങൾ തുറക്കുക</string>
+
+    <string name="section_account_management">അക്കൗണ്ട് മാനേജ്മെന്റ്</string>
+    <string name="settings_manage_accounts">അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യുക</string>
+    <string name="settings_manage_accounts_desc">അക്കൗണ്ടുകൾ ചേർക്കുക, എഡിറ്റ് ചെയ്യുക അല്ലെങ്കിൽ ഇല്ലാതാക്കുക</string>
+    <string name="settings_manage_budgets">ബജറ്റുകൾ മാനേജ് ചെയ്യുക</string>
+    <string name="settings_manage_budgets_desc">വിഭാഗങ്ങൾക്കായി പ്രതിമാസ ബജറ്റ് സജ്ജമാക്കുക</string>
+    <string name="settings_recurring_transactions">ആവർത്തിക്കുന്ന ഇടപാടുകൾ</string>
+    <string name="settings_recurring_transactions_desc">ആവർത്തിക്കുന്ന ചെലവുകളും വരുമാനവും മാനേജ് ചെയ്യുക</string>
+
+    <string name="section_sms_auto_detection">SMS യാന്ത്രിക കണ്ടെത്തൽ</string>
+    <string name="settings_enable_sms_auto_detection">SMS യാന്ത്രിക കണ്ടെത്തൽ പ്രവർത്തനക്ഷമമാക്കുക</string>
+    <string name="settings_enable_sms_auto_detection_desc">ബാങ്ക് SMS-ൽ നിന്ന് ഇടപാടുകൾ യാന്ത്രികമായി കണ്ടെത്തുക</string>
+    <string name="settings_scan_historical_sms">മുൻകാല SMS സ്കാൻ ചെയ്യുക</string>
+    <string name="settings_scan_historical_sms_desc">മുൻകാല ഇടപാടുകൾക്കായി ഉപകരണത്തിലെ SMS സ്കാൻ ചെയ്യുക (പശ്ചാത്തലത്തിൽ പ്രവർത്തിക്കുന്നു)</string>
+
+    <string name="section_security">സുരക്ഷ</string>
+    <string name="settings_app_lock">ആപ്പ് ലോക്ക്</string>
+    <string name="settings_app_lock_desc">ആപ്പ് തുറക്കാൻ ഉപകരണ പ്രാമാണീകരണം ആവശ്യമാണ്</string>
+    <string name="msg_app_lock_timeout_desc">തിരഞ്ഞെടുത്ത കാലയളവിലേക്ക് നിഷ്‌ക്രിയമായതിന് ശേഷം ആപ്പ് ലോക്ക് ചെയ്യും</string>
+
+    <string name="section_appearance">കാഴ്ച</string>
+    <string name="label_theme">തീം</string>
+    <string name="settings_language">ഭാഷ</string>
+    <string name="subtitle_language">നിങ്ങളുടെ ഇഷ്ടപ്പെട്ട ഭാഷ തിരഞ്ഞെടുക്കുക</string>
+    <string name="title_language_settings">ഭാഷ ക്രമീകരണങ്ങൾ</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_malayalam">മലയാളം</string>
+
+    <string name="settings_data_management_desc">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്ത് പുനഃസ്ഥാപിക്കുക</string>
+
+    <string name="section_about">കുറിച്ച്</string>
+    <string name="settings_about_spendly">Spendly കുറിച്ച്</string>
+    <string name="settings_about_desc">പതിപ്പ്, ലിങ്കുകൾ, കൂടുതൽ</string>
+
+    <string name="title_device_security_required">ഉപകരണ സുരക്ഷ ആവശ്യമാണ്</string>
+    <string name="msg_device_security_required_desc">ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ ഒരു PIN, പാറ്റേൺ അല്ലെങ്കിൽ ബയോമെട്രിക് ലോക്ക് സജ്ജീകരിക്കുക.</string>
+
+    <string name="msg_delete_budget_confirm">നിങ്ങൾക്ക് ഈ ബജറ്റ് ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ? ഈ പ്രവർത്തനം പഴയപടിയാക്കാൻ കഴിയില്ല.</string>
+
+    <!-- Additional strings added during replacement sweep -->
+    <string name="label_unlock_to_continue">തുടരാൻ അൺലോക്ക് ചെയ്യുക</string>
+    <string name="msg_auth_not_available">പ്രാമാണീകരണം ലഭ്യമല്ല</string>
+    <string name="button_authenticate">പ്രാമാണീകരിക്കുക</string>
+
+    <string name="placeholder_select_expense">ചെലവ് തിരഞ്ഞെടുക്കുക</string>
+    <string name="title_select_expense_for_refund">റീഫണ്ടിനായി ചെലവ് തിരഞ്ഞെടുക്കുക</string>
+    <string name="cd_clear_selection">തിരഞ്ഞെടുപ്പ് മായ്ക്കുക</string>
+    <string name="cd_select_expense">ചെലവ് തിരഞ്ഞെടുക്കുക</string>
+
+    <string name="screen_add_income_title">വരുമാനം ചേർക്കുക</string>
+    <string name="button_save_income">വരുമാനം സംരക്ഷിക്കുക</string>
+    <string name="label_saving_income">വരുമാനം സംരക്ഷിക്കുന്നു...</string>
+
+    <string name="freq_daily">ദിനംതോറും</string>
+    <string name="freq_weekly">ആഴ്ചതോറും</string>
+    <string name="freq_monthly">പ്രതിമാസം</string>
+
+    <string name="screen_add_recurring_transaction_title">ആവർത്തിക്കുന്ന ഇടപാട് ചേർക്കുക</string>
+
+    <string name="button_go_back">തിരികെ പോകുക</string>
+    <string name="screen_edit_income_title">വരുമാനം എഡിറ്റ് ചെയ്യുക</string>
+    <string name="button_update_income">വരുമാനം അപ്ഡേറ്റ് ചെയ്യുക</string>
+    <string name="cd_delete_income">വരുമാനം ഇല്ലാതാക്കുക</string>
+
+    <string name="label_amount">തുക</string>
+    <string name="label_amount_required">തുക ആവശ്യമാണ്</string>
+    <string name="label_currency_symbol">₹ </string>
+    <string name="label_description_counter">%1$d/200</string>
+
+    <string name="header_add_receipt">രസീത് ചേർക്കുക</string>
+    <string name="choose_from_files">ഫയലുകളിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</string>
+    <string name="select_file_types_desc">JPG, PNG, WebP അല്ലെങ്കിൽ PDF തിരഞ്ഞെടുക്കുക</string>
+    <string name="placeholder_date_format">dd/mm/yy</string>
+    <string name="title_select_account_type">അക്കൗണ്ട് തരം തിരഞ്ഞെടുക്കുക</string>
+    <string name="title_select_color">നിറം തിരഞ്ഞെടുക്കുക</string>
+    <string name="label_pick_color">നിറം തിരഞ്ഞെടുക്കുക</string>
+    <string name="button_save_expense">ചെലവ് സംരക്ഷിക്കുക</string>
+    <string name="label_calendar_short">Cal</string>
+    <string name="label_financial_year_short">FY</string>
+    <string name="take_photo">ഫോട്ടോ എടുക്കുക</string>
+    <string name="capture_using_camera">ക്യാമറ ഉപയോഗിച്ച് ക്യാപ്ചർ ചെയ്യുക</string>
+
+    <string name="title_delete_account">അക്കൗണ്ട് ഇല്ലാതാക്കണോ?</string>
+    <string name="msg_delete_account_confirm">നിങ്ങൾ \"%1$s\" ഇല്ലാതാക്കാൻ പോകുകയാണ്.</string>
+    <string name="msg_account_no_transactions">ഈ അക്കൗണ്ടിന് ഇടപാടുകളൊന്നുമില്ല, അത് സുരക്ഷിതമായി ഇല്ലാതാക്കാം.</string>
+    <string name="label_reassign_to">ഇതിലേക്ക് വീണ്ടും അസൈൻ ചെയ്യുക</string>
+    <string name="msg_transactions_reassign">എല്ലാ ഇടപാടുകളും തിരഞ്ഞെടുത്ത അക്കൗണ്ടിലേക്ക് വീണ്ടും അസൈൻ ചെയ്യപ്പെടും:</string>
+
+    <string name="title_delete_expense">ചെലവ് ഇല്ലാതാക്കണോ?</string>
+    <string name="msg_delete_expense_body">ഇത് ഈ ചെലവും എല്ലാ അനുബന്ധ രസീതുകളും ശാശ്വതമായി ഇല്ലാതാക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാൻ കഴിയില്ല.</string>
+
+    <string name="button_save_changes">മാറ്റങ്ങൾ സംരക്ഷിക്കുക</string>
+
+    <string name="cd_receipt_image">രസീത് ചിത്രം</string>
+    <string name="cd_add_recurring_transaction">ആവർത്തിക്കുന്ന ഇടപാട് ചേർക്കുക</string>
+    <string name="cd_delete_account">അക്കൗണ്ട് ഇല്ലാതാക്കുക</string>
+    <string name="cd_pdf_file">PDF ഫയൽ</string>
+    <string name="cd_delete_receipt">രസീത് ഇല്ലാതാക്കുക</string>
+    <string name="label_pdf">PDF</string>
+    <string name="label_compressed">കംപ്രസ്സ് ചെയ്തത്</string>
+
+    <!-- About screen strings -->
+    <string name="title_about">കുറിച്ച്</string>
+    <string name="label_version">പതിപ്പ് %1$s</string>
+    <string name="desc_about_app">നിങ്ങളുടെ വ്യക്തിഗത സാമ്പത്തിക കാര്യങ്ങൾ കൈകാര്യം ചെയ്യുന്നതിനുള്ള ലളിതവും ഓഫ്‌ലൈൻ-ആദ്യവുമായ ചെലവ് ട്രാക്കർ. ചെലവുകൾ, വരുമാനം, ബജറ്റ് എന്നിവ ട്രാക്ക് ചെയ്യുക, നിങ്ങളുടെ ചെലവ് പാറ്റേണുകളിൽ ഉൾക്കാഴ്ചകൾ നേടുക.</string>
+    <string name="title_visit_website">വെബ്‌സൈറ്റ് സന്ദർശിക്കുക</string>
+    <string name="subtitle_website" translatable="false">https://spendly.co.in</string>
+    <string name="title_contact_us">ഞങ്ങളെ ബന്ധപ്പെടുക</string>
+    <string name="subtitle_contact_email" translatable="false">info@spendly.co.in</string>
+
+    <string name="cd_cancel">റദ്ദാക്കുക</string>
+    <string name="cd_capture">ക്യാപ്ചർ ചെയ്യുക</string>
+    <string name="label_tap_to_capture">ക്യാപ്ചർ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</string>
+
+    <string name="cd_pie_chart">പൈ ചാർട്ട്</string>
+    <string name="cd_bar_chart">ബാർ ചാർട്ട്</string>
+    <string name="cd_line_chart">ലൈൻ ചാർട്ട്</string>
+    <string name="cd_trend_chart">ട്രെൻഡ് ചാർട്ട്</string>
+    <string name="analytics_title">നിങ്ങളുടെ ചെലവ് ഉൾക്കാഴ്ചകൾ അൺലോക്ക് ചെയ്യുക</string>
+    <string name="analytics_desc">നിങ്ങളുടെ ചെലവ് ശീലങ്ങളിൽ പാറ്റേണുകൾ, ട്രെൻഡുകൾ, ഉൾക്കാഴ്ചകൾ എന്നിവ കണ്ടെത്താൻ തയ്യാറാകുക. മികച്ച സാമ്പത്തിക തീരുമാനങ്ങൾ എടുക്കാൻ നിങ്ങളെ സഹായിക്കുന്നതിന് അനലിറ്റിക്‌സ് സവിശേഷതകൾ ഉടൻ വരുന്നു.</string>
+
+    <string name="label_my_account">എന്റെ അക്കൗണ്ട്</string>
+    <string name="cd_select_account">അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</string>
+    <string name="cd_navigate_back">തിരികെ പോകുക</string>
+    <string name="label_others">മറ്റുള്ളവ</string>
+    <string name="cd_select_account_type">അക്കൗണ്ട് തരം തിരഞ്ഞെടുക്കുക</string>
+    <string name="cd_select_category">വിഭാഗം തിരഞ്ഞെടുക്കുക</string>
+
+    <string name="button_add_budget">ബജറ്റ് ചേർക്കുക</string>
+    <string name="title_add_budget">ബജറ്റ് ചേർക്കുക</string>
+    <string name="button_save_budget">ബജറ്റ് സംരക്ഷിക്കുക</string>
+    <string name="label_no_budgets_configured">ബജറ്റുകളൊന്നും കോൺഫിഗർ ചെയ്തിട്ടില്ല</string>
+    <string name="label_spent">ചെലവഴിച്ചത്</string>
+    <string name="label_budget">ബജറ്റ്</string>
+
+    <string name="label_enter_dates_manually">തീയതികൾ സ്വമേധയാ നൽകുക</string>
+    <string name="label_or_select_from_calendar">അല്ലെങ്കിൽ കലണ്ടറിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</string>
+
+    <string name="label_over_budget">ബജറ്റിനേക്കാൾ %1$s കൂടുതൽ</string>
+    <string name="label_remaining">%1$s ശേഷിക്കുന്നു</string>
+    <string name="label_of">%1$s-ന്റെ</string>
+
+    <string name="label_recent_transactions">സമീപകാല ഇടപാടുകൾ</string>
+    <string name="label_no_accounts_yet">ഇതുവരെ അക്കൗണ്ടുകളൊന്നുമില്ല. നിങ്ങളുടെ ആദ്യ അക്കൗണ്ട് ചേർക്കുക!</string>
+    <string name="cd_add_account">അക്കൗണ്ട് ചേർക്കുക</string>
+    <string name="cd_previous_month">മുൻ മാസം</string>
+    <string name="cd_select_month">മാസം തിരഞ്ഞെടുക്കുക</string>
+    <string name="cd_next_month">അടുത്ത മാസം</string>
+
+    <!-- Additional form labels -->
+    <string name="label_description">വിവരണം</string>
+    <string name="label_account">അക്കൗണ്ട്</string>
+
+    <!-- Missing keys used during replacements -->
+    <string name="screen_edit_expense_title">ചെലവ് എഡിറ്റ് ചെയ്യുക</string>
+    <string name="cd_delete_expense">ചെലവ് ഇല്ലാതാക്കുക</string>
+    <string name="cd_add_receipt">രസീത് ചേർക്കുക</string>
+    <string name="msg_no_expenses_available">ചെലവുകൾ ലഭ്യമല്ല. ആദ്യം ചെലവ് ചേർക്കുക.</string>
+
+    <string name="label_category_optional">വിഭാഗം (ഓപ്ഷണൽ)</string>
+    <string name="label_transaction_type">ഇടപാട് തരം</string>
+    <string name="label_frequency">ആവൃത്തി</string>
+    <string name="label_next_occurrence">അടുത്ത സംഭവം</string>
+    <string name="label_next_occurrence_with_date">അടുത്തത്: %1$s</string>
+    <string name="title_financial_summary">സാമ്പത്തിക സംഗ്രഹം</string>
+    <string name="label_full_year">മുഴുവൻ വർഷം</string>
+    <string name="label_expenses">ചെലവുകൾ</string>
+    <string name="label_balance">ബാലൻസ്</string>
+
+    <!-- Plurals and other small strings added during replacements -->
+    <plurals name="plurals_account_transactions">
+        <item quantity="one">ഈ അക്കൗണ്ടിന് %1$d ഇടപാടുണ്ട് (%2$d ചെലവ്, %3$d വരുമാനം).</item>
+        <item quantity="other">ഈ അക്കൗണ്ടിന് %1$d ഇടപാടുകളുണ്ട് (%2$d ചെലവുകൾ, %3$d വരുമാനം).</item>
+    </plurals>
+
+    <string name="label_error_with_msg">പിശക്: %1$s</string>
+    <string name="label_saving_changes">മാറ്റങ്ങൾ സംരക്ഷിക്കുന്നു...</string>
+
+    <!-- Analytics & additional UI strings (only unique keys added) -->
+    <string name="msg_no_data_available">ഡാറ്റയൊന്നും ലഭ്യമല്ല</string>
+    <string name="msg_add_transactions_for_analytics">അനലിറ്റിക്‌സും ഉൾക്കാഴ്ചകളും കാണാൻ കുറച്ച് ഇടപാടുകൾ ചേർക്കുക</string>
+    <string name="msg_error_loading_analytics">അനലിറ്റിക്‌സ് ലോഡ് ചെയ്യുന്നതിൽ പിശക്</string>
+    <string name="label_this_financial_year">ഈ സാമ്പത്തിക വർഷം</string>
+    <string name="label_this_year">ഈ വർഷം</string>
+    <string name="label_total_spending">മൊത്തം ചെലവ്</string>
+
+    <string name="label_spend_categories">ചെലവ് വിഭാഗങ്ങൾ</string>
+    <string name="msg_no_expense_data_yet">ഇതുവരെ ചെലവ് ഡാറ്റയൊന്നുമില്ല</string>
+    <plurals name="plurals_transactions">
+        <item quantity="one">%d ഇടപാട്</item>
+        <item quantity="other">%d ഇടപാടുകൾ</item>
+    </plurals>
+    <string name="action_show_less">കുറച്ച് കാണിക്കുക</string>
+    <string name="action_show_all">എല്ലാം കാണിക്കുക</string>
+
+    <string name="title_period_summary">കാലയളവ് സംഗ്രഹം</string>
+    <string name="label_net_balance">നെറ്റ് ബാലൻസ്</string>
+
+    <string name="label_vs_last_month">കഴിഞ്ഞ മാസവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_month_before_last">മുമ്പത്തെ മാസവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_prev_3_months">മുൻ 3 മാസങ്ങളുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_prev_6_months">മുൻ 6 മാസങ്ങളുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_last_year">കഴിഞ്ഞ വർഷവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_last_financial_year">കഴിഞ്ഞ സാമ്പത്തിക വർഷവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_year_before_last">മുൻ വർഷവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+    <string name="label_vs_previous_period">മുൻ കാലയളവുമായി താരതമ്യം ചെയ്യുമ്പോൾ</string>
+
+    <!-- Empty state preview aliases -->
+    <string name="label_no_expenses_yet">ഇതുവരെ ചെലവുകളൊന്നുമില്ല</string>
+    <string name="msg_start_tracking_expenses">നിങ്ങളുടെ ആദ്യ ചെലവ് ചേർത്ത് നിങ്ങളുടെ ചെലവുകൾ ട്രാക്ക് ചെയ്യാൻ ആരംഭിക്കുക</string>
+    <string name="label_no_results_found">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</string>
+    <string name="msg_try_adjusting_filters">നിങ്ങളുടെ ഫിൽട്ടറുകൾ ക്രമീകരിക്കാൻ ശ്രമിക്കുക</string>
+
+    <!-- App bar preview title for Expenses -->
+    <string name="screen_expenses_title">ചെലവുകൾ</string>
+
+    <!-- Add transaction bottom sheet -->
+    <string name="title_add_transaction">ഇടപാട് ചേർക്കുക</string>
+    <string name="button_add_expense">ചെലവ് ചേർക്കുക</string>
+    <string name="button_add_income">വരുമാനം ചേർക്കുക</string>
+
+    <!-- Additional localized strings -->
+    <string name="analytics_chart_intro">ചെലവ് ട്രെൻഡുകൾ കാണിക്കുന്ന ലൈൻ ചാർട്ട്.</string>
+    <string name="msg_tap_point_for_details">വിശദാംശങ്ങൾ കാണാൻ ഒരു ഡാറ്റാ പോയിന്റിൽ ടാപ്പ് ചെയ്യുക.</string>
+    <string name="msg_currently_selected">നിലവിൽ തിരഞ്ഞെടുത്തത്:</string>
+
+    <string name="analytics_pie_intro">വിഭാഗം അനുസരിച്ച് ചെലവ് കാണിക്കുന്ന പൈ ചാർട്ട്.</string>
+    <string name="pie_selection_animation" translatable="false">pie_selection_animation</string>
+    <string name="line_selection_animation" translatable="false">line_selection_animation</string>
+    <string name="msg_tap_slice_for_details">വിശദാംശങ്ങൾ കാണാൻ ഒരു സ്ലൈസിൽ ടാപ്പ് ചെയ്യുക.</string>
+
+    <string name="label_net_worth">മൊത്തം സമ്പത്ത്</string>
+    <string name="label_spending_trend">ചെലവ് ട്രെൻഡ്</string>
+
+    <!-- SMS notification strings -->
+    <string name="notification_transaction_added">%1$s ഇടപാട് ചേർത്തു</string>
+    <string name="label_received">ലഭിച്ചു</string>
+    <string name="msg_at_merchant"> %1$s-ൽ</string>
+
+    <!-- Budget notifications -->
+    <string name="notification_channel_name">ബജറ്റ് അലേർട്ടുകൾ</string>
+    <string name="notification_channel_description">ബജറ്റ് ചെലവ് 75%% അല്ലെങ്കിൽ 100%% എത്തുമ്പോൾ അലേർട്ടുകൾ</string>
+    <string name="label_overall">മൊത്തം</string>
+    <string name="notification_budget_alert_title">ബജറ്റ് അലേർട്ട്: %1$s</string>
+    <string name="notification_budget_alert_text">നിങ്ങളുടെ %2$s ബജറ്റിന്റെ %1$s എത്തി</string>
+
+    <!-- Add / Edit account -->
+    <string name="title_add_account">അക്കൗണ്ട് ചേർക്കുക</string>
+    <string name="button_add_account">അക്കൗണ്ട് ചേർക്കുക</string>
+
+    <string name="label_default">സ്ഥിര</string>
+    <string name="msg_made_with_love">ഇന്ത്യയിൽ ❤️ കൊണ്ട് നിർമ്മിച്ചത്</string>
+    <string name="label_percentage">%1$d%%</string>
+
+    <!-- Expense screen messages -->
+    <string name="msg_expense_deleted">ചെലവ് ഇല്ലാതാക്കി</string>
+    <string name="msg_failed_delete_expense">ചെലവ് ഇല്ലാതാക്കുന്നതിൽ പരാജയപ്പെട്ടു</string>
+    <string name="msg_expense_updated_success">ചെലവ് വിജയകരമായി അപ്ഡേറ്റ് ചെയ്തു</string>
+    <string name="msg_failed_save_changes">മാറ്റങ്ങൾ സംരക്ഷിക്കുന്നതിൽ പരാജയപ്പെട്ടു</string>
+    <string name="header_receipts">രസീതുകൾ</string>
+    <string name="label_budget_overview">ബജറ്റ് അവലോകനം</string>
+
+    <string name="title_spending_by_category">വിഭാഗം അനുസരിച്ച് ചെലവ്</string>
+    <string name="label_top_n">ടോപ്പ് %1$d</string>
+    <string name="label_no_expense_data">ചെലവ് ഡാറ്റയൊന്നും ലഭ്യമല്ല</string>
+</resources>

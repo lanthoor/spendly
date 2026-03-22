@@ -1,0 +1,31 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+*.log
+*.salive
+*.keystore
+*.jks
+
+# Development artifacts
+test-input.sh
+sms.log
+test-output.json
+test-data-*.json
+
+# Empty directories
+logs/
+
+# Build outputs
+*.apk
+*.aab
+
+# Play Store credentials
+play-store-credentials.json
+*-credentials.json
