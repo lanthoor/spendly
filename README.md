@@ -1,7 +1,7 @@
 # Spendly - Personal Expense Tracker
 
 [![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
-[![Coverage Status](https://coveralls.io/repos/github/lanthoor/spendly/badge.svg?branch=main)](https://coveralls.io/github/lanthoor/spendly?branch=main)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lanthoor_spendly&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lanthoor_spendly)
 
 **Version:** 0.9.0-beta (versionCode 90)
 
