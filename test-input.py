@@ -685,12 +685,12 @@ def reset_device_time():
 
 def kill_app():
     """Force stop the Spendly app"""
-    run_adb_command("shell am force-stop in.co.spendly", "Kill app", check=False)
+    run_adb_command("shell am force-stop dev.lanthoor.spendly", "Kill app", check=False)
     time.sleep(1)
 
 def launch_app():
     """Launch the Spendly app"""
-    run_adb_command("shell am start -n in.co.spendly/.MainActivity", "Launch app", check=False)
+    run_adb_command("shell am start -n dev.lanthoor.spendly/.MainActivity", "Launch app", check=False)
     time.sleep(5)  # Wait longer for app to fully initialize and register SMS receiver
 
 def send_sms_simple(sender, message, debug=False):
@@ -808,7 +808,7 @@ def inject_transaction_batch(transactions, batch_size=100):
 
         # Use heredoc to pass SQL without shell escaping issues
         heredoc_command = f"""shell << 'EOF'
-run-as in.co.spendly sqlite3 /data/data/in.co.spendly/databases/spendly_database << 'SQL'
+run-as dev.lanthoor.spendly sqlite3 /data/data/dev.lanthoor.spendly/databases/spendly_database << 'SQL'
 {full_sql}
 SQL
 EOF
@@ -867,11 +867,11 @@ def grant_permissions():
 
     # Grant required permissions
     for perm in required_permissions:
-        run_adb_command(f"shell pm grant in.co.spendly {perm}", f"Grant {perm}")
+        run_adb_command(f"shell pm grant dev.lanthoor.spendly {perm}", f"Grant {perm}")
 
     # Grant optional permissions (ignore errors)
     for perm in optional_permissions:
-        result = run_adb_command(f"shell pm grant in.co.spendly {perm}", f"Grant {perm}", check=False)
+        result = run_adb_command(f"shell pm grant dev.lanthoor.spendly {perm}", f"Grant {perm}", check=False)
         if result is None:
             print(f"   ⚠️  Skipped {perm} (not available on this Android version)")
 
@@ -881,10 +881,10 @@ def setup_app():
     """Initial app setup"""
     print("\n🚀 Setting up Spendly app...")
     # Launch once to ensure app is installed and initialized
-    run_adb_command("shell am start -n in.co.spendly/.MainActivity", "Launch app")
+    run_adb_command("shell am start -n dev.lanthoor.spendly/.MainActivity", "Launch app")
     print("   ⏳ Waiting for app initialization...")
     time.sleep(5)
-    run_adb_command("shell am force-stop in.co.spendly", "Stop app", check=False)
+    run_adb_command("shell am force-stop dev.lanthoor.spendly", "Stop app", check=False)
     print("   ✅ App setup complete")
 
 def create_custom_accounts():
@@ -913,7 +913,7 @@ def create_custom_accounts():
 
     # Execute using heredoc
     heredoc_command = f"""shell << 'EOF'
-run-as in.co.spendly sqlite3 /data/data/in.co.spendly/databases/spendly_database << 'SQL'
+run-as dev.lanthoor.spendly sqlite3 /data/data/dev.lanthoor.spendly/databases/spendly_database << 'SQL'
 {full_sql}
 SQL
 EOF
@@ -941,21 +941,21 @@ def query_account_ids():
 
     # Query My Account
     my_account_result = run_adb_command(
-        'shell "run-as in.co.spendly sqlite3 /data/data/in.co.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'My Account\'\\"\"',
+        'shell "run-as dev.lanthoor.spendly sqlite3 /data/data/dev.lanthoor.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'My Account\'\\"\"',
         "Query My Account ID",
         check=False
     )
 
     # Query Credit Card
     credit_card_result = run_adb_command(
-        'shell "run-as in.co.spendly sqlite3 /data/data/in.co.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'Credit Card\'\\"\"',
+        'shell "run-as dev.lanthoor.spendly sqlite3 /data/data/dev.lanthoor.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'Credit Card\'\\"\"',
         "Query Credit Card ID",
         check=False
     )
 
     # Query Debit Card
     debit_card_result = run_adb_command(
-        'shell "run-as in.co.spendly sqlite3 /data/data/in.co.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'Debit Card\'\\"\"',
+        'shell "run-as dev.lanthoor.spendly sqlite3 /data/data/dev.lanthoor.spendly/databases/spendly_database \\"SELECT id FROM accounts WHERE name=\'Debit Card\'\\"\"',
         "Query Debit Card ID",
         check=False
     )

@@ -31,10 +31,10 @@ This file contains guidelines for agentic coding agents operating in this Spendl
 ./gradlew jacocoTestReport
 
 # Run a single test class
-./gradlew test --tests "in.co.spendly.utils.SmsParserTest"
+./gradlew test --tests "dev.lanthoor.spendly.utils.SmsParserTest"
 
 # Run a single test method
-./gradlew test --tests "in.co.spendly.utils.SmsParserTest.testParseHdfcSms"
+./gradlew test --tests "dev.lanthoor.spendly.utils.SmsParserTest.testParseHdfcSms"
 ```
 
 ## Code Style Guidelines

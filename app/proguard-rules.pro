@@ -47,4 +47,4 @@
 -keep class android.telephony.SmsMessage { *; }
 
 # Keep SmsReceiver
--keep class in.co.spendly.receivers.SmsReceiver { *; }
+-keep class dev.lanthoor.spendly.receivers.SmsReceiver { *; }

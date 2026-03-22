@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "in.co.spendly"
+    namespace = "dev.lanthoor.spendly"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "in.co.spendly"
+        applicationId = "dev.lanthoor.spendly"
         minSdk = 31
         targetSdk = 36
         ndkVersion = "29.0.14206865"
@@ -54,14 +54,12 @@ android {
                 "proguard-rules.pro"
             )
             // Only apply signing config if it's properly configured
-            val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile?.exists() == true) {
-                signingConfig = releaseSigningConfig
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
