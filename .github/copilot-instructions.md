@@ -3,7 +3,7 @@
 ## Project
 **Android expense tracker** (Kotlin + Jetpack Compose, offline-only)
 - Package: `dev.lanthoor.spendly`
-- Version: 0.8.1-beta (versionCode 81), DB v3
+- Version: 0.9.0-beta (versionCode 90), DB v3
 - Min/Target SDK: 31/36
 
 ## Tech Stack

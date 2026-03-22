@@ -4,6 +4,14 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.0-beta] - 2026-03-22
+
+### Changed
+- Bumped app version to `0.9.0-beta` with `versionCode` 90
+- Updated release metadata across build config, docs, and Play release notes
+
+---
+
 ## [0.8.0-beta] - 2025-12-22
 
 ### Added
@@ -37,4 +45,5 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.0-beta]: https://github.com/spendly-co-in/spendly/releases/tag/v0.9.0-beta
 [0.8.0-beta]: https://github.com/spendly-co-in/spendly/releases/tag/v0.8.0-beta
