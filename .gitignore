@@ -29,3 +29,4 @@ logs/
 # Play Store credentials
 play-store-credentials.json
 *-credentials.json
+*.env
