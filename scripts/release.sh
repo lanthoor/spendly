@@ -39,4 +39,4 @@ git push origin "$TAG"
 
 echo ""
 echo "✅ Released $TAG"
-echo "📊 Monitor: https://github.com/spendly-co-in/spendly/actions"
+echo "📊 Monitor: https://github.com/lanthoor/spendly/actions"

@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.play.publisher)
-    alias(libs.plugins.coveralls)
     jacoco
 }
 
@@ -208,9 +207,4 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
         )
     })
-}
-
-// Coveralls configuration
-coveralls {
-    jacocoReportPath = "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
 }

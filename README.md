@@ -1,7 +1,7 @@
 # Spendly - Personal Expense Tracker
 
-[![Android CI](https://github.com/spendly-co-in/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/spendly-co-in/spendly/actions/workflows/android.yml)
-[![Coverage Status](https://coveralls.io/repos/github/spendly-co-in/spendly/badge.svg?branch=main)](https://coveralls.io/github/spendly-co-in/spendly?branch=main)
+[![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lanthoor_spendly&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lanthoor_spendly)
 
 **Version:** 0.9.0-beta (versionCode 90)
 
@@ -234,6 +234,6 @@ git push origin v0.5.0
 
 ## Project Links
 
-- **Repository:** https://github.com/spendly-co-in/spendly
+- **Repository:** https://github.com/lanthoor/spendly
 - **CI/CD:** GitHub Actions (see badge above)
 - **Documentation:** See `CLAUDE.md`, `PLAN.md`, `MIGRATIONS.md`

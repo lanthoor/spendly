@@ -261,9 +261,9 @@ File size: %2$s</string>
     <string name="label_version">Version %1$s</string>
     <string name="desc_about_app">A simple, offline-first expense tracker for managing your personal finances. Track expenses, income, budgets, and get insights into your spending patterns.</string>
     <string name="title_visit_website">Visit Website</string>
-    <string name="subtitle_website">https://spendly.co.in</string>
+    <string name="subtitle_website">https://lanthoor.dev/spendly</string>
     <string name="title_contact_us">Contact Us</string>
-    <string name="subtitle_contact_email">info@spendly.co.in</string>
+    <string name="subtitle_contact_email">support@lanthoor.dev</string>
 
     <string name="cd_cancel">Cancel</string>
     <string name="cd_capture">Capture</string>

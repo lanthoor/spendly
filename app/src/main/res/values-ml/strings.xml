@@ -261,9 +261,9 @@
     <string name="label_version">പതിപ്പ് %1$s</string>
     <string name="desc_about_app">നിങ്ങളുടെ വ്യക്തിഗത സാമ്പത്തിക കാര്യങ്ങൾ കൈകാര്യം ചെയ്യുന്നതിനുള്ള ലളിതവും ഓഫ്‌ലൈൻ-ആദ്യവുമായ ചെലവ് ട്രാക്കർ. ചെലവുകൾ, വരുമാനം, ബജറ്റ് എന്നിവ ട്രാക്ക് ചെയ്യുക, നിങ്ങളുടെ ചെലവ് പാറ്റേണുകളിൽ ഉൾക്കാഴ്ചകൾ നേടുക.</string>
     <string name="title_visit_website">വെബ്‌സൈറ്റ് സന്ദർശിക്കുക</string>
-    <string name="subtitle_website" translatable="false">https://spendly.co.in</string>
+    <string name="subtitle_website" translatable="false">https://lanthoor.dev/spendly</string>
     <string name="title_contact_us">ഞങ്ങളെ ബന്ധപ്പെടുക</string>
-    <string name="subtitle_contact_email" translatable="false">info@spendly.co.in</string>
+    <string name="subtitle_contact_email" translatable="false">support@lanthoor.dev</string>
 
     <string name="cd_cancel">റദ്ദാക്കുക</string>
     <string name="cd_capture">ക്യാപ്ചർ ചെയ്യുക</string>
