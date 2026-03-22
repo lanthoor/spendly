@@ -3,7 +3,7 @@
 [![Android CI](https://github.com/spendly-co-in/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/spendly-co-in/spendly/actions/workflows/android.yml)
 [![Coverage Status](https://coveralls.io/repos/github/spendly-co-in/spendly/badge.svg?branch=main)](https://coveralls.io/github/spendly-co-in/spendly?branch=main)
 
-**Version:** 0.8.0-beta (versionCode 80)
+**Version:** 0.9.0-beta (versionCode 90)
 
 A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-only architecture with local data persistence.
 
@@ -115,7 +115,7 @@ A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-
 
 ## Development Status
 
-**Current Version:** 0.8.0-beta (code 80)
+**Current Version:** 0.9.0-beta (code 90)
 **Status:** Beta - Core features complete with import/export
 
 **Completed Phases:**
