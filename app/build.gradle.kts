@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "in.co.spendly"
+    namespace = "dev.lanthoor.spendly"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "in.co.spendly"
+        applicationId = "dev.lanthoor.spendly"
         minSdk = 31
         targetSdk = 36
         ndkVersion = "29.0.14206865"

@@ -2,7 +2,7 @@
 
 ## Project
 **Android expense tracker** (Kotlin + Jetpack Compose, offline-only)
-- Package: `in.co.spendly` (backticks required, `in` is Kotlin keyword)
+- Package: `dev.lanthoor.spendly` (backticks required, `in` is Kotlin keyword)
 - Version: 0.8.0-beta (versionCode 80), DB v3
 - Min/Target SDK: 31/36
 

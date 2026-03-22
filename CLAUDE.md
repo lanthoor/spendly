@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Spendly** is an Android expense tracker built with Kotlin and Jetpack Compose. It's an offline-only application for personal finance management with no cloud sync or bank integration.
 
-**Package:** `in.co.spendly` (note: backticks required in imports since `in` is a Kotlin keyword)
+**Package:** `dev.lanthoor.spendly` (note: backticks required in imports since `in` is a Kotlin keyword)
 
 **Current Version:** 0.8.0-beta (versionCode 80)
 
@@ -42,7 +42,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 The project follows **MVVM + Clean Architecture** with clear separation of concerns:
 
 ```
-app/src/main/java/in/co/spendly/
+app/src/main/java/dev/lanthoor/spendly/
 ├── data/                      # Data layer
 │   ├── local/                 # Room database
 │   │   ├── dao/              # Data Access Objects

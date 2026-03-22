@@ -63,9 +63,9 @@
             android:name=".workers.HistoricalSmsScanControlReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="in.co.spendly.ACTION_CANCEL_SMS_SCAN" />
-                <action android:name="in.co.spendly.ACTION_PAUSE_SMS_SCAN" />
-                <action android:name="in.co.spendly.ACTION_RESUME_SMS_SCAN" />
+                <action android:name="dev.lanthoor.spendly.ACTION_CANCEL_SMS_SCAN" />
+                <action android:name="dev.lanthoor.spendly.ACTION_PAUSE_SMS_SCAN" />
+                <action android:name="dev.lanthoor.spendly.ACTION_RESUME_SMS_SCAN" />
             </intent-filter>
         </receiver>
 

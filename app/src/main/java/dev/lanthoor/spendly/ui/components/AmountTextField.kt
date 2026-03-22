@@ -1,0 +1,81 @@
+package dev.lanthoor.spendly.ui.components
+
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import dev.lanthoor.spendly.R
+
+/**
+ * Text field for currency amount input in rupees.
+ * Accepts decimal input (e.g., "100.50") and shows ₹ prefix.
+ * Internally converts to paise using CurrencyUtils.
+ *
+ * @param value Current amount value as string (in rupees format)
+ * @param onValueChange Callback when value changes
+ * @param label Label for the text field
+ * @param modifier Optional modifier
+ * @param isError Whether to show error state
+ * @param errorMessage Error message to display
+ * @param enabled Whether the field is enabled
+ */
+@Composable
+fun AmountTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    isError: Boolean = false,
+    errorMessage: String? = null,
+    enabled: Boolean = true
+) {
+    val displayLabel = label ?: stringResource(R.string.label_amount)
+    OutlinedTextField(
+        value = value,
+        onValueChange = { newValue ->
+            // Allow only numbers and one decimal point
+            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d{0,2}$"))) {
+                onValueChange(newValue)
+            }
+        },
+        label = { Text(displayLabel) },
+        prefix = { Text(stringResource(R.string.label_currency_symbol)) },
+        modifier = modifier,
+        isError = isError,
+        supportingText = if (isError && errorMessage != null) {
+            { Text(errorMessage) }
+        } else null,
+        enabled = enabled,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Decimal
+        ),
+        visualTransformation = IndianNumberFormatTransformation()
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AmountTextFieldPreview() {
+    AmountTextField(
+        value = "100.50",
+        onValueChange = {},
+        label = stringResource(R.string.label_amount)
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AmountTextFieldErrorPreview() {
+    AmountTextField(
+        value = "",
+        onValueChange = {},
+        label = stringResource(R.string.label_amount),
+        isError = true,
+        errorMessage = stringResource(R.string.label_amount_required)
+    )
+}
