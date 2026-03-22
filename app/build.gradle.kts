@@ -54,14 +54,12 @@ android {
                 "proguard-rules.pro"
             )
             // Only apply signing config if it's properly configured
-            val releaseSigningConfig = signingConfigs.getByName("release")
-            if (releaseSigningConfig.storeFile?.exists() == true) {
-                signingConfig = releaseSigningConfig
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
