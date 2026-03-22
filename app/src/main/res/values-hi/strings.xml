@@ -1,0 +1,423 @@
+<resources>
+    <!-- App name - non-translatable -->
+    <string name="app_name" translatable="false">Spendly</string>
+
+    <!-- Time field -->
+    <string name="label_time">समय</string>
+    <string name="cd_select_time">समय चुनें</string>
+
+    <!-- General buttons -->
+    <string name="button_close">बंद करें</string>
+    <string name="button_ok">ठीक है</string>
+    <string name="button_cancel">रद्द करें</string>
+    <string name="button_save">सहेजें</string>
+    <string name="label_saving">सहेज रहा है...</string>
+    <string name="button_delete">हटाएं</string>
+    <string name="button_retry">पुनः प्रयास करें</string>
+    <string name="button_apply">लागू करें</string>
+    <string name="button_clear">साफ़ करें</string>
+    <string name="button_clear_all">सभी साफ़ करें</string>
+    <string name="button_export_json">JSON में निर्यात करें</string>
+    <string name="button_import_json">JSON से आयात करें</string>
+
+    <!-- Dialog / screen titles -->
+    <string name="title_financial_year_type">वित्तीय वर्ष प्रकार</string>
+    <string name="title_select_date_range">तारीख सीमा चुनें</string>
+    <string name="screen_edit_budget_title">बजट संपादित करें</string>
+    <string name="dialog_delete_budget_title">बजट हटाएं</string>
+    <string name="screen_transactions_title">सभी लेनदेन</string>
+    <string name="screen_data_management_title">आयात और निर्यात</string>
+    <string name="title_export_success">निर्यात सफल</string>
+    <string name="title_export_failed">निर्यात विफल</string>
+    <string name="title_exporting_data">डेटा निर्यात कर रहे हैं</string>
+    <string name="title_import_success">आयात सफल</string>
+    <string name="title_import_failed">आयात विफल</string>
+    <string name="title_importing_data">डेटा आयात कर रहे हैं</string>
+    <string name="screen_filter_transactions_title">लेनदेन फ़िल्टर करें</string>
+    <string name="screen_edit_recurring_transaction_title">आवर्ती लेनदेन संपादित करें</string>
+
+    <!-- Labels and small text -->
+    <string name="label_date">तारीख</string>
+    <string name="cd_select_date">तारीख चुनें</string>
+    <string name="label_loading">लोड हो रहा है...</string>
+    <string name="error_initialization_failed">प्रारंभ विफल</string>
+    <string name="label_budget_amount">बजट राशि</string>
+    <string name="label_overall_budget">कुल बजट</string>
+    <string name="label_select_category">श्रेणी चुनें</string>
+    <string name="label_category">श्रेणी</string>
+    <string name="label_export_data">डेटा निर्यात करें</string>
+    <string name="label_backup_to_json">JSON फ़ाइल में बैकअप लें</string>
+    <string name="desc_export_data">अपने सभी खर्चों, आय, रसीदों, बजट और आवर्ती लेनदेन का पूर्ण बैकअप बनाएं। निर्यात में JSON में एन्कोड की गई सभी रसीद फ़ाइलें शामिल हैं।</string>
+    <string name="label_import_data">डेटा आयात करें</string>
+    <string name="label_restore_from_json">JSON फ़ाइल से पुनर्स्थापित करें</string>
+    <string name="desc_import_data">पिछले निर्यात से अपना डेटा पुनर्स्थापित करें। यह लेनदेन, रसीदें, बजट और सेटिंग्स सहित सभी मौजूदा डेटा को बदल देगा।</string>
+    <string name="label_important">महत्वपूर्ण</string>
+    <string name="desc_import_warning">डेटा आयात करने से आपका सभी मौजूदा डेटा बदल जाएगा। यदि आप इसे रखना चाहते हैं तो पहले अपने वर्तमान डेटा को निर्यात करना सुनिश्चित करें।</string>
+
+    <!-- Empty / Error states -->
+    <string name="empty_no_transactions_title">अभी तक कोई लेनदेन नहीं</string>
+    <string name="empty_no_transactions_desc">शुरू करने के लिए अपना पहला खर्च या आय जोड़ें</string>
+    <string name="empty_no_matching_transactions_title">कोई मिलान लेनदेन नहीं</string>
+    <string name="empty_no_matching_transactions_desc">अपने फ़िल्टर समायोजित करने का प्रयास करें</string>
+    <string name="error_loading_transactions">लेनदेन लोड करने में त्रुटि</string>
+
+    <!-- Progress / status strings -->
+    <string name="status_querying_data">डेटा क्वेरी कर रहे हैं...</string>
+    <string name="status_processing_receipts">रसीदें प्रोसेस कर रहे हैं...</string>
+    <string name="status_building_export">निर्यात बना रहे हैं...</string>
+    <string name="status_serializing_json">JSON में सीरियलाइज़ कर रहे हैं...</string>
+    <string name="status_writing_file">फ़ाइल लिख रहे हैं...</string>
+    <string name="status_parsing_json">JSON पार्स कर रहे हैं...</string>
+    <string name="status_validating_data">डेटा सत्यापित कर रहे हैं...</string>
+    <string name="status_clearing_old_data">पुराना डेटा साफ़ कर रहे हैं...</string>
+    <string name="status_importing_master_data">श्रेणियां और खाते आयात कर रहे हैं...</string>
+    <string name="status_importing_expenses">खर्चे आयात कर रहे हैं...</string>
+    <string name="status_importing_receipts">रसीदें आयात कर रहे हैं...</string>
+    <string name="status_importing_income">आय आयात कर रहे हैं...</string>
+    <string name="status_importing_budgets">बजट आयात कर रहे हैं...</string>
+    <string name="status_importing_recurring">आवर्ती लेनदेन आयात कर रहे हैं...</string>
+    <string name="status_finalizing">अंतिम रूप दे रहे हैं...</string>
+
+    <!-- Progress messages / formatted -->
+    <string name="string_export_success_message">%1$d रिकॉर्ड सफलतापूर्वक निर्यात किए गए\nफ़ाइल का आकार: %2$s</string>
+    <string name="string_import_success_header">सफलतापूर्वक आयात किया गया:\n</string>
+
+    <!-- Transaction filter labels -->
+    <string name="label_date_range">तारीख सीमा</string>
+    <string name="label_select_date_range">तारीख सीमा चुनें</string>
+    <string name="button_clear_date_range">तारीख सीमा साफ़ करें</string>
+    <string name="label_categories">श्रेणियां</string>
+    <string name="label_all">सभी</string>
+    <string name="label_expense">खर्च</string>
+    <string name="label_income">आय</string>
+
+    <!-- Category selector -->
+    <string name="title_select_categories">श्रेणियां चुनें</string>
+    <plurals name="plurals_selected_count">
+        <item quantity="one">%d चयनित</item>
+        <item quantity="other">%d चयनित</item>
+    </plurals>
+
+    <!-- Month names -->
+    <string name="month_january">जनवरी</string>
+    <string name="month_february">फरवरी</string>
+    <string name="month_march">मार्च</string>
+    <string name="month_april">अप्रैल</string>
+    <string name="month_may">मई</string>
+    <string name="month_june">जून</string>
+    <string name="month_july">जुलाई</string>
+    <string name="month_august">अगस्त</string>
+    <string name="month_september">सितंबर</string>
+    <string name="month_october">अक्टूबर</string>
+    <string name="month_november">नवंबर</string>
+    <string name="month_december">दिसंबर</string>
+    <string name="month_unknown">अज्ञात</string>
+
+    <!-- Recurring transaction messages -->
+    <string name="label_saving_recurring_transaction">आवर्ती लेनदेन सहेज रहे हैं...</string>
+    <string name="msg_recurring_added_success">आवर्ती लेनदेन सफलतापूर्वक जोड़ा गया</string>
+    <string name="msg_recurring_updated_success">आवर्ती लेनदेन सफलतापूर्वक अपडेट किया गया</string>
+    <string name="msg_recurring_deleted_success">आवर्ती लेनदेन सफलतापूर्वक हटाया गया</string>
+    <string name="msg_recurring_delete_failed">आवर्ती लेनदेन हटाने में विफल</string>
+
+    <string name="label_filter">फ़िल्टर</string>
+
+    <!-- AddExpense strings -->
+    <string name="label_saving_expense">खर्च सहेज रहे हैं...</string>
+    <string name="screen_add_expense_title">खर्च जोड़ें</string>
+    <string name="screen_edit_account_title">खाता संपादित करें</string>
+    <string name="msg_save_receipts_first">रसीदें संलग्न करने के लिए पहले खर्च सहेजें। सहेजने के बाद आप फ़ोटो या PDF जोड़ सकते हैं।</string>
+
+    <!-- Account form strings -->
+    <string name="label_icon_preview">आइकन पूर्वावलोकन</string>
+    <string name="label_color">रंग</string>
+    <string name="cd_created_from_sms">SMS से बनाया गया</string>
+    <string name="label_unknown">अज्ञात</string>
+
+    <!-- New settings and UI strings -->
+    <string name="title_select_time_period">समय अवधि चुनें</string>
+    <string name="tp_this_month">यह महीना</string>
+    <string name="tp_last_month">पिछला महीना</string>
+    <string name="tp_last_3_months">पिछले 3 महीने</string>
+    <string name="tp_last_6_months">पिछले 6 महीने</string>
+    <string name="tp_this_year">यह वर्ष</string>
+    <string name="tp_last_year">पिछला वर्ष</string>
+    <string name="tp_custom_date_range">कस्टम तारीख सीमा...</string>
+
+    <string name="title_select_month">महीना चुनें</string>
+    <string name="cd_previous_year">पिछला वर्ष</string>
+    <string name="cd_next_year">अगला वर्ष</string>
+
+    <string name="label_lock_timeout">लॉक समय-समाप्ति</string>
+    <string name="cd_select_lock_timeout">लॉक समय-समाप्ति चुनें</string>
+
+    <string name="title_sms_permission_required">SMS अनुमति आवश्यक</string>
+    <string name="msg_sms_permission_required_desc">बैंक SMS से लेनदेन का स्वचालित पता लगाने के लिए SMS अनुमतियां आवश्यक हैं। कृपया ऐप सेटिंग्स में अनुमतियां दें।</string>
+    <string name="button_open_settings">सेटिंग्स खोलें</string>
+
+    <string name="section_account_management">खाता प्रबंधन</string>
+    <string name="settings_manage_accounts">खाते प्रबंधित करें</string>
+    <string name="settings_manage_accounts_desc">खाते जोड़ें, संपादित करें या हटाएं</string>
+    <string name="settings_manage_budgets">बजट प्रबंधित करें</string>
+    <string name="settings_manage_budgets_desc">श्रेणियों के लिए मासिक बजट सेट करें</string>
+    <string name="settings_recurring_transactions">आवर्ती लेनदेन</string>
+    <string name="settings_recurring_transactions_desc">आवर्ती खर्च और आय प्रबंधित करें</string>
+
+    <string name="section_sms_auto_detection">SMS स्वचालित पहचान</string>
+    <string name="settings_enable_sms_auto_detection">SMS स्वचालित पहचान सक्षम करें</string>
+    <string name="settings_enable_sms_auto_detection_desc">बैंक SMS से लेनदेन का स्वचालित पता लगाएं</string>
+    <string name="settings_scan_historical_sms">पिछले SMS स्कैन करें</string>
+    <string name="settings_scan_historical_sms_desc">पिछले लेनदेन के लिए डिवाइस SMS स्कैन करें (पृष्ठभूमि में चलता है)</string>
+
+    <string name="section_security">सुरक्षा</string>
+    <string name="settings_app_lock">ऐप लॉक</string>
+    <string name="settings_app_lock_desc">ऐप खोलने के लिए डिवाइस प्रमाणीकरण की आवश्यकता है</string>
+    <string name="msg_app_lock_timeout_desc">चयनित अवधि के लिए निष्क्रिय रहने के बाद ऐप लॉक हो जाएगा</string>
+
+    <string name="section_appearance">दिखावट</string>
+    <string name="label_theme">थीम</string>
+    <string name="settings_language">भाषा</string>
+    <string name="subtitle_language">अपनी पसंदीदा भाषा चुनें</string>
+    <string name="title_language_settings">भाषा सेटिंग्स</string>
+    <string name="language_english">English</string>
+    <string name="language_hindi">हिन्दी</string>
+    <string name="language_malayalam">മലയാളം</string>
+
+    <string name="settings_data_management_desc">अपने डेटा का बैकअप लें और पुनर्स्थापित करें</string>
+
+    <string name="section_about">के बारे में</string>
+    <string name="settings_about_spendly">Spendly के बारे में</string>
+    <string name="settings_about_desc">संस्करण, लिंक और अधिक</string>
+
+    <string name="title_device_security_required">डिवाइस सुरक्षा आवश्यक</string>
+    <string name="msg_device_security_required_desc">कृपया पहले अपने डिवाइस पर PIN, पैटर्न या बायोमेट्रिक लॉक सेट करें।</string>
+
+    <string name="msg_delete_budget_confirm">क्या आप निश्चित रूप से इस बजट को हटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।</string>
+
+    <!-- Additional strings added during replacement sweep -->
+    <string name="label_unlock_to_continue">जारी रखने के लिए अनलॉक करें</string>
+    <string name="msg_auth_not_available">प्रमाणीकरण उपलब्ध नहीं है</string>
+    <string name="button_authenticate">प्रमाणित करें</string>
+
+    <string name="placeholder_select_expense">खर्च चुनें</string>
+    <string name="title_select_expense_for_refund">वापसी के लिए खर्च चुनें</string>
+    <string name="cd_clear_selection">चयन साफ़ करें</string>
+    <string name="cd_select_expense">खर्च चुनें</string>
+
+    <string name="screen_add_income_title">आय जोड़ें</string>
+    <string name="button_save_income">आय सहेजें</string>
+    <string name="label_saving_income">आय सहेज रहे हैं...</string>
+
+    <string name="freq_daily">दैनिक</string>
+    <string name="freq_weekly">साप्ताहिक</string>
+    <string name="freq_monthly">मासिक</string>
+
+    <string name="screen_add_recurring_transaction_title">आवर्ती लेनदेन जोड़ें</string>
+
+    <string name="button_go_back">वापस जाएं</string>
+    <string name="screen_edit_income_title">आय संपादित करें</string>
+    <string name="button_update_income">आय अपडेट करें</string>
+    <string name="cd_delete_income">आय हटाएं</string>
+
+    <string name="label_amount">राशि</string>
+    <string name="label_amount_required">राशि आवश्यक है</string>
+    <string name="label_currency_symbol">₹ </string>
+    <string name="label_description_counter">%1$d/200</string>
+
+    <string name="header_add_receipt">रसीद जोड़ें</string>
+    <string name="choose_from_files">फ़ाइलों से चुनें</string>
+    <string name="select_file_types_desc">JPG, PNG, WebP या PDF चुनें</string>
+    <string name="placeholder_date_format">dd/mm/yy</string>
+    <string name="title_select_account_type">खाता प्रकार चुनें</string>
+    <string name="title_select_color">रंग चुनें</string>
+    <string name="label_pick_color">रंग चुनें</string>
+    <string name="button_save_expense">खर्च सहेजें</string>
+    <string name="label_calendar_short">Cal</string>
+    <string name="label_financial_year_short">FY</string>
+    <string name="take_photo">फ़ोटो लें</string>
+    <string name="capture_using_camera">कैमरे का उपयोग करके कैप्चर करें</string>
+
+    <string name="title_delete_account">खाता हटाएं?</string>
+    <string name="msg_delete_account_confirm">आप \"%1$s\" को हटाने वाले हैं।</string>
+    <string name="msg_account_no_transactions">इस खाते में कोई लेनदेन नहीं है और इसे सुरक्षित रूप से हटाया जा सकता है।</string>
+    <string name="label_reassign_to">इसे पुनः असाइन करें</string>
+    <string name="msg_transactions_reassign">सभी लेनदेन चयनित खाते को पुनः असाइन किए जाएंगे:</string>
+
+    <string name="title_delete_expense">खर्च हटाएं?</string>
+    <string name="msg_delete_expense_body">यह इस खर्च और सभी संबंधित रसीदों को स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।</string>
+
+    <string name="button_save_changes">परिवर्तन सहेजें</string>
+
+    <string name="cd_receipt_image">रसीद छवि</string>
+    <string name="cd_add_recurring_transaction">आवर्ती लेनदेन जोड़ें</string>
+    <string name="cd_delete_account">खाता हटाएं</string>
+    <string name="cd_pdf_file">PDF फ़ाइल</string>
+    <string name="cd_delete_receipt">रसीद हटाएं</string>
+    <string name="label_pdf">PDF</string>
+    <string name="label_compressed">संपीड़ित</string>
+
+    <!-- About screen strings -->
+    <string name="title_about">के बारे में</string>
+    <string name="label_version">संस्करण %1$s</string>
+    <string name="desc_about_app">आपके व्यक्तिगत वित्त के प्रबंधन के लिए एक सरल, ऑफ़लाइन-पहले खर्च ट्रैकर। खर्च, आय, बजट ट्रैक करें और अपने खर्च के पैटर्न में अंतर्दृष्टि प्राप्त करें।</string>
+    <string name="title_visit_website">वेबसाइट पर जाएं</string>
+    <string name="subtitle_website" translatable="false">https://spendly.co.in</string>
+    <string name="title_contact_us">हमसे संपर्क करें</string>
+    <string name="subtitle_contact_email" translatable="false">info@spendly.co.in</string>
+
+    <string name="cd_cancel">रद्द करें</string>
+    <string name="cd_capture">कैप्चर करें</string>
+    <string name="label_tap_to_capture">कैप्चर करने के लिए टैप करें</string>
+
+    <string name="cd_pie_chart">पाई चार्ट</string>
+    <string name="cd_bar_chart">बार चार्ट</string>
+    <string name="cd_line_chart">लाइन चार्ट</string>
+    <string name="cd_trend_chart">ट्रेंड चार्ट</string>
+    <string name="analytics_title">अपनी खर्च अंतर्दृष्टि को अनलॉक करें</string>
+    <string name="analytics_desc">अपने खर्च की आदतों में पैटर्न, ट्रेंड और अंतर्दृष्टि खोजने के लिए तैयार हो जाएं। स्मार्ट वित्तीय निर्णय लेने में आपकी मदद के लिए विश्लेषण सुविधाएँ जल्द ही आ रही हैं।</string>
+
+    <string name="label_my_account">मेरा खाता</string>
+    <string name="cd_select_account">खाता चुनें</string>
+    <string name="cd_navigate_back">वापस जाएं</string>
+    <string name="label_others">अन्य</string>
+    <string name="cd_select_account_type">खाता प्रकार चुनें</string>
+    <string name="cd_select_category">श्रेणी चुनें</string>
+
+    <string name="button_add_budget">बजट जोड़ें</string>
+    <string name="title_add_budget">बजट जोड़ें</string>
+    <string name="button_save_budget">बजट सहेजें</string>
+    <string name="label_no_budgets_configured">कोई बजट कॉन्फ़िगर नहीं किया गया</string>
+    <string name="label_spent">खर्च किया</string>
+    <string name="label_budget">बजट</string>
+
+    <string name="label_enter_dates_manually">तारीखें मैन्युअल रूप से दर्ज करें</string>
+    <string name="label_or_select_from_calendar">या कैलेंडर से चुनें</string>
+
+    <string name="label_over_budget">बजट से %1$s अधिक</string>
+    <string name="label_remaining">%1$s शेष</string>
+    <string name="label_of">%1$s का</string>
+
+    <string name="label_recent_transactions">हाल के लेनदेन</string>
+    <string name="label_no_accounts_yet">अभी तक कोई खाता नहीं। अपना पहला खाता जोड़ें!</string>
+    <string name="cd_add_account">खाता जोड़ें</string>
+    <string name="cd_previous_month">पिछला महीना</string>
+    <string name="cd_select_month">महीना चुनें</string>
+    <string name="cd_next_month">अगला महीना</string>
+
+    <!-- Additional form labels -->
+    <string name="label_description">विवरण</string>
+    <string name="label_account">खाता</string>
+
+    <!-- Missing keys used during replacements -->
+    <string name="screen_edit_expense_title">खर्च संपादित करें</string>
+    <string name="cd_delete_expense">खर्च हटाएं</string>
+    <string name="cd_add_receipt">रसीद जोड़ें</string>
+    <string name="msg_no_expenses_available">कोई खर्च उपलब्ध नहीं। पहले खर्च जोड़ें।</string>
+
+    <string name="label_category_optional">श्रेणी (वैकल्पिक)</string>
+    <string name="label_transaction_type">लेनदेन प्रकार</string>
+    <string name="label_frequency">आवृत्ति</string>
+    <string name="label_next_occurrence">अगली घटना</string>
+    <string name="label_next_occurrence_with_date">अगला: %1$s</string>
+    <string name="title_financial_summary">वित्तीय सारांश</string>
+    <string name="label_full_year">पूर्ण वर्ष</string>
+    <string name="label_expenses">खर्चे</string>
+    <string name="label_balance">शेष</string>
+
+    <!-- Plurals and other small strings added during replacements -->
+    <plurals name="plurals_account_transactions">
+        <item quantity="one">इस खाते में %1$d लेनदेन है (%2$d खर्च, %3$d आय)।</item>
+        <item quantity="other">इस खाते में %1$d लेनदेन हैं (%2$d खर्च, %3$d आय)।</item>
+    </plurals>
+
+    <string name="label_error_with_msg">त्रुटि: %1$s</string>
+    <string name="label_saving_changes">परिवर्तन सहेज रहे हैं...</string>
+
+    <!-- Analytics & additional UI strings (only unique keys added) -->
+    <string name="msg_no_data_available">कोई डेटा उपलब्ध नहीं</string>
+    <string name="msg_add_transactions_for_analytics">विश्लेषण और अंतर्दृष्टि देखने के लिए कुछ लेनदेन जोड़ें</string>
+    <string name="msg_error_loading_analytics">विश्लेषण लोड करने में त्रुटि</string>
+    <string name="label_this_financial_year">इस वित्तीय वर्ष</string>
+    <string name="label_this_year">इस वर्ष</string>
+    <string name="label_total_spending">कुल खर्च</string>
+
+    <string name="label_spend_categories">खर्च श्रेणियां</string>
+    <string name="msg_no_expense_data_yet">अभी तक कोई खर्च डेटा नहीं</string>
+    <plurals name="plurals_transactions">
+        <item quantity="one">%d लेनदेन</item>
+        <item quantity="other">%d लेनदेन</item>
+    </plurals>
+    <string name="action_show_less">कम दिखाएं</string>
+    <string name="action_show_all">सभी दिखाएं</string>
+
+    <string name="title_period_summary">अवधि सारांश</string>
+    <string name="label_net_balance">शुद्ध शेष</string>
+
+    <string name="label_vs_last_month">पिछले महीने की तुलना में</string>
+    <string name="label_vs_month_before_last">पिछले से पहले महीने की तुलना में</string>
+    <string name="label_vs_prev_3_months">पिछले 3 महीनों की तुलना में</string>
+    <string name="label_vs_prev_6_months">पिछले 6 महीनों की तुलना में</string>
+    <string name="label_vs_last_year">पिछले वर्ष की तुलना में</string>
+    <string name="label_vs_last_financial_year">पिछले वित्तीय वर्ष की तुलना में</string>
+    <string name="label_vs_year_before_last">पिछले से पहले वर्ष की तुलना में</string>
+    <string name="label_vs_previous_period">पिछली अवधि की तुलना में</string>
+
+    <!-- Empty state preview aliases -->
+    <string name="label_no_expenses_yet">अभी तक कोई खर्च नहीं</string>
+    <string name="msg_start_tracking_expenses">अपना पहला खर्च जोड़कर अपने खर्चों को ट्रैक करना शुरू करें</string>
+    <string name="label_no_results_found">कोई परिणाम नहीं मिला</string>
+    <string name="msg_try_adjusting_filters">अपने फ़िल्टर समायोजित करने का प्रयास करें</string>
+
+    <!-- App bar preview title for Expenses -->
+    <string name="screen_expenses_title">खर्चे</string>
+
+    <!-- Add transaction bottom sheet -->
+    <string name="title_add_transaction">लेनदेन जोड़ें</string>
+    <string name="button_add_expense">खर्च जोड़ें</string>
+    <string name="button_add_income">आय जोड़ें</string>
+
+    <!-- Additional localized strings -->
+    <string name="analytics_chart_intro">खर्च ट्रेंड दिखाने वाला लाइन चार्ट।</string>
+    <string name="msg_tap_point_for_details">विवरण देखने के लिए डेटा पॉइंट पर टैप करें।</string>
+    <string name="msg_currently_selected">वर्तमान में चयनित:</string>
+
+    <string name="analytics_pie_intro">श्रेणी के अनुसार खर्च दिखाने वाला पाई चार्ट।</string>
+    <string name="pie_selection_animation" translatable="false">pie_selection_animation</string>
+    <string name="line_selection_animation" translatable="false">line_selection_animation</string>
+    <string name="msg_tap_slice_for_details">विवरण देखने के लिए स्लाइस पर टैप करें।</string>
+
+    <string name="label_net_worth">कुल संपत्ति</string>
+    <string name="label_spending_trend">खर्च ट्रेंड</string>
+
+    <!-- SMS notification strings -->
+    <string name="notification_transaction_added">%1$s लेनदेन जोड़ा गया</string>
+    <string name="label_received">प्राप्त</string>
+    <string name="msg_at_merchant"> %1$s पर</string>
+
+    <!-- Budget notifications -->
+    <string name="notification_channel_name">बजट अलर्ट</string>
+    <string name="notification_channel_description">जब बजट खर्च 75%% या 100%% तक पहुंचता है तो अलर्ट</string>
+    <string name="label_overall">कुल</string>
+    <string name="notification_budget_alert_title">बजट अलर्ट: %1$s</string>
+    <string name="notification_budget_alert_text">आप अपने %2$s बजट के %1$s तक पहुंच गए हैं</string>
+
+    <!-- Add / Edit account -->
+    <string name="title_add_account">खाता जोड़ें</string>
+    <string name="button_add_account">खाता जोड़ें</string>
+
+    <string name="label_default">डिफ़ॉल्ट</string>
+    <string name="msg_made_with_love">भारत में ❤️ से बनाया गया</string>
+    <string name="label_percentage">%1$d%%</string>
+
+    <!-- Expense screen messages -->
+    <string name="msg_expense_deleted">खर्च हटाया गया</string>
+    <string name="msg_failed_delete_expense">खर्च हटाने में विफल</string>
+    <string name="msg_expense_updated_success">खर्च सफलतापूर्वक अपडेट किया गया</string>
+    <string name="msg_failed_save_changes">परिवर्तन सहेजने में विफल</string>
+    <string name="header_receipts">रसीदें</string>
+    <string name="label_budget_overview">बजट अवलोकन</string>
+
+    <string name="title_spending_by_category">श्रेणी के अनुसार खर्च</string>
+    <string name="label_top_n">शीर्ष %1$d</string>
+    <string name="label_no_expense_data">कोई खर्च डेटा उपलब्ध नहीं</string>
+</resources>

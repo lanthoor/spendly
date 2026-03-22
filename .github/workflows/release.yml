@@ -1,0 +1,146 @@
+name: Release
+
+on:
+  push:
+    # Matches semantic version tags with optional suffixes (e.g., v1.2.3, v1.2.3-alpha, v1.2.3-beta)
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  release:
+    name: Release to Play Store & GitHub
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout code at tag
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          # Remove 'v' prefix and 'refs/tags/' prefix
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}
+
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Detect pre-release
+          if [[ "$VERSION" == *"-alpha"* || "$VERSION" == *"-beta"* ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+            echo "🏷️  Pre-release detected: $VERSION"
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+            echo "🏷️  Full release detected: $VERSION"
+          fi
+
+      - name: Validate version matches tag
+        run: |
+          BUILD_FILE="app/build.gradle.kts"
+          EXPECTED_VERSION="${{ steps.version.outputs.version }}"
+          ACTUAL_VERSION=$(grep -oP 'versionName = "\K[^"]+' "$BUILD_FILE")
+
+          if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "❌ Version mismatch!"
+            echo "Tag version: $EXPECTED_VERSION"
+            echo "build.gradle.kts version: $ACTUAL_VERSION"
+            echo ""
+            echo "Please update build.gradle.kts to match tag version:"
+            echo "  versionName = \"$EXPECTED_VERSION\""
+            exit 1
+          fi
+
+          echo "✅ Version matches tag: $EXPECTED_VERSION"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE_FILE }}" | base64 -d > "$HOME/release.keystore"
+          echo "KEYSTORE_FILE=$HOME/release.keystore" >> $GITHUB_ENV
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+        env:
+          KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Build Release AAB
+        run: ./gradlew bundleRelease
+        env:
+          KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Decode Play Store Credentials
+        env:
+          PLAY_STORE_JSON_BASE64: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          printf '%s' "$PLAY_STORE_JSON_BASE64" | tr -d '\n\r' | base64 -d > "${{ github.workspace }}/app/play-store-credentials.json"
+
+      - name: Upload to Play Store (Internal Testing)
+        run: ./gradlew publishReleaseBundle -x bundleRelease --stacktrace
+        env:
+          KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.2.0
+        with:
+          name: Release ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          body: |
+            ## Spendly ${{ steps.version.outputs.version }}
+
+            **Build Date:** ${{ github.event.head_commit.timestamp }}
+
+            ### Downloads
+            - **APK:** Direct installation file for Android devices
+            - **AAB:** Android App Bundle for Google Play Store
+
+            ### Play Store
+            This release has been automatically published to the Internal Testing track.
+
+            ### Changes
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md#${{ steps.version.outputs.version }}) for details.
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+          draft: false
+          prerelease: ${{ steps.version.outputs.is_prerelease }}
+          token: ${{ secrets.GITHUB_TOKEN }}

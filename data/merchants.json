@@ -1,0 +1,385 @@
+{
+  "expense_categories": {
+    "1": {
+      "name": "Food",
+      "merchants": [
+        "Swiggy", "Zomato", "McDonald's", "KFC", "Domino's Pizza", "Pizza Hut",
+        "Starbucks", "Cafe Coffee Day", "Haldiram's", "Barbeque Nation",
+        "Burger King", "Subway", "Wow! Momo", "Biryani Blues", "Faasos",
+        "The Beer Cafe", "Social", "Hard Rock Cafe", "Mainland China",
+        "Paradise Biryani", "Behrouz Biryani", "Theobroma", "Naturals Ice Cream",
+        "Baskin Robbins", "Dunkin' Donuts", "Chaayos", "Starbucks Reserve",
+        "Blue Tokai Coffee", "Tibbs Frankie", "Rolls Mania", "Mast Kalandar",
+        "Box8", "Freshmenu", "Oven Story Pizza", "La Pino'z Pizza",
+        "Smokin' Joe's", "Taco Bell", "Chipotle", "Papa John's",
+        "Krispy Kreme", "Mad Over Donuts", "Keventers", "Juice World",
+        "Biryani By Kilo", "Behrouz", "EatFit", "Salad Days",
+        "Wat-a-Burger", "Johnny Rockets", "Haagen-Dazs", "Gelato Italiano"
+      ],
+      "descriptions": [
+        "Lunch order", "Dinner delivery", "Breakfast", "Evening snacks",
+        "Weekend treat", "Late night cravings", "Quick bite", "Coffee break",
+        "Team lunch", "Celebration dinner", "Family dinner", "Date night",
+        "Work lunch", "Brunch", "Dessert", "Ice cream", "Fast food"
+      ]
+    },
+    "2": {
+      "name": "Travel",
+      "merchants": [
+        "Uber", "Ola", "Rapido", "IRCTC", "MakeMyTrip", "Goibibo",
+        "IndiGo Airlines", "SpiceJet", "Air India", "Vistara",
+        "Indian Oil Petrol Pump", "HP Petrol Pump", "Bharat Petroleum",
+        "Shell Petrol Pump", "Essar Petrol Pump", "RedBus", "Yatra.com",
+        "EaseMyTrip", "Cleartrip", "Uber Intercity", "Ola Outstation",
+        "Meru Cabs", "BluSmart", "Namma Yatri", "Auto Rickshaw",
+        "Metro Card Recharge", "Delhi Metro", "Mumbai Metro", "Bangalore Metro",
+        "Uber Moto", "Ola Bike", "Bounce", "Yulu", "Vogo",
+        "Railway Ticket", "Bus Ticket", "Taxi", "Airport Pickup",
+        "Hotel Booking", "OYO Rooms", "Treebo Hotels", "FabHotels",
+        "Zostel", "Airbnb", "Car Rental", "Zoomcar", "Revv", "Drivezy",
+        "Toll Plaza", "Parking Fee", "Fuel Station", "Vehicle Service"
+      ],
+      "descriptions": [
+        "Daily commute", "Office travel", "Weekend trip", "Airport ride",
+        "Shopping mall visit", "Doctor visit", "Friend's place",
+        "Railway station", "Grocery pickup", "Fuel refill", "Car service",
+        "Long distance travel", "Hotel stay", "Flight booking", "Bus journey",
+        "Metro recharge", "Bike ride", "Auto fare", "Parking charges"
+      ]
+    },
+    "3": {
+      "name": "Rent",
+      "merchants": [
+        "Monthly Rent", "House Rent", "Apartment Rent", "Flat Rent",
+        "PG Rent", "Hostel Fees", "Society Maintenance", "Building Maintenance",
+        "Housing Society", "Landlord Payment", "Rent Payment",
+        "Residential Rent", "Property Rent", "Lease Payment"
+      ],
+      "descriptions": [
+        "Monthly house rent", "Apartment rent payment", "PG accommodation",
+        "Hostel rent", "Society maintenance charge", "Monthly lease payment",
+        "Flat rent", "Room rent", "Property lease"
+      ]
+    },
+    "4": {
+      "name": "Utilities",
+      "merchants": [
+        "Electricity Bill", "BESCOM", "MSEDCL", "Adani Electricity",
+        "Tata Power", "BSES", "Water Bill", "Municipal Corporation",
+        "Jio Fiber", "Airtel Broadband", "ACT Fibernet", "BSNL Broadband",
+        "Tata Sky", "Dish TV", "Airtel Digital TV", "Sun Direct",
+        "Jio Recharge", "Airtel Recharge", "Vi Recharge", "BSNL Recharge",
+        "Gas Cylinder", "Indane Gas", "HP Gas", "Bharat Gas",
+        "LPG Booking", "Piped Gas Bill", "Mahanagar Gas", "IGL",
+        "Property Tax", "DTH Recharge", "Postpaid Bill", "Internet Bill",
+        "Cable TV", "Landline Bill", "Sewage Charges", "Water Tank Cleaning"
+      ],
+      "descriptions": [
+        "Electricity bill payment", "Monthly water bill", "Internet recharge",
+        "Mobile recharge", "DTH renewal", "Gas cylinder booking",
+        "Broadband payment", "Postpaid bill", "Cable TV subscription",
+        "Property tax", "Utility payment", "Phone bill", "WiFi bill"
+      ]
+    },
+    "5": {
+      "name": "Services",
+      "merchants": [
+        "Urban Company", "Salon", "Spa", "Barber Shop", "Beauty Parlor",
+        "Lakme Salon", "Naturals Salon", "VLCC", "Shahnaz Husain",
+        "Laundry Service", "UClean", "PickMyLaundry", "Tumble",
+        "Car Wash", "Bike Service", "Car Service Center", "AC Repair",
+        "Plumber", "Electrician", "Carpenter", "Painter",
+        "House Cleaning", "Pest Control", "Sofa Cleaning", "Home Repair",
+        "Appliance Repair", "Mobile Repair", "Laptop Repair",
+        "Fitness Trainer", "Yoga Classes", "Gym Membership", "CrossFit",
+        "Swimming Pool", "Sports Coach", "Tuition Teacher", "Music Classes",
+        "Dance Classes", "Zomato Pro", "Swiggy Super", "Amazon Prime",
+        "Legal Consultation", "CA Services", "Financial Advisor", "Insurance Agent",
+        "Packers Movers", "Porter", "Storage Services", "Professional Services"
+      ],
+      "descriptions": [
+        "Haircut", "Spa session", "Salon visit", "Massage therapy",
+        "Laundry pickup", "Dry cleaning", "Car wash", "Vehicle service",
+        "Home repair", "Appliance fixing", "AC servicing", "Pest control",
+        "House cleaning", "Gym membership", "Yoga class", "Personal training",
+        "Tuition fees", "Music lessons", "Dance class", "Professional consultation",
+        "Subscription renewal", "Service charge", "Maintenance service"
+      ]
+    },
+    "6": {
+      "name": "Shopping",
+      "merchants": [
+        "Amazon", "Flipkart", "Myntra", "Ajio", "Meesho", "Nykaa",
+        "Decathlon", "Croma", "Reliance Digital", "Vijay Sales",
+        "Max Fashion", "Westside", "Pantaloons", "Lifestyle", "Shoppers Stop",
+        "H&M", "Zara", "Uniqlo", "Marks & Spencer", "Van Heusen",
+        "Allen Solly", "Peter England", "Louis Philippe", "Arrow",
+        "Levi's", "Nike", "Adidas", "Puma", "Reebok", "Sketchers",
+        "Bata", "Metro Shoes", "Mochi", "Woodland", "Red Chief",
+        "Samsung Store", "Mi Store", "Apple Store", "OnePlus Store",
+        "Boat Store", "JBL", "Sony Center", "Dell Exclusive Store",
+        "HP World", "Lenovo Store", "Canon Store", "Nikon Store",
+        "Tanishq", "Kalyan Jewellers", "Malabar Gold", "PC Jeweller",
+        "Titan Store", "Fossil Store", "Casio Store", "Fastrack",
+        "Home Centre", "Ikea", "FabIndia", "Nilkamal", "Godrej Interio",
+        "Urban Ladder", "Pepperfry", "HomeTown", "@Home", "Fabfurnish",
+        "FirstCry", "Hamleys", "Toys R Us", "Mothercare", "Hopscotch"
+      ],
+      "descriptions": [
+        "Online shopping", "Clothing purchase", "Electronics", "Footwear",
+        "Accessories", "Jewelry", "Watch", "Mobile phone", "Laptop",
+        "Headphones", "Speakers", "Camera", "Furniture", "Home decor",
+        "Kitchen appliances", "Toys", "Books", "Sports equipment",
+        "Fitness gear", "Baby products", "Fashion accessories", "Gadgets",
+        "Smart watch", "Tablet", "TV purchase", "Washing machine",
+        "Refrigerator", "Microwave", "Air conditioner", "Water purifier"
+      ]
+    },
+    "7": {
+      "name": "Media",
+      "merchants": [
+        "Netflix", "Amazon Prime Video", "Disney+ Hotstar", "Sony Liv",
+        "Zee5", "Voot", "MX Player", "Alt Balaji", "Apple TV+",
+        "YouTube Premium", "Spotify", "Apple Music", "Gaana", "JioSaavn",
+        "Wynk Music", "Hungama Music", "Amazon Music", "Google Play Music",
+        "BookMyShow", "Paytm Insider", "PVR Cinemas", "INOX",
+        "Cinepolis", "Carnival Cinemas", "Miraj Cinemas", "Fun Cinemas",
+        "Kindle Unlimited", "Audible", "Scribd", "Storytel",
+        "Amazon Kindle", "Google Play Books", "Apple Books", "Kobo",
+        "PlayStation Plus", "Xbox Game Pass", "Nintendo eShop", "Steam",
+        "Epic Games Store", "Origin", "Uplay", "GOG", "Twitch",
+        "Coursera", "Udemy", "Skillshare", "LinkedIn Learning", "MasterClass",
+        "Times Prime", "Sony Rewards", "Google One", "iCloud Storage"
+      ],
+      "descriptions": [
+        "Netflix subscription", "Prime Video renewal", "Hotstar VIP",
+        "Music streaming", "Spotify Premium", "Movie tickets",
+        "Cinema booking", "OTT subscription", "Gaming subscription",
+        "PlayStation Plus", "Xbox Live", "Steam purchase", "Mobile game",
+        "YouTube Premium", "E-book purchase", "Audiobook", "Online course",
+        "Cloud storage", "App subscription", "Digital content"
+      ]
+    },
+    "8": {
+      "name": "Healthcare",
+      "merchants": [
+        "Apollo Pharmacy", "MedPlus", "Netmeds", "1mg", "PharmEasy",
+        "Apollo Hospitals", "Fortis Hospital", "Max Hospital", "Manipal Hospital",
+        "Columbia Asia", "Narayana Health", "AIIMS", "Government Hospital",
+        "Eye Clinic", "Dental Clinic", "Skin Clinic", "Dermatologist",
+        "Cardiologist", "Orthopedic", "Pediatrician", "Gynecologist",
+        "General Physician", "Diagnostic Center", "Pathology Lab",
+        "Dr. Lal PathLabs", "Thyrocare", "Metropolis Labs", "SRL Diagnostics",
+        "X-Ray Center", "CT Scan", "MRI Scan", "Blood Test",
+        "Health Checkup", "Vaccination", "Physiotherapy", "Ayurvedic Clinic",
+        "Homeopathy", "Yoga Therapy", "Alternative Medicine", "Health Insurance Premium",
+        "Medi claim", "Star Health", "ICICI Lombard", "Max Bupa", "Care Health"
+      ],
+      "descriptions": [
+        "Medicine purchase", "Doctor consultation", "Health checkup",
+        "Lab tests", "Blood test", "X-ray", "CT scan", "MRI",
+        "Prescription medicines", "Emergency treatment", "Dental checkup",
+        "Eye checkup", "Skin treatment", "Vaccination", "Physiotherapy session",
+        "Hospital admission", "Surgery", "Medical procedure", "Health insurance",
+        "Medical equipment", "First aid", "Vitamins", "Supplements"
+      ]
+    },
+    "9": {
+      "name": "Gifts",
+      "merchants": [
+        "Ferns N Petals", "Archies", "Gift Shop", "Hallmark",
+        "Amazon Gift Card", "Flipkart Gift Voucher", "BookMyShow Voucher",
+        "Lifestyle Gift Card", "Westside Voucher", "Myntra Gift Card",
+        "Tanishq", "Jewelry Gift", "Flower Delivery", "Cake Delivery",
+        "Monginis", "Cakes & More", "Theobroma Gift", "Chocolate Box",
+        "Cadbury Celebrations", "Ferrero Rocher", "Birthday Gift",
+        "Anniversary Gift", "Wedding Gift", "Festival Gift", "Return Gift",
+        "Corporate Gift", "Personalized Gift", "Photo Frame", "Customized Mug",
+        "Gift Hamper", "Dry Fruits", "Sweets Box", "Gift Wrapping"
+      ],
+      "descriptions": [
+        "Birthday gift", "Anniversary gift", "Wedding gift", "Festival gift",
+        "Return gift", "Corporate gift", "Valentine's Day", "Mother's Day",
+        "Father's Day", "Raksha Bandhan", "Diwali gift", "Christmas gift",
+        "New Year gift", "Housewarming gift", "Baby shower gift",
+        "Gift card", "Gift voucher", "Flowers", "Cake", "Chocolates",
+        "Personalized gift", "Gift hamper", "Greeting card"
+      ]
+    },
+    "10": {
+      "name": "Education",
+      "merchants": [
+        "School Fees", "College Fees", "University Fees", "Tuition Fees",
+        "Coaching Classes", "BYJU'S", "Unacademy", "Vedantu", "Toppr",
+        "WhiteHat Jr", "Cuemath", "Simplilearn", "UpGrad", "Great Learning",
+        "Coursera", "Udemy", "Skillshare", "LinkedIn Learning", "Khan Academy",
+        "Exam Fees", "IELTS", "TOEFL", "GRE", "GMAT", "CAT", "NEET", "JEE",
+        "Book Purchase", "Amazon Books", "Flipkart Books", "Crossword",
+        "Oxford Bookstore", "Sapna Book House", "Stationery Shop",
+        "Study Material", "Online Course", "Certification", "Workshop",
+        "Seminar", "Conference", "Educational App", "Language Course",
+        "Music School", "Dance Academy", "Art Classes", "Sports Academy",
+        "Swimming Classes", "Coding Bootcamp", "Skill Development"
+      ],
+      "descriptions": [
+        "School fees payment", "College tuition", "Coaching classes",
+        "Online course", "Exam fees", "Book purchase", "Stationery",
+        "Study material", "Certification course", "Workshop registration",
+        "Educational app", "Language learning", "Skill development",
+        "Professional course", "Entrance exam", "Competitive exam",
+        "Music lessons", "Art classes", "Sports training"
+      ]
+    },
+    "11": {
+      "name": "Investments",
+      "merchants": [
+        "Zerodha", "Groww", "Upstox", "Angel One", "5paisa",
+        "ICICI Direct", "HDFC Securities", "SBI Securities", "Kotak Securities",
+        "Mutual Fund", "SIP Investment", "Stock Purchase", "ETF Purchase",
+        "Gold Bond", "PPF", "NSC", "Fixed Deposit", "Recurring Deposit",
+        "Life Insurance Premium", "LIC Premium", "Term Insurance",
+        "ULIP Premium", "HDFC Life", "ICICI Prudential", "Max Life",
+        "SBI Life", "Bajaj Allianz", "Tata AIG", "Health Insurance",
+        "Vehicle Insurance", "Home Insurance", "Travel Insurance",
+        "Sovereign Gold Bond", "NPS", "EPF", "Retirement Plan",
+        "Pension Fund", "Cryptocurrency", "WazirX", "CoinDCX", "Bitcoin"
+      ],
+      "descriptions": [
+        "Stock market investment", "Mutual fund SIP", "Gold investment",
+        "Fixed deposit", "Recurring deposit", "PPF contribution",
+        "Life insurance premium", "Health insurance premium",
+        "Term insurance", "ULIP premium", "Vehicle insurance",
+        "NPS contribution", "Retirement planning", "Pension fund",
+        "Cryptocurrency", "ETF purchase", "Bond investment",
+        "Gold bond", "Portfolio diversification", "Emergency fund"
+      ]
+    },
+    "12": {
+      "name": "Groceries",
+      "merchants": [
+        "BigBasket", "DMart", "Reliance Fresh", "More Megastore",
+        "Spencer's Retail", "Star Bazaar", "Big Bazaar", "Hypercity",
+        "Spar", "Nature's Basket", "Godrej Nature's Basket", "Metro Cash & Carry",
+        "Jiomart", "Amazon Fresh", "Flipkart Supermart", "Grofers",
+        "Blinkit", "Zepto", "Swiggy Instamart", "Dunzo Daily",
+        "Local Kirana Store", "Vegetable Vendor", "Fruit Shop", "Dairy",
+        "Amul Parlour", "Mother Dairy", "Meat Shop", "Fish Market",
+        "Bakery", "Supermarket", "Hypermarket", "Wholesale Market",
+        "Organic Store", "Health Food Store", "Dry Fruits Shop",
+        "Spices Shop", "Provision Store", "General Store", "Mini Mart"
+      ],
+      "descriptions": [
+        "Weekly groceries", "Monthly groceries", "Vegetables and fruits",
+        "Dairy products", "Bakery items", "Meat and fish", "Dry fruits",
+        "Spices and condiments", "Rice and grains", "Cooking oil",
+        "Household essentials", "Cleaning supplies", "Personal care",
+        "Baby products", "Pet food", "Beverages", "Snacks", "Quick grocery",
+        "Emergency purchase", "Kitchen supplies", "Bulk purchase", "Organic food"
+      ]
+    },
+    "13": {
+      "name": "Others",
+      "merchants": [
+        "Miscellaneous", "General Expense", "Cash Withdrawal", "Bank Charges",
+        "ATM Withdrawal", "Credit Card Payment", "Loan EMI", "Personal Loan",
+        "Home Loan EMI", "Car Loan EMI", "Education Loan", "Credit Card Bill",
+        "Unknown Expense", "Other Expense", "Various", "Sundry Expense",
+        "Petty Cash", "Donation", "Charity", "Temple Offering",
+        "Religious Contribution", "Community Service", "Social Work",
+        "Emergency Expense", "Unplanned Expense", "Penalty", "Fine",
+        "Late Fee", "Processing Fee", "Service Charge", "Convenience Fee",
+        "Transaction Fee", "Annual Fee", "Membership Fee", "Registration Fee"
+      ],
+      "descriptions": [
+        "Miscellaneous expense", "General purchase", "Cash withdrawal",
+        "Bank charges", "ATM fee", "Loan EMI", "Credit card payment",
+        "Service charge", "Processing fee", "Late fee", "Penalty",
+        "Donation", "Charity", "Religious offering", "Emergency expense",
+        "Unplanned purchase", "Other expense", "Sundry expense", "Various"
+      ]
+    }
+  },
+  "income_categories": {
+    "101": {
+      "name": "Salary",
+      "sources": [
+        "TCS Limited", "Infosys", "Wipro", "Tech Mahindra", "HCL Technologies",
+        "Accenture", "Capgemini", "Cognizant", "IBM India", "Microsoft India",
+        "Amazon India", "Google India", "Flipkart", "Paytm", "PhonePe",
+        "Swiggy", "Zomato", "Ola", "Uber", "ICICI Bank", "HDFC Bank",
+        "SBI", "Axis Bank", "Kotak Bank", "Monthly Salary", "Salary Credit"
+      ],
+      "descriptions": [
+        "Monthly salary", "Salary credit", "Monthly income", "Employment income",
+        "Payroll credit", "Monthly paycheck", "Salary transfer", "Income credit"
+      ]
+    },
+    "102": {
+      "name": "Freelance",
+      "sources": [
+        "Freelance Project", "Upwork", "Fiverr", "Freelancer.com", "Toptal",
+        "Consulting Work", "Contract Work", "Part-time Work", "Side Project",
+        "Gig Work", "Client Payment", "Project Payment", "Freelance Income"
+      ],
+      "descriptions": [
+        "Freelance project payment", "Consulting fee", "Contract work payment",
+        "Side project income", "Gig payment", "Client invoice payment",
+        "Part-time income", "Freelance work", "Project completion bonus"
+      ]
+    },
+    "103": {
+      "name": "Business",
+      "sources": [
+        "Business Revenue", "Sales Income", "Service Income", "Business Payment",
+        "Client Payment", "Customer Payment", "Trade Income", "Business Profit",
+        "Commerce Income", "Retail Sales", "Wholesale Income", "Online Sales"
+      ],
+      "descriptions": [
+        "Business income", "Sales revenue", "Service payment", "Client payment",
+        "Business profit", "Trading income", "Sales commission", "Business earnings"
+      ]
+    },
+    "106": {
+      "name": "Interest",
+      "sources": [
+        "Bank Interest", "FD Interest", "Savings Account Interest", "RD Interest",
+        "Fixed Deposit Interest", "Recurring Deposit Interest", "Interest Credit",
+        "Interest Income", "HDFC Bank Interest", "ICICI Bank Interest",
+        "SBI Interest", "Axis Bank Interest", "Kotak Bank Interest"
+      ],
+      "descriptions": [
+        "Interest credit", "FD interest", "Savings interest", "RD interest",
+        "Bank interest", "Deposit interest", "Interest income", "Interest earned"
+      ]
+    },
+    "108": {
+      "name": "Refund",
+      "sources": [
+        "Refund", "Cashback", "Reversal", "Return", "Reimbursement",
+        "Amazon Refund", "Flipkart Refund", "Paytm Cashback", "PhonePe Cashback",
+        "Google Pay Cashback", "UPI Refund", "Shopping Refund", "Flight Refund",
+        "Hotel Refund", "Booking Cancellation", "Credit Card Reversal",
+        "Payment Reversal", "Tax Refund", "GST Refund", "Insurance Claim"
+      ],
+      "descriptions": [
+        "Refund credit", "Cashback received", "Payment reversal", "Return refund",
+        "Reimbursement", "Shopping refund", "Booking cancellation refund",
+        "Insurance claim", "Tax refund", "UPI refund", "Failed transaction reversal"
+      ]
+    },
+    "109": {
+      "name": "Bonus",
+      "sources": [
+        "Performance Bonus", "Annual Bonus", "Diwali Bonus", "Festival Bonus",
+        "Incentive", "Year End Bonus", "Quarterly Bonus", "Achievement Bonus",
+        "Sales Bonus", "Target Achievement", "Reward", "Recognition Bonus",
+        "Spot Bonus", "Project Bonus", "Retention Bonus", "Joining Bonus"
+      ],
+      "descriptions": [
+        "Performance bonus", "Annual bonus", "Festival bonus", "Year end bonus",
+        "Incentive payment", "Target achievement", "Sales incentive",
+        "Recognition reward", "Spot bonus", "Project completion bonus"
+      ]
+    }
+  }
+}

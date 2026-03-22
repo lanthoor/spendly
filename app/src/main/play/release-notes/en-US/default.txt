@@ -1,0 +1,3 @@
+Version 0.8.0-beta - First Release
+
+Offline expense tracker for Android. Track expenses & income with SMS auto-detection for Indian banks/UPI. Interactive pie & line charts, monthly budgets with notifications, recurring transactions. Multiple account types, 19 categories, unlimited receipt attachments. Biometric app lock, JSON backup/restore, Material 3 design with light/dark themes. 100% offline, no cloud sync required.
