@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Package:** `dev.lanthoor.spendly`
 
-**Current Version:** 0.9.0-beta (versionCode 90)
+**Current Version:** 0.9.1-beta (versionCode 91)
 
 ## Build & Test Commands
 

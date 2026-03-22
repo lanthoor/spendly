@@ -3,7 +3,7 @@
 [![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lanthoor_spendly&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lanthoor_spendly)
 
-**Version:** 0.9.0-beta (versionCode 90)
+**Version:** 0.9.1-beta (versionCode 91)
 
 A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-only architecture with local data persistence.
 
@@ -115,7 +115,7 @@ A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-
 
 ## Development Status
 
-**Current Version:** 0.9.0-beta (code 90)
+**Current Version:** 0.9.1-beta (code 91)
 **Status:** Beta - Core features complete with import/export
 
 **Completed Phases:**
