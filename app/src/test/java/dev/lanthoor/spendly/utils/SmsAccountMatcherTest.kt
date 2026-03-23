@@ -4,6 +4,7 @@ import dev.lanthoor.spendly.domain.model.Account
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import java.util.Locale
 
 class SmsAccountMatcherTest {
 
@@ -132,6 +133,59 @@ class SmsAccountMatcherTest {
         )
 
         assertNull(result)
+    }
+
+    @Test
+    fun `keyword matching is locale invariant`() {
+        val originalLocale = Locale.getDefault()
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"))
+            val accounts = listOf(
+                account(id = 1, name = "ICICI Savings", type = AccountType.BANK, sortOrder = 1),
+                account(id = 2, name = "HDFC Savings", type = AccountType.BANK, sortOrder = 2)
+            )
+            val parsed = parsedTransaction(accountHint = null)
+
+            val result = SmsAccountMatcher.resolveAccountId(
+                accounts = accounts,
+                parsed = parsed,
+                sender = "ICICIB",
+                body = "Rs.200 debited"
+            )
+
+            assertEquals(1L, result)
+        } finally {
+            Locale.setDefault(originalLocale)
+        }
+    }
+
+    @Test
+    fun `resolveDefaultAccountId prefers predefined default id`() {
+        val accounts = listOf(
+            account(id = 7, name = "Custom First", type = AccountType.BANK, sortOrder = 0),
+            account(
+                id = 1,
+                name = "My Account",
+                type = AccountType.BANK,
+                sortOrder = 10
+            )
+        )
+
+        val result = SmsAccountMatcher.resolveDefaultAccountId(accounts)
+
+        assertEquals(1L, result)
+    }
+
+    @Test
+    fun `resolveDefaultAccountId falls back to first when default missing`() {
+        val accounts = listOf(
+            account(id = 7, name = "Custom First", type = AccountType.BANK, sortOrder = 0),
+            account(id = 9, name = "Custom Second", type = AccountType.CARD, sortOrder = 1)
+        )
+
+        val result = SmsAccountMatcher.resolveDefaultAccountId(accounts)
+
+        assertEquals(7L, result)
     }
 
     private fun parsedTransaction(

@@ -101,8 +101,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             var lastProgressUpdateTime = 0L
             val progressUpdateIntervalMs = 5000L // Update at most once per second
             val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
-            val defaultAccount = accounts.firstOrNull()
-            if (defaultAccount == null) {
+            val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
+            if (defaultAccountId == null) {
                 cursor.close()
                 return@withContext Result.success()
             }
@@ -145,7 +145,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                     sender = sender,
                     body = body
                 )
-                val accountId = matchedAccountId ?: defaultAccount.id
+                val accountId = matchedAccountId ?: defaultAccountId
 
                 when (parsed.transactionType) {
                     TransactionType.EXPENSE -> {

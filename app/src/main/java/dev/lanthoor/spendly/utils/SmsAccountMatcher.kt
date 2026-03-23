@@ -1,6 +1,7 @@
 package dev.lanthoor.spendly.utils
 
 import dev.lanthoor.spendly.domain.model.Account
+import java.util.Locale
 
 object SmsAccountMatcher {
     private const val HINT_SCORE = 100
@@ -106,6 +107,11 @@ object SmsAccountMatcher {
         return if (best.score > 0) best.account.id else null
     }
 
+    fun resolveDefaultAccountId(accounts: List<Account>): Long? {
+        return accounts.firstOrNull { it.id == Account.DEFAULT_ACCOUNT_ID }?.id
+            ?: accounts.firstOrNull()?.id
+    }
+
     private fun hasStrongHintMatch(accountName: String, accountHint: String?): Boolean {
         if (accountHint.isNullOrBlank()) return false
         val normalizedHint = accountHint.filter { it.isDigit() }
@@ -131,7 +137,7 @@ object SmsAccountMatcher {
     }
 
     private fun normalize(value: String): String {
-        return value.lowercase()
+        return value.lowercase(Locale.ROOT)
             .replace("-", " ")
             .replace("_", " ")
             .replace("*", "")

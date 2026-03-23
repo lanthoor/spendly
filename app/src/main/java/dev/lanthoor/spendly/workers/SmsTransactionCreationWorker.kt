@@ -59,7 +59,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                 ?: return Result.success()  // Not an error, just not a valid transaction
 
             val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
-            val defaultAccount = accounts.firstOrNull()
+            val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
                 ?: return Result.failure()
             val matchedAccountId = SmsAccountMatcher.resolveAccountId(
                 accounts = accounts,
@@ -67,7 +67,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                 sender = sender,
                 body = body
             )
-            val accountId = matchedAccountId ?: defaultAccount.id
+            val accountId = matchedAccountId ?: defaultAccountId
 
             // Get default category based on transaction type
             // Default expense category: "Others" (ID 13)
