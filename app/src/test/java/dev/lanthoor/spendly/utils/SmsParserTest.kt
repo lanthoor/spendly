@@ -527,6 +527,24 @@ class SmsParserTest {
         assertEquals(120, parsedCalendar.get(Calendar.MILLISECOND))
     }
 
+    @Test
+    fun `Two digit year uses sms timestamp century`() {
+        val smsTimestamp = buildTimestamp(1999, Calendar.JANUARY, 2, 11, 10, 9, 8)
+        val sms = "INR 899 debited from A/c **7788 on 13/12/99"
+
+        val parsed = SmsParser.parseBankSms(sms, "SPAM-123", smsTimestamp)
+
+        assertNotNull(parsed)
+        val parsedCalendar = Calendar.getInstance().apply { timeInMillis = parsed!!.date }
+        assertEquals(1999, parsedCalendar.get(Calendar.YEAR))
+        assertEquals(Calendar.DECEMBER, parsedCalendar.get(Calendar.MONTH))
+        assertEquals(13, parsedCalendar.get(Calendar.DAY_OF_MONTH))
+        assertEquals(11, parsedCalendar.get(Calendar.HOUR_OF_DAY))
+        assertEquals(10, parsedCalendar.get(Calendar.MINUTE))
+        assertEquals(9, parsedCalendar.get(Calendar.SECOND))
+        assertEquals(8, parsedCalendar.get(Calendar.MILLISECOND))
+    }
+
     // ============================================================
     // Confidence Scoring Tests
     // ============================================================

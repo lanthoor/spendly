@@ -183,7 +183,10 @@ abstract class BaseBankParser {
             if (groups.size < 4) return null
 
             val day = groups[1].toIntOrNull() ?: return null
-            val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            val smsTimeCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = smsTimestamp
+            }
+            val smsYear = smsTimeCalendar.get(java.util.Calendar.YEAR)
 
             // Detect format and parse month/year accordingly
             val (month, year) = if (groups[2].length == 3) {
@@ -195,7 +198,7 @@ abstract class BaseBankParser {
                 )
                 val month = monthMap[groups[2].lowercase()] ?: return null
                 val year = when (groups[3].length) {
-                    2 -> (currentYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
+                    2 -> (smsYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
                     4 -> groups[3].toInt()  // 2024 -> 2024
                     else -> return null
                 }
@@ -204,15 +207,11 @@ abstract class BaseBankParser {
                 // Format: 13/12/24 or 13/12/2024 (month is numeric)
                 val month = (groups[2].toIntOrNull() ?: return null) - 1  // 1-12 -> 0-11
                 val year = when (groups[3].length) {
-                    2 -> (currentYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
+                    2 -> (smsYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
                     4 -> groups[3].toInt()  // 2024 -> 2024
                     else -> return null
                 }
                 Pair(month, year)
-            }
-
-            val smsTimeCalendar = java.util.Calendar.getInstance().apply {
-                timeInMillis = smsTimestamp
             }
 
             // Create Calendar object and set date components.
