@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.utils
 
+import java.util.Calendar
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -208,6 +209,39 @@ class SmsParserTest {
         assertNotNull(parsed)
         assertEquals(200000L, parsed!!.amount)
         assertEquals(TransactionType.INCOME, parsed.transactionType)
+    }
+
+    // ============================================================
+    // Scapia Tests
+    // ============================================================
+
+    @Test
+    fun `Scapia successful txn parsed as expense`() {
+        val sms = "Your txn of Rs.1,234.50 at Obsidian + Ca on your Scapia Federal Visa Card was successful on 13-Dec-24"
+        val parsed = SmsParser.parseBankSms(sms, "TX-FEDSCP-S", timestamp)
+
+        assertNotNull(parsed)
+        assertEquals(123450L, parsed!!.amount)
+        assertEquals(TransactionType.EXPENSE, parsed.transactionType)
+        assertTrue(parsed.isReliable())
+    }
+
+    @Test
+    fun `Scapia merchant extraction supports mixed case and symbols`() {
+        val sms = "A transaction of INR 845.00 at Cloudflare + Us. on your Scapia Federal RuPay Card was successful on 14-Dec-24"
+        val parsed = SmsParser.parseBankSms(sms, "VM-FEDSCP-S", timestamp)
+
+        assertNotNull(parsed)
+        assertEquals(TransactionType.EXPENSE, parsed!!.transactionType)
+        assertEquals("Cloudflare + Us", parsed.merchantName)
+    }
+
+    @Test
+    fun `Scapia sender variants are recognized as known senders`() {
+        assertTrue(SmsParser.isKnownBankSender("FEDSCP"))
+        assertTrue(SmsParser.isKnownBankSender("TX-FEDSCP-S"))
+        assertTrue(SmsParser.isKnownBankSender("VM-FEDSCP-S"))
+        assertTrue(SmsParser.isKnownBankSender("AD-SCAPIA-T"))
     }
 
     // ============================================================
@@ -436,6 +470,46 @@ class SmsParserTest {
     }
 
     // ============================================================
+    // Timestamp Preservation Tests
+    // ============================================================
+
+    @Test
+    fun `HDFC parsed date keeps sms timestamp time`() {
+        val smsTimestamp = buildTimestamp(2025, Calendar.JANUARY, 20, 18, 47, 33, 789)
+        val sms = "INR 500.00 debited from A/c **1234 on 13-Dec-24"
+
+        val parsed = SmsParser.parseBankSms(sms, "HDFCBK", smsTimestamp)
+
+        assertNotNull(parsed)
+        val parsedCalendar = Calendar.getInstance().apply { timeInMillis = parsed!!.date }
+        assertEquals(2024, parsedCalendar.get(Calendar.YEAR))
+        assertEquals(Calendar.DECEMBER, parsedCalendar.get(Calendar.MONTH))
+        assertEquals(13, parsedCalendar.get(Calendar.DAY_OF_MONTH))
+        assertEquals(18, parsedCalendar.get(Calendar.HOUR_OF_DAY))
+        assertEquals(47, parsedCalendar.get(Calendar.MINUTE))
+        assertEquals(33, parsedCalendar.get(Calendar.SECOND))
+        assertEquals(789, parsedCalendar.get(Calendar.MILLISECOND))
+    }
+
+    @Test
+    fun `Generic parser date keeps sms timestamp time`() {
+        val smsTimestamp = buildTimestamp(2026, Calendar.FEBRUARY, 5, 9, 12, 45, 120)
+        val sms = "INR 899 debited from A/c **7788 on 13/12/24"
+
+        val parsed = SmsParser.parseBankSms(sms, "SPAM-123", smsTimestamp)
+
+        assertNotNull(parsed)
+        val parsedCalendar = Calendar.getInstance().apply { timeInMillis = parsed!!.date }
+        assertEquals(2024, parsedCalendar.get(Calendar.YEAR))
+        assertEquals(Calendar.DECEMBER, parsedCalendar.get(Calendar.MONTH))
+        assertEquals(13, parsedCalendar.get(Calendar.DAY_OF_MONTH))
+        assertEquals(9, parsedCalendar.get(Calendar.HOUR_OF_DAY))
+        assertEquals(12, parsedCalendar.get(Calendar.MINUTE))
+        assertEquals(45, parsedCalendar.get(Calendar.SECOND))
+        assertEquals(120, parsedCalendar.get(Calendar.MILLISECOND))
+    }
+
+    // ============================================================
     // Confidence Scoring Tests
     // ============================================================
 
@@ -634,5 +708,25 @@ class SmsParserTest {
         assertEquals(TransactionType.INCOME, parsed.transactionType)
         assertEquals("3456", parsed.accountHint)
         assertTrue(parsed.isReliable())
+    }
+
+    private fun buildTimestamp(
+        year: Int,
+        month: Int,
+        day: Int,
+        hour: Int,
+        minute: Int,
+        second: Int,
+        millisecond: Int
+    ): Long {
+        return Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, month)
+            set(Calendar.DAY_OF_MONTH, day)
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+            set(Calendar.SECOND, second)
+            set(Calendar.MILLISECOND, millisecond)
+        }.timeInMillis
     }
 }

@@ -19,10 +19,10 @@ class AxisParser : BaseBankParser() {
             ?: super.extractMerchant(smsBody)
     }
 
-    override fun extractDate(smsBody: String): Long? {
+    override fun extractDate(smsBody: String, smsTimestamp: Long): Long? {
         val axisPattern = Regex("""(\d{1,2})-([A-Za-z]{3})-(\d{2})""")
-        return axisPattern.find(smsBody)?.let { parseDateFromMatch(it) }
-            ?: super.extractDate(smsBody)
+        return axisPattern.find(smsBody)?.let { parseDateFromMatch(it, smsTimestamp) }
+            ?: super.extractDate(smsBody, smsTimestamp)
     }
 
     override fun getDefaultDescription(type: TransactionType?): String {

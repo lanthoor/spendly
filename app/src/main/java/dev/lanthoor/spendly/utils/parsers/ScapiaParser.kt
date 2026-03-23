@@ -7,6 +7,23 @@ import dev.lanthoor.spendly.utils.TransactionType
  */
 class ScapiaParser : BaseBankParser() {
 
+    override fun extractTransactionType(smsBody: String): TransactionType? {
+        val hasCardContext = smsBody.contains("Scapia", ignoreCase = true) ||
+            smsBody.contains("Federal", ignoreCase = true) ||
+            smsBody.contains("card", ignoreCase = true) ||
+            smsBody.contains("visa", ignoreCase = true) ||
+            smsBody.contains("rupay", ignoreCase = true)
+        val hasExpensePhrase = smsBody.contains("txn of", ignoreCase = true) ||
+            smsBody.contains("transaction of", ignoreCase = true)
+        val hasSuccessPhrase = smsBody.contains("was successful", ignoreCase = true)
+
+        if (hasCardContext && (hasExpensePhrase || hasSuccessPhrase)) {
+            return TransactionType.EXPENSE
+        }
+
+        return super.extractTransactionType(smsBody)
+    }
+
     override fun extractAccountHint(smsBody: String): String? {
         val accountPattern = Regex("""(?:Scapia Federal\s*(Visa|RuPay))""", RegexOption.IGNORE_CASE)
         return accountPattern.find(smsBody)?.groupValues?.get(1)
@@ -14,8 +31,16 @@ class ScapiaParser : BaseBankParser() {
     }
 
     override fun extractMerchant(smsBody: String): String? {
-        val merchantPattern = Regex("""at\s+([A-Z][A-Z\s]+?)on your""", RegexOption.IGNORE_CASE)
-        return merchantPattern.find(smsBody)?.groupValues?.get(1)?.trim()
+        val merchantPattern = Regex(
+            """\bat\s+(.+?)\s+on\s+your\b""",
+            setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+        )
+        val cleanedMerchant = merchantPattern.find(smsBody)?.groupValues?.get(1)
+            ?.replace("\\s+".toRegex(), " ")
+            ?.trim(' ', '.', ',', ';', ':', '-', '_')
+            ?.takeIf { it.isNotBlank() }
+
+        return cleanedMerchant
             ?: super.extractMerchant(smsBody)
     }
 

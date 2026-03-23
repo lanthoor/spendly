@@ -58,8 +58,8 @@ enum class BankIdentifier(val senderPatterns: List<Regex>) {
     ),
     SCAPIA(
         listOf(
-            Regex("(?i)FEDSCP"),
-            Regex("(?!)SCAPIA")
+            Regex("(?i)(?:^|[-_])FEDSCP(?:[-_]|$)"),
+            Regex("(?i)(?:^|[-_])SCAPIA(?:[-_]|$)")
         )
     ),
     UPI_NPCI(
