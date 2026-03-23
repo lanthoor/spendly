@@ -106,9 +106,7 @@ class SmsDuplicateDetector {
 
     private fun pruneForTimestamp(candidates: ArrayDeque<Long>, timestamp: Long) {
         val threshold = timestamp + SEMANTIC_WINDOW_MS
-        while (candidates.isNotEmpty() && candidates.first() > threshold) {
-            candidates.removeFirst()
-        }
+        candidates.removeIf { it > threshold }
     }
 
     private fun MutableMap<String, ArrayDeque<Long>>.addTimestamp(key: String, timestamp: Long) {

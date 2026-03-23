@@ -48,10 +48,11 @@ object DatabaseModule {
             SpendlyDatabase::class.java,
             SpendlyDatabase.DATABASE_NAME
         )
-            // Migrations: version 1 → 2 → 3
+            // Migrations: version 1 → 2 → 3 → 4
             .addMigrations(
                 SpendlyDatabase.MIGRATION_1_2,
-                SpendlyDatabase.MIGRATION_2_3
+                SpendlyDatabase.MIGRATION_2_3,
+                SpendlyDatabase.MIGRATION_3_4
             )
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {

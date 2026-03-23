@@ -67,7 +67,7 @@ import dev.lanthoor.spendly.data.local.entities.RecurringTransactionEntity
         RecurringTransactionEntity::class,
         AccountEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 abstract class SpendlyDatabase : RoomDatabase() {
@@ -274,6 +274,17 @@ abstract class SpendlyDatabase : RoomDatabase() {
                         modified_at = ?
                     WHERE sms_timestamp IS NOT NULL
                 """, arrayOf(currentTime)
+                )
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS index_expenses_sms_timestamp ON expenses(sms_timestamp)"
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS index_income_sms_timestamp ON income(sms_timestamp)"
                 )
             }
         }

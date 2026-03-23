@@ -26,6 +26,7 @@ import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsDuplicateDetector
 import dev.lanthoor.spendly.utils.SmsFingerprintFactory
+import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
 import kotlinx.coroutines.Dispatchers
@@ -71,38 +72,13 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             if (!enabled) return@withContext Result.success()
 
             // Load already-created SMS metadata from existing expenses/income
-            val expenseSnapshot = expenseRepository.getAllExpenses().first()
-            val incomeSnapshot = incomeRepository.getAllIncome().first()
+            val expenseSnapshot = expenseRepository.getSmsLinkedExpensesSince(0L)
+            val incomeSnapshot = incomeRepository.getSmsLinkedIncomeSince(0L)
             val duplicateDetector = SmsDuplicateDetector()
 
-            val existingFingerprints = buildList {
-                expenseSnapshot.forEach { e ->
-                    if (e.smsBody != null && e.smsTimestamp != null) {
-                        val parsed = SmsParser.parseBankSms(e.smsBody, "", e.smsTimestamp)
-                        add(
-                            SmsFingerprintFactory.create(
-                                sender = null,
-                                body = e.smsBody,
-                                timestamp = e.smsTimestamp,
-                                parsed = parsed
-                            )
-                        )
-                    }
-                }
-                incomeSnapshot.forEach { i ->
-                    if (i.smsBody != null && i.smsTimestamp != null) {
-                        val parsed = SmsParser.parseBankSms(i.smsBody, "", i.smsTimestamp)
-                        add(
-                            SmsFingerprintFactory.create(
-                                sender = null,
-                                body = i.smsBody,
-                                timestamp = i.smsTimestamp,
-                                parsed = parsed
-                            )
-                        )
-                    }
-                }
-            }
+            val existingFingerprints =
+                SmsFingerprintPreload.fromExpenses(expenseSnapshot) +
+                    SmsFingerprintPreload.fromIncome(incomeSnapshot)
             duplicateDetector.preload(existingFingerprints)
 
             val defaultAccount = accountRepository.getAllAccounts().firstOrNull()?.firstOrNull()
