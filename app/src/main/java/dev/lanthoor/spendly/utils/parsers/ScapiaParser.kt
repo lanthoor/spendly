@@ -14,10 +14,10 @@ class ScapiaParser : BaseBankParser() {
             smsBody.contains("visa", ignoreCase = true) ||
             smsBody.contains("rupay", ignoreCase = true)
         val hasExpensePhrase = smsBody.contains("txn of", ignoreCase = true) ||
-            smsBody.contains("transaction of", ignoreCase = true)
-        val hasSuccessPhrase = smsBody.contains("was successful", ignoreCase = true)
+            smsBody.contains("transaction of", ignoreCase = true) ||
+            smsBody.contains("spent", ignoreCase = true)
 
-        if (hasCardContext && (hasExpensePhrase || hasSuccessPhrase)) {
+        if (hasCardContext && hasExpensePhrase) {
             return TransactionType.EXPENSE
         }
 

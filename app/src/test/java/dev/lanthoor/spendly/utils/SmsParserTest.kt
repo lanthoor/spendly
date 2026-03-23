@@ -237,6 +237,24 @@ class SmsParserTest {
     }
 
     @Test
+    fun `Scapia spent phrase is parsed as expense`() {
+        val sms = "INR 599.00 spent on your Scapia Federal Visa Card at Obsidian + Ca on 15-Dec-24"
+        val parsed = SmsParser.parseBankSms(sms, "TX-FEDSCP-S", timestamp)
+
+        assertNotNull(parsed)
+        assertEquals(59900L, parsed!!.amount)
+        assertEquals(TransactionType.EXPENSE, parsed.transactionType)
+    }
+
+    @Test
+    fun `Scapia success-only message should not infer expense`() {
+        val sms = "Your Scapia Federal Visa Card verification was successful on 15-Dec-24"
+        val parsed = SmsParser.parseBankSms(sms, "TX-FEDSCP-S", timestamp)
+
+        assertNull(parsed)
+    }
+
+    @Test
     fun `Scapia sender variants are recognized as known senders`() {
         assertTrue(SmsParser.isKnownBankSender("FEDSCP"))
         assertTrue(SmsParser.isKnownBankSender("TX-FEDSCP-S"))
