@@ -23,6 +23,7 @@ import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
+import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
 import kotlinx.coroutines.Dispatchers
@@ -98,14 +99,20 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             val totalCount = cursor.count
             var processed = 0
             var lastProgressUpdateTime = 0L
-            val progressUpdateIntervalMs = 5000L // Update at most once per second
+            val progressUpdateIntervalMs = 5000L // Update progress at most once every 5 seconds
+            val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
+            val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
+            if (defaultAccountId == null) {
+                cursor.close()
+                return@withContext Result.success()
+            }
 
             while (cursor.moveToNext()) {
                 val sender = cursor.getString(1) ?: ""
                 val body = cursor.getString(2) ?: ""
                 val date = cursor.getLong(3)
 
-                // Progress update (debounced to 1 per second max)
+                // Progress update (debounced to once every 5 seconds)
                 processed++
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastProgressUpdateTime >= progressUpdateIntervalMs) {
@@ -125,8 +132,6 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 val parsed = SmsParser.parseBankSms(body, sender, date) ?: continue
 
                 // Create transaction similar to SmsTransactionCreationWorker
-                val defaultAccount =
-                    accountRepository.getAllAccounts().firstOrNull()?.firstOrNull() ?: continue
                 val categories = categoryRepository.getAllCategories().first()
                 val defaultCategoryId = when (parsed.transactionType) {
                     TransactionType.EXPENSE -> 13L
@@ -134,6 +139,13 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 }
                 val defaultCategory = categories.firstOrNull { it.id == defaultCategoryId }
                 val now = System.currentTimeMillis()
+                val matchedAccountId = SmsAccountMatcher.resolveAccountId(
+                    accounts = accounts,
+                    parsed = parsed,
+                    sender = sender,
+                    body = body
+                )
+                val accountId = matchedAccountId ?: defaultAccountId
 
                 when (parsed.transactionType) {
                     TransactionType.EXPENSE -> {
@@ -141,7 +153,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                             id = 0,
                             amount = parsed.amount,
                             categoryId = defaultCategory?.id,
-                            accountId = defaultAccount.id,
+                            accountId = accountId,
                             date = parsed.date,
                             description = parsed.description,
                             createdAt = now,
@@ -161,7 +173,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                             amount = parsed.amount,
                             categoryId = defaultCategory?.id,
                             source = dev.lanthoor.spendly.utils.IncomeSource.OTHER,
-                            accountId = defaultAccount.id,
+                            accountId = accountId,
                             date = parsed.date,
                             description = parsed.description,
                             createdAt = now,

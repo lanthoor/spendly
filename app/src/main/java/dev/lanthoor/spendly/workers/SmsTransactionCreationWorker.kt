@@ -15,6 +15,7 @@ import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsNotificationService
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
@@ -57,9 +58,16 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
             val parsed = SmsParser.parseBankSms(body, sender, timestamp)
                 ?: return Result.success()  // Not an error, just not a valid transaction
 
-            // Get default account
-            val defaultAccount = accountRepository.getAllAccounts().firstOrNull()?.firstOrNull()
+            val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
+            val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
                 ?: return Result.failure()
+            val matchedAccountId = SmsAccountMatcher.resolveAccountId(
+                accounts = accounts,
+                parsed = parsed,
+                sender = sender,
+                body = body
+            )
+            val accountId = matchedAccountId ?: defaultAccountId
 
             // Get default category based on transaction type
             // Default expense category: "Others" (ID 13)
@@ -79,7 +87,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                         id = 0,
                         amount = parsed.amount,
                         categoryId = defaultCategory?.id,
-                        accountId = defaultAccount.id,
+                        accountId = accountId,
                         date = parsed.date,
                         description = parsed.description,
                         createdAt = now,
@@ -106,7 +114,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                         amount = parsed.amount,
                         categoryId = defaultCategory?.id,
                         source = IncomeSource.OTHER,  // Default source
-                        accountId = defaultAccount.id,
+                        accountId = accountId,
                         date = parsed.date,
                         description = parsed.description,
                         createdAt = now,
