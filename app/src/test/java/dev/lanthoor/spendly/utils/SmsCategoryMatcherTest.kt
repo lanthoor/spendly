@@ -140,6 +140,23 @@ class SmsCategoryMatcherTest {
     }
 
     @Test
+    fun `resolveCategory reports missing others when no fallback category exists`() {
+        val parsed = parsedExpense(merchant = null, description = "bank transaction")
+        val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(emptyList())
+
+        val resolution = SmsCategoryMatcher.resolveCategory(
+            parsed = parsed,
+            smsBody = "txn completed",
+            sender = "HDFCBK",
+            categoryLookup = categoryLookup
+        )
+
+        assertNull(resolution.category)
+        assertTrue(resolution.usedFallback)
+        assertEquals("fallback:missing:others", resolution.reason)
+    }
+
+    @Test
     fun `returns null for unknown text so workers can fallback to Others`() {
         val parsed = parsedExpense(merchant = null, description = "bank transaction")
 

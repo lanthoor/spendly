@@ -98,7 +98,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             val totalCount = cursor.count
             var processed = 0
             var lastProgressUpdateTime = 0L
-            val progressUpdateIntervalMs = 5000L // Update progress at most once every 5 seconds
+            val progressUpdateIntervalMs = 5000L // Update at most once per 5 seconds
             val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
             val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
             if (defaultAccountId == null) {
@@ -113,7 +113,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 val body = cursor.getString(2) ?: ""
                 val date = cursor.getLong(3)
 
-                // Progress update (debounced to once every 5 seconds)
+                // Progress update (debounced to once per 5 seconds)
                 processed++
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastProgressUpdateTime >= progressUpdateIntervalMs) {

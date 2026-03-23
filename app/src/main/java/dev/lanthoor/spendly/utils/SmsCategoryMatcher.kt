@@ -72,7 +72,8 @@ object SmsCategoryMatcher {
         val fallbackCategory = categoryLookup[normalizeCategoryName(OTHERS_CATEGORY_NAME)]
         val resolvedCategory = resolvedFromMatch ?: fallbackCategory
         val reason = when {
-            matchedCategory == null -> "fallback:others"
+            matchedCategory == null && fallbackCategory != null -> "fallback:others"
+            matchedCategory == null -> "fallback:missing:others"
             resolvedFromMatch == null -> {
                 "fallback:missing:${matchedCategory.categoryName.lowercase(Locale.ROOT)}"
             }
