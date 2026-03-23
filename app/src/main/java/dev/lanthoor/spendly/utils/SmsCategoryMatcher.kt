@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.utils
 
+import dev.lanthoor.spendly.domain.model.Category
 import java.util.Locale
 
 data class SmsCategoryMatch(
@@ -8,34 +9,84 @@ data class SmsCategoryMatch(
     val reason: String
 )
 
+data class SmsCategoryResolution(
+    val category: Category?,
+    val matchedCategory: SmsCategoryMatch?,
+    val reason: String,
+    val usedFallback: Boolean
+)
+
 object SmsCategoryMatcher {
     private const val MIN_SCORE = 3f
+    private const val OTHERS_CATEGORY_NAME = "Others"
+    private val NON_ALPHANUMERIC_REGEX = Regex("[^a-z0-9\\s]")
+    private val MULTI_SPACE_REGEX = Regex("\\s+")
+    private val SCORE_COMPARATOR = compareBy<MatchScore> { it.score }
+        .thenBy { it.merchantHits }
 
     private data class KeywordRule(
         val categoryName: String,
-        val keywords: List<String>
+        val patterns: List<KeywordPattern>
+    )
+
+    private data class KeywordPattern(
+        val keyword: String,
+        val regex: Regex
     )
 
     private val expenseRules = listOf(
-        KeywordRule("Food", listOf("swiggy", "zomato", "restaurant", "cafe", "dining")),
-        KeywordRule("Groceries", listOf("mart", "supermarket", "grocery", "dmart", "bigbasket", "zepto", "blinkit")),
-        KeywordRule("Travel", listOf("uber", "ola", "irctc", "metro", "fuel", "petrol", "diesel", "toll")),
-        KeywordRule("Utilities", listOf("electricity", "water bill", "broadband", "recharge", "postpaid", "dth", "gas bill")),
-        KeywordRule("Shopping", listOf("amazon", "flipkart", "myntra", "ajio", "meesho")),
-        KeywordRule("Healthcare", listOf("pharmacy", "hospital", "clinic", "medic", "apollo", "diagnostic")),
-        KeywordRule("Rent", listOf("rent", "landlord", "lease")),
-        KeywordRule("Education", listOf("school", "college", "tuition", "course", "udemy", "byju")),
-        KeywordRule("Media", listOf("netflix", "spotify", "prime video", "youtube", "hotstar"))
+        keywordRule("Food", listOf("swiggy", "zomato", "restaurant", "cafe", "dining")),
+        keywordRule("Groceries", listOf("mart", "supermarket", "grocery", "dmart", "bigbasket", "zepto", "blinkit")),
+        keywordRule("Travel", listOf("uber", "ola", "irctc", "metro", "fuel", "petrol", "diesel", "toll")),
+        keywordRule("Utilities", listOf("electricity", "water bill", "broadband", "recharge", "postpaid", "dth", "gas bill")),
+        keywordRule("Shopping", listOf("amazon", "flipkart", "myntra", "ajio", "meesho")),
+        keywordRule("Healthcare", listOf("pharmacy", "hospital", "clinic", "medic", "apollo", "diagnostic")),
+        keywordRule("Rent", listOf("rent", "landlord", "lease")),
+        keywordRule("Education", listOf("school", "college", "tuition", "course", "udemy", "byju")),
+        keywordRule("Media", listOf("netflix", "spotify", "prime video", "youtube", "hotstar"))
     )
 
     private val incomeRules = listOf(
-        KeywordRule("Salary", listOf("salary", "payroll", "employer", "wages", "salary credited")),
-        KeywordRule("Interest", listOf("interest credited", "int payout", "interest payout", "interest")),
-        KeywordRule("Refund", listOf("refund", "reversal", "chargeback", "refund initiated")),
-        KeywordRule("Bonus", listOf("bonus", "incentive", "ex gratia")),
-        KeywordRule("Freelance", listOf("invoice", "client payment", "consulting", "freelance", "project fee")),
-        KeywordRule("Business", listOf("business", "vendor payment", "settlement", "merchant settlement"))
+        keywordRule("Salary", listOf("salary", "payroll", "employer", "wages", "salary credited")),
+        keywordRule("Interest", listOf("interest credited", "int payout", "interest payout", "interest")),
+        keywordRule("Refund", listOf("refund", "reversal", "chargeback", "refund initiated")),
+        keywordRule("Bonus", listOf("bonus", "incentive", "ex gratia")),
+        keywordRule("Freelance", listOf("invoice", "client payment", "consulting", "freelance", "project fee")),
+        keywordRule("Business", listOf("business", "vendor payment", "settlement", "merchant settlement"))
     )
+
+    fun buildCategoryLookup(categories: List<Category>): Map<String, Category> {
+        return categories.associateBy { normalizeCategoryName(it.name) }
+    }
+
+    fun resolveCategory(
+        parsed: ParsedTransaction,
+        smsBody: String,
+        sender: String,
+        categoryLookup: Map<String, Category>
+    ): SmsCategoryResolution {
+        val matchedCategory = match(parsed, smsBody, sender)
+        val resolvedFromMatch = matchedCategory?.let {
+            categoryLookup[normalizeCategoryName(it.categoryName)]
+        }
+        val fallbackCategory = categoryLookup[normalizeCategoryName(OTHERS_CATEGORY_NAME)]
+        val resolvedCategory = resolvedFromMatch ?: fallbackCategory
+        val reason = when {
+            matchedCategory == null -> "fallback:others"
+            resolvedFromMatch == null -> {
+                "fallback:missing:${matchedCategory.categoryName.lowercase(Locale.ROOT)}"
+            }
+
+            else -> matchedCategory.reason
+        }
+
+        return SmsCategoryResolution(
+            category = resolvedCategory,
+            matchedCategory = matchedCategory,
+            reason = reason,
+            usedFallback = resolvedFromMatch == null
+        )
+    }
 
     fun match(
         parsed: ParsedTransaction,
@@ -54,17 +105,17 @@ object SmsCategoryMatcher {
             val hits = mutableListOf<String>()
             var score = 0f
             var merchantHits = 0
-            rule.keywords.forEach { keyword ->
-                if (containsKeyword(merchantBlob, keyword)) {
+            rule.patterns.forEach { pattern ->
+                if (containsKeyword(merchantBlob, pattern)) {
                     score += 5f
                     merchantHits++
-                    hits += "merchant:$keyword"
-                } else if (containsKeyword(descriptionBlob, keyword)) {
+                    hits += "merchant:${pattern.keyword}"
+                } else if (containsKeyword(descriptionBlob, pattern)) {
                     score += 3f
-                    hits += "description:$keyword"
-                } else if (containsKeyword(bodyBlob, keyword)) {
+                    hits += "description:${pattern.keyword}"
+                } else if (containsKeyword(bodyBlob, pattern)) {
                     score += 2f
-                    hits += "body:$keyword"
+                    hits += "body:${pattern.keyword}"
                 }
             }
             MatchScore(rule.categoryName, score, merchantHits, hits)
@@ -72,18 +123,14 @@ object SmsCategoryMatcher {
 
         if (scored.isEmpty()) return null
 
-        val best = scored.maxWithOrNull(
-            compareBy<MatchScore> { it.score }
-                .thenBy { it.merchantHits }
-        ) ?: return null
-        val secondBestScore = scored
+        val best = scored.maxWithOrNull(SCORE_COMPARATOR) ?: return null
+        val secondBest = scored
             .asSequence()
             .filter { it.categoryName != best.categoryName }
-            .maxOfOrNull { it.score }
-            ?: 0f
+            .maxWithOrNull(SCORE_COMPARATOR)
 
         if (best.score < MIN_SCORE) return null
-        if (best.score <= secondBestScore) return null
+        if (secondBest != null && SCORE_COMPARATOR.compare(best, secondBest) <= 0) return null
 
         val reason = best.hits.take(2).joinToString(", ")
         return SmsCategoryMatch(
@@ -100,24 +147,18 @@ object SmsCategoryMatcher {
         val hits: List<String>
     )
 
-    private fun normalize(parts: List<String>): String {
-        return parts
-            .joinToString(" ")
-            .lowercase(Locale.ROOT)
-            .replace(Regex("[^a-z0-9\\s]"), " ")
-            .replace(Regex("\\s+"), " ")
-            .trim()
+    private fun keywordRule(categoryName: String, keywords: List<String>): KeywordRule {
+        return KeywordRule(
+            categoryName = categoryName,
+            patterns = keywords.map { keyword ->
+                KeywordPattern(keyword = keyword, regex = buildKeywordRegex(keyword))
+            }
+        )
     }
 
-    private fun containsKeyword(blob: String, rawKeyword: String): Boolean {
-        if (blob.isBlank()) return false
-        val keyword = rawKeyword
-            .lowercase(Locale.ROOT)
-            .replace(Regex("[^a-z0-9\\s]"), " ")
-            .replace(Regex("\\s+"), " ")
-            .trim()
-        if (keyword.isBlank()) return false
-
+    private fun buildKeywordRegex(rawKeyword: String): Regex {
+        val keyword = normalizeText(rawKeyword)
+        if (keyword.isBlank()) return Regex("(?!x)x")
         val pattern = if (keyword.contains(' ')) {
             "\\b" + keyword
                 .split(" ")
@@ -125,6 +166,29 @@ object SmsCategoryMatcher {
         } else {
             "\\b${Regex.escape(keyword)}\\b"
         }
-        return Regex(pattern).containsMatchIn(blob)
+        return Regex(pattern)
+    }
+
+    private fun normalize(parts: List<String>): String {
+        return parts
+            .joinToString(" ")
+            .let(::normalizeText)
+    }
+
+    private fun normalizeText(input: String): String {
+        return input
+            .lowercase(Locale.ROOT)
+            .replace(NON_ALPHANUMERIC_REGEX, " ")
+            .replace(MULTI_SPACE_REGEX, " ")
+            .trim()
+    }
+
+    private fun normalizeCategoryName(input: String): String {
+        return input.trim().lowercase(Locale.ROOT)
+    }
+
+    private fun containsKeyword(blob: String, keywordPattern: KeywordPattern): Boolean {
+        if (blob.isBlank()) return false
+        return keywordPattern.regex.containsMatchIn(blob)
     }
 }

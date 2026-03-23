@@ -82,10 +82,6 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                     SmsFingerprintPreload.fromIncome(incomeSnapshot)
             duplicateDetector.preload(existingFingerprints)
 
-            val defaultAccount = accountRepository.getAllAccounts().firstOrNull()?.firstOrNull()
-                ?: return@withContext Result.failure()
-            val categories = categoryRepository.getAllCategories().first()
-
             // Query SMS inbox
             val resolver: ContentResolver = applicationContext.contentResolver
             val uri = Telephony.Sms.Inbox.CONTENT_URI
@@ -109,6 +105,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 cursor.close()
                 return@withContext Result.success()
             }
+            val categories = categoryRepository.getAllCategories().first()
+            val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(categories)
 
             while (cursor.moveToNext()) {
                 val sender = cursor.getString(1) ?: ""
@@ -142,15 +140,19 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 }
 
                 // Create transaction similar to SmsTransactionCreationWorker
-                val matchedCategory = SmsCategoryMatcher.match(parsed, body, sender)
-                val resolvedCategory = categories.firstOrNull {
-                    it.name.equals(matchedCategory?.categoryName ?: "Others", ignoreCase = true)
-                } ?: categories.firstOrNull { it.name.equals("Others", ignoreCase = true) }
-
-                Log.d(
-                    TAG,
-                    "Category selected=${resolvedCategory?.name ?: "None"} type=${parsed.transactionType} reason=${matchedCategory?.reason ?: "fallback:others"}"
+                val categoryResolution = SmsCategoryMatcher.resolveCategory(
+                    parsed = parsed,
+                    smsBody = body,
+                    sender = sender,
+                    categoryLookup = categoryLookup
                 )
+
+                if (categoryResolution.matchedCategory != null || categoryResolution.category == null) {
+                    Log.d(
+                        TAG,
+                        "Category selected=${categoryResolution.category?.name ?: "None"} type=${parsed.transactionType} reason=${categoryResolution.reason}"
+                    )
+                }
                 val now = System.currentTimeMillis()
                 val matchedAccountId = SmsAccountMatcher.resolveAccountId(
                     accounts = accounts,
@@ -165,7 +167,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                         val expense = Expense(
                             id = 0,
                             amount = parsed.amount,
-                            categoryId = resolvedCategory?.id,
+                            categoryId = categoryResolution.category?.id,
                             accountId = accountId,
                             date = parsed.date,
                             description = parsed.description,
@@ -184,7 +186,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                         val income = Income(
                             id = 0,
                             amount = parsed.amount,
-                            categoryId = resolvedCategory?.id,
+                            categoryId = categoryResolution.category?.id,
                             source = dev.lanthoor.spendly.utils.IncomeSource.OTHER,
                             accountId = accountId,
                             date = parsed.date,

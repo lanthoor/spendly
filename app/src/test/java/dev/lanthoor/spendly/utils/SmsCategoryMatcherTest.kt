@@ -3,6 +3,7 @@ package dev.lanthoor.spendly.utils
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SmsCategoryMatcherTest {
@@ -84,6 +85,61 @@ class SmsCategoryMatcherTest {
     }
 
     @Test
+    fun `merchant hits tie breaker prefers category with more merchant matches`() {
+        val parsed = parsedExpense(
+            merchant = "SWIGGY",
+            description = "dining amazon flipkart"
+        )
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "Paid via card using myntra gateway",
+            "HDFCBK"
+        )
+
+        assertNotNull(result)
+        assertEquals("Food", result!!.categoryName)
+    }
+
+    @Test
+    fun `equal score and merchant hits returns null for ambiguous text`() {
+        val parsed = parsedExpense(
+            merchant = "SWIGGY AMAZON",
+            description = "purchase"
+        )
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "Paid at SWIGGY and AMAZON",
+            "ICICIB"
+        )
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `resolveCategory falls back to Others when matched name missing in lookup`() {
+        val parsed = parsedIncome(description = "salary credited")
+        val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(
+            listOf(
+                category(id = 13L, name = "Others")
+            )
+        )
+
+        val resolution = SmsCategoryMatcher.resolveCategory(
+            parsed = parsed,
+            smsBody = "salary credited by employer",
+            sender = "HDFCBK",
+            categoryLookup = categoryLookup
+        )
+
+        assertNotNull(resolution.category)
+        assertEquals("Others", resolution.category!!.name)
+        assertTrue(resolution.usedFallback)
+        assertTrue(resolution.reason.startsWith("fallback:missing:salary"))
+    }
+
+    @Test
     fun `returns null for unknown text so workers can fallback to Others`() {
         val parsed = parsedExpense(merchant = null, description = "bank transaction")
 
@@ -113,6 +169,17 @@ class SmsCategoryMatcherTest {
             accountHint = "5678",
             merchantName = null,
             confidence = 0.9f
+        )
+    }
+
+    private fun category(id: Long, name: String): dev.lanthoor.spendly.domain.model.Category {
+        return dev.lanthoor.spendly.domain.model.Category(
+            id = id,
+            name = name,
+            icon = "category",
+            color = 0,
+            isCustom = false,
+            sortOrder = 0
         )
     }
 }

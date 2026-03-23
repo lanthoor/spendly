@@ -97,15 +97,20 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
             val accountId = matchedAccountId ?: defaultAccountId
 
             val categories = categoryRepository.getAllCategories().first()
-            val matchedCategory = SmsCategoryMatcher.match(parsed, body, sender)
-            val resolvedCategory = categories.firstOrNull {
-                it.name.equals(matchedCategory?.categoryName ?: "Others", ignoreCase = true)
-            } ?: categories.firstOrNull { it.name.equals("Others", ignoreCase = true) }
-
-            Log.d(
-                TAG,
-                "Category selected=${resolvedCategory?.name ?: "None"} type=${parsed.transactionType} reason=${matchedCategory?.reason ?: "fallback:others"}"
+            val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(categories)
+            val categoryResolution = SmsCategoryMatcher.resolveCategory(
+                parsed = parsed,
+                smsBody = body,
+                sender = sender,
+                categoryLookup = categoryLookup
             )
+
+            if (categoryResolution.matchedCategory != null || categoryResolution.category == null) {
+                Log.d(
+                    TAG,
+                    "Category selected=${categoryResolution.category?.name ?: "None"} type=${parsed.transactionType} reason=${categoryResolution.reason}"
+                )
+            }
 
             // Create transaction
             val now = System.currentTimeMillis()
@@ -114,7 +119,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                     val expense = Expense(
                         id = 0,
                         amount = parsed.amount,
-                        categoryId = resolvedCategory?.id,
+                        categoryId = categoryResolution.category?.id,
                         accountId = accountId,
                         date = parsed.date,
                         description = parsed.description,
@@ -140,7 +145,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                     val income = Income(
                         id = 0,
                         amount = parsed.amount,
-                        categoryId = resolvedCategory?.id,
+                        categoryId = categoryResolution.category?.id,
                         source = IncomeSource.OTHER,  // Default source
                         accountId = accountId,
                         date = parsed.date,
