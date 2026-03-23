@@ -7,6 +7,7 @@ object SmsAccountMatcher {
     private const val HINT_SCORE = 100
     private const val KEYWORD_SCORE = 20
     private const val TYPE_AFFINITY_SCORE = 15
+    private val whitespaceRegex = Regex("\\s+")
 
     private val bankAndProviderKeywords = setOf(
         "hdfc",
@@ -141,7 +142,7 @@ object SmsAccountMatcher {
             .replace("-", " ")
             .replace("_", " ")
             .replace("*", "")
-            .replace(Regex("\\s+"), " ")
+            .replace(whitespaceRegex, " ")
             .trim()
     }
 
