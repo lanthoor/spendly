@@ -147,6 +147,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                     lastProgressUpdateTime = currentTime
                 }
 
+                if (!SmsParser.isKnownBankSender(sender)) continue
+
                 // Attempt parse
                 val parsed = SmsParser.parseBankSms(body, sender, date) ?: continue
 
@@ -158,7 +160,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 )
                 val duplicateReason = duplicateDetector.findDuplicateReason(fingerprint)
                 if (duplicateReason != null) {
-                    Log.d(TAG, "dedup hit $duplicateReason")
+                    Log.d(TAG, "dedup hit ${duplicateReason.name.lowercase()}")
                     continue
                 }
 

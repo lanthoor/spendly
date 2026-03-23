@@ -103,4 +103,9 @@ interface ExpenseRepository {
      * @return Flow emitting list of recent expenses
      */
     fun getRecentExpenses(limit: Int = 5): Flow<List<Expense>>
+
+    /**
+     * Retrieves SMS-linked expenses with sms timestamp at or after the given threshold.
+     */
+    suspend fun getSmsLinkedExpensesSince(minSmsTimestamp: Long): List<Expense>
 }

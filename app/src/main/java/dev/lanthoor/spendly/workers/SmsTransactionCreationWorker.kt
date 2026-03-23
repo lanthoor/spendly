@@ -38,6 +38,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
 
     companion object {
         private const val TAG = "SmsTransactionCreationWorker"
+        private const val PRELOAD_LOOKBACK_MS = 45L * 24 * 60 * 60 * 1000
         const val KEY_SENDER = "sender"
         const val KEY_BODY = "body"
         const val KEY_TIMESTAMP = "timestamp"
@@ -61,8 +62,9 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                 ?: return Result.success()  // Not an error, just not a valid transaction
 
             val duplicateDetector = SmsDuplicateDetector()
-            val expenseSnapshot = expenseRepository.getAllExpenses().first()
-            val incomeSnapshot = incomeRepository.getAllIncome().first()
+            val minSmsTimestamp = timestamp - PRELOAD_LOOKBACK_MS
+            val expenseSnapshot = expenseRepository.getSmsLinkedExpensesSince(minSmsTimestamp)
+            val incomeSnapshot = incomeRepository.getSmsLinkedIncomeSince(minSmsTimestamp)
 
             val existingFingerprints = buildList {
                 expenseSnapshot.forEach { expense ->
@@ -106,7 +108,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
             )
             val duplicateReason = duplicateDetector.findDuplicateReason(incomingFingerprint)
             if (duplicateReason != null) {
-                Log.d(TAG, "dedup hit $duplicateReason")
+                Log.d(TAG, "dedup hit ${duplicateReason.name.lowercase()}")
                 return Result.success()
             }
 
@@ -188,8 +190,6 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                     )
                 }
             }
-
-            duplicateDetector.markSeen(incomingFingerprint)
 
             Result.success()
 

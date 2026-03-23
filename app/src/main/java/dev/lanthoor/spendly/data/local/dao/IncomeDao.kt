@@ -144,6 +144,17 @@ interface IncomeDao {
     @Query("SELECT * FROM income ORDER BY date DESC")
     suspend fun getAllSnapshot(): List<IncomeEntity>
 
+    @Query(
+        """
+        SELECT * FROM income
+        WHERE sms_body IS NOT NULL
+          AND sms_timestamp IS NOT NULL
+          AND sms_timestamp >= :minSmsTimestamp
+        ORDER BY sms_timestamp DESC
+        """
+    )
+    suspend fun getSmsLinkedSnapshotSince(minSmsTimestamp: Long): List<IncomeEntity>
+
     /**
      * Delete all income.
      * Used during import to clear all income data before restoring.

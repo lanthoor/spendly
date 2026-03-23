@@ -17,7 +17,7 @@ class SmsDuplicateDetectorTest {
 
         detector.markSeen(first)
 
-        assertEquals("strict", detector.findDuplicateReason(second))
+        assertEquals(SmsDuplicateDetector.DuplicateReason.STRICT, detector.findDuplicateReason(second))
     }
 
     @Test
@@ -32,7 +32,7 @@ class SmsDuplicateDetectorTest {
 
         detector.markSeen(first)
 
-        assertEquals("strict", detector.findDuplicateReason(second))
+        assertEquals(SmsDuplicateDetector.DuplicateReason.STRICT, detector.findDuplicateReason(second))
     }
 
     @Test
@@ -63,7 +63,7 @@ class SmsDuplicateDetectorTest {
 
         detector.markSeen(first)
 
-        assertEquals("semantic", detector.findDuplicateReason(second))
+        assertEquals(SmsDuplicateDetector.DuplicateReason.SEMANTIC, detector.findDuplicateReason(second))
     }
 
     @Test
@@ -108,7 +108,24 @@ class SmsDuplicateDetectorTest {
 
         detector.markSeen(first)
 
-        assertEquals("strict", detector.findDuplicateReason(second))
+        assertEquals(SmsDuplicateDetector.DuplicateReason.STRICT, detector.findDuplicateReason(second))
+
+    }
+
+    @Test
+    fun `senderless preload can still match semantic duplicate in window`() {
+        val detector = SmsDuplicateDetector()
+        val firstTime = 1_700_000_000_000L
+        val secondTime = firstTime + 3 * 60 * 1000L
+        val firstParsed = parsed(25000L, TransactionType.EXPENSE, "1234", "zomato")
+        val secondParsed = parsed(25000L, TransactionType.EXPENSE, "1234", "zomato")
+
+        val existingDbFingerprint = SmsFingerprintFactory.create(null, "UPI txn id 123", firstTime, firstParsed)
+        val incoming = SmsFingerprintFactory.create("ICICIB", "UPI txn id 456", secondTime, secondParsed)
+
+        detector.markSeen(existingDbFingerprint)
+
+        assertEquals(SmsDuplicateDetector.DuplicateReason.SEMANTIC, detector.findDuplicateReason(incoming))
     }
 
     private fun parsed(

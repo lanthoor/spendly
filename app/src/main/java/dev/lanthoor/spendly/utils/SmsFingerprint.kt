@@ -6,6 +6,7 @@ data class SmsFingerprint(
     val strictBodySenderKey: String,
     val hasSender: Boolean,
     val semanticSenderKey: String?,
+    val semanticAnySenderKey: String?,
     val timestamp: Long
 )
 
@@ -27,13 +28,19 @@ object SmsFingerprintFactory {
         val strictBodySenderKey = "s:$normalizedSender|b:$normalizedBody"
         val hasSender = normalizedSender.isNotBlank()
 
-        val hasStrongSemanticFields = hasSender && parsed != null &&
+        val hasStrongSemanticFields = parsed != null &&
             (parsed.accountHint?.isNotBlank() == true || parsed.merchantName?.isNotBlank() == true)
 
-        val semanticSenderKey = if (hasStrongSemanticFields) {
+        val semanticAnySenderKey = if (hasStrongSemanticFields) {
             val accountHint = normalizeToken(parsed?.accountHint)
             val merchant = normalizeToken(parsed?.merchantName ?: parsed?.description)
-            "s:$normalizedSender|a:${parsed?.amount}|ty:${parsed?.transactionType?.name}|acc:$accountHint|m:$merchant"
+            "a:${parsed?.amount}|ty:${parsed?.transactionType?.name}|acc:$accountHint|m:$merchant"
+        } else {
+            null
+        }
+
+        val semanticSenderKey = if (hasSender && semanticAnySenderKey != null) {
+            "s:$normalizedSender|$semanticAnySenderKey"
         } else {
             null
         }
@@ -44,6 +51,7 @@ object SmsFingerprintFactory {
             strictBodySenderKey = strictBodySenderKey,
             hasSender = hasSender,
             semanticSenderKey = semanticSenderKey,
+            semanticAnySenderKey = semanticAnySenderKey,
             timestamp = timestamp
         )
     }

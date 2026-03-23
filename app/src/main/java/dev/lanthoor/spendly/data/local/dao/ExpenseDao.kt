@@ -160,6 +160,17 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses ORDER BY date DESC")
     suspend fun getAllSnapshot(): List<ExpenseEntity>
 
+    @Query(
+        """
+        SELECT * FROM expenses
+        WHERE sms_body IS NOT NULL
+          AND sms_timestamp IS NOT NULL
+          AND sms_timestamp >= :minSmsTimestamp
+        ORDER BY sms_timestamp DESC
+        """
+    )
+    suspend fun getSmsLinkedSnapshotSince(minSmsTimestamp: Long): List<ExpenseEntity>
+
     /**
      * Delete all expenses.
      * Used during import to clear all expense data before restoring.
