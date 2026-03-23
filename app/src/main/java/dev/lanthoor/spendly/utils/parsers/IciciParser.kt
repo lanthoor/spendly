@@ -19,10 +19,10 @@ class IciciParser : BaseBankParser() {
             ?: super.extractMerchant(smsBody)
     }
 
-    override fun extractDate(smsBody: String): Long? {
+    override fun extractDate(smsBody: String, smsTimestamp: Long): Long? {
         val iciciPattern = Regex("""(\d{1,2})-([A-Za-z]{3})-(\d{2})""")
-        return iciciPattern.find(smsBody)?.let { parseDateFromMatch(it) }
-            ?: super.extractDate(smsBody)
+        return iciciPattern.find(smsBody)?.let { parseDateFromMatch(it, smsTimestamp) }
+            ?: super.extractDate(smsBody, smsTimestamp)
     }
 
     override fun getDefaultDescription(type: TransactionType?): String {

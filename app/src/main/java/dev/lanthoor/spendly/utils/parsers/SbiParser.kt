@@ -13,10 +13,10 @@ class SbiParser : BaseBankParser() {
             ?: super.extractAccountHint(smsBody)
     }
 
-    override fun extractDate(smsBody: String): Long? {
+    override fun extractDate(smsBody: String, smsTimestamp: Long): Long? {
         val sbiPattern = Regex("""(\d{1,2})([A-Za-z]{3})(\d{2})""")
-        return sbiPattern.find(smsBody)?.let { parseDateFromMatch(it) }
-            ?: super.extractDate(smsBody)
+        return sbiPattern.find(smsBody)?.let { parseDateFromMatch(it, smsTimestamp) }
+            ?: super.extractDate(smsBody, smsTimestamp)
     }
 
     override fun getDefaultDescription(type: TransactionType?): String {

@@ -40,7 +40,7 @@ abstract class BaseBankParser {
         if (merchantName != null) confidence += 0.1f
 
         // Date: try to extract from SMS body first, fall back to SMS receipt timestamp
-        val extractedDate = extractDate(smsBody)
+        val extractedDate = extractDate(smsBody, smsTimestamp)
         val date = if (extractedDate != null) {
             extractedDate
         } else {
@@ -131,7 +131,7 @@ abstract class BaseBankParser {
      * Generic implementation tries common date formats - can be overridden for bank-specific formats.
      * Returns null if no date found (caller will use SMS timestamp as fallback).
      */
-    protected open fun extractDate(smsBody: String): Long? {
+    protected open fun extractDate(smsBody: String, smsTimestamp: Long): Long? {
         // Try common date formats
         val formats = listOf(
             Regex("""(\d{1,2})-([A-Za-z]{3})-(\d{2})"""),   // 13-Dec-24
@@ -140,7 +140,7 @@ abstract class BaseBankParser {
         )
         for (format in formats) {
             format.find(smsBody)?.let { match ->
-                return parseDateFromMatch(match)
+                return parseDateFromMatch(match, smsTimestamp)
             }
         }
         return null
@@ -177,13 +177,16 @@ abstract class BaseBankParser {
      * Helper: Parse date from regex match.
      * Handles different date formats based on match groups.
      */
-    protected fun parseDateFromMatch(match: MatchResult): Long? {
+    protected fun parseDateFromMatch(match: MatchResult, smsTimestamp: Long): Long? {
         return try {
             val groups = match.groupValues
             if (groups.size < 4) return null
 
             val day = groups[1].toIntOrNull() ?: return null
-            val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+            val smsTimeCalendar = java.util.Calendar.getInstance().apply {
+                timeInMillis = smsTimestamp
+            }
+            val smsYear = smsTimeCalendar.get(java.util.Calendar.YEAR)
 
             // Detect format and parse month/year accordingly
             val (month, year) = if (groups[2].length == 3) {
@@ -195,7 +198,7 @@ abstract class BaseBankParser {
                 )
                 val month = monthMap[groups[2].lowercase()] ?: return null
                 val year = when (groups[3].length) {
-                    2 -> (currentYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
+                    2 -> (smsYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
                     4 -> groups[3].toInt()  // 2024 -> 2024
                     else -> return null
                 }
@@ -204,22 +207,23 @@ abstract class BaseBankParser {
                 // Format: 13/12/24 or 13/12/2024 (month is numeric)
                 val month = (groups[2].toIntOrNull() ?: return null) - 1  // 1-12 -> 0-11
                 val year = when (groups[3].length) {
-                    2 -> (currentYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
+                    2 -> (smsYear / 100) * 100 + groups[3].toInt()  // 24 -> 2024
                     4 -> groups[3].toInt()  // 2024 -> 2024
                     else -> return null
                 }
                 Pair(month, year)
             }
 
-            // Create Calendar object and set date components
+            // Create Calendar object and set date components.
+            // Keep time from SMS receipt timestamp to avoid midnight-only dates.
             java.util.Calendar.getInstance().apply {
                 set(java.util.Calendar.YEAR, year)
                 set(java.util.Calendar.MONTH, month)
                 set(java.util.Calendar.DAY_OF_MONTH, day)
-                set(java.util.Calendar.HOUR_OF_DAY, 0)
-                set(java.util.Calendar.MINUTE, 0)
-                set(java.util.Calendar.SECOND, 0)
-                set(java.util.Calendar.MILLISECOND, 0)
+                set(java.util.Calendar.HOUR_OF_DAY, smsTimeCalendar.get(java.util.Calendar.HOUR_OF_DAY))
+                set(java.util.Calendar.MINUTE, smsTimeCalendar.get(java.util.Calendar.MINUTE))
+                set(java.util.Calendar.SECOND, smsTimeCalendar.get(java.util.Calendar.SECOND))
+                set(java.util.Calendar.MILLISECOND, smsTimeCalendar.get(java.util.Calendar.MILLISECOND))
             }.timeInMillis
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse date: ${match.value}", e)
