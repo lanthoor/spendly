@@ -4,6 +4,20 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.2-beta] - 2026-03-24
+
+### Added
+- Added heuristic SMS account matching to improve account auto-selection from sender/body hints
+- Added SMS deduplication across realtime processing and historical scans using strict and semantic fingerprint checks
+
+### Changed
+- Improved Scapia/Federal SMS parsing for transaction type detection, account hint extraction, and merchant parsing
+- Improved SMS category inference with rule-based keyword scoring and deterministic fallback behavior
+- Bumped app version to `0.9.2-beta` with `versionCode` 92
+- Updated release metadata across build config and documentation
+
+---
+
 ## [0.9.1-beta] - 2026-03-23
 
 ### Changed
@@ -53,6 +67,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.2-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.2-beta
 [0.9.1-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.1-beta
 [0.9.0-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.0-beta
 [0.8.0-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.8.0-beta

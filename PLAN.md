@@ -1,7 +1,7 @@
 # Spendly - Development Plan
 
-**Current Version:** 0.9.1-beta (versionCode 91)
-**Database Version:** 3 (SMS timestamp fix, established 2025-12-20)
+**Current Version:** 0.9.2-beta (versionCode 92)
+**Database Version:** 4 (SMS timestamp indexes, established 2026-03-24)
 **Last Updated:** 2025-12-21
 
 ---

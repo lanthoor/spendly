@@ -3,7 +3,7 @@
 ## Project
 **Android expense tracker** (Kotlin + Jetpack Compose, offline-only)
 - Package: `dev.lanthoor.spendly`
-- Version: 0.9.1-beta (versionCode 91), DB v3
+- Version: 0.9.2-beta (versionCode 92), DB v4
 - Min/Target SDK: 31/36
 
 ## Tech Stack
@@ -29,7 +29,7 @@
 - **All I/O:** Use `Dispatchers.IO`
 
 ## Database
-- Version 3 (19 unified categories, SMS timestamp fix)
+- Version 4 (adds SMS timestamp indexes for dedup/history scan performance)
 - NO destructive migrations - always preserve data
 - Proper indexes on foreign keys
 

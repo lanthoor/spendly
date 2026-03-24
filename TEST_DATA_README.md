@@ -235,7 +235,7 @@ Total transactions: 9000
 ## Integration with Spendly
 
 The script creates transactions compatible with Spendly's:
-- Database schema version 3
+- Database schema version 4
 - 19 unified categories (no expense/income distinction)
 - 3 default accounts (My Account, Credit Card, Debit Card)
 - SMS auto-detection confidence threshold (0.7)
