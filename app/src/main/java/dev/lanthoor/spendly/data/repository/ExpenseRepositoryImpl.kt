@@ -118,6 +118,11 @@ class ExpenseRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getSmsLinkedExpensesSince(minSmsTimestamp: Long): List<Expense> {
+        return expenseDao.getSmsLinkedSnapshotSince(minSmsTimestamp)
+            .map { expenseFrom(it) }
+    }
+
     private fun expenseFrom(entity: ExpenseEntity, receipts: List<Receipt> = emptyList()): Expense {
         return Expense(
             id = entity.id,

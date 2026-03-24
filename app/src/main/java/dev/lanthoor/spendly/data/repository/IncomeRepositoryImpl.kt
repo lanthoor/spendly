@@ -93,6 +93,11 @@ class IncomeRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getSmsLinkedIncomeSince(minSmsTimestamp: Long): List<Income> {
+        return incomeDao.getSmsLinkedSnapshotSince(minSmsTimestamp)
+            .map { incomeFrom(it) }
+    }
+
     private fun incomeFrom(entity: IncomeEntity): Income {
         return Income(
             id = entity.id,

@@ -107,4 +107,9 @@ interface IncomeRepository {
      * @return Flow emitting list of recent income
      */
     fun getRecentIncome(limit: Int = 5): Flow<List<Income>>
+
+    /**
+     * Retrieves SMS-linked income with sms timestamp at or after the given threshold.
+     */
+    suspend fun getSmsLinkedIncomeSince(minSmsTimestamp: Long): List<Income>
 }

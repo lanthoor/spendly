@@ -24,6 +24,9 @@ import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.utils.SmsAccountMatcher
+import dev.lanthoor.spendly.utils.SmsDuplicateDetector
+import dev.lanthoor.spendly.utils.SmsFingerprintFactory
+import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +38,7 @@ import kotlinx.coroutines.withContext
  * Worker to scan historical SMS messages on device and create transactions for eligible messages.
  *
  * - Respects known bank senders via SmsParser.isKnownBankSender
- * - Skips messages already represented in DB by matching sms_body + sms_timestamp
+ * - Skips messages already represented in DB by strict/semantic SMS fingerprints
  * - Runs as foreground with a progress notification and supports cancel/pause/resume via broadcast receiver
  */
 @HiltWorker
@@ -68,20 +71,19 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             val enabled = preferencesRepository.getSmsAutoDetectionEnabled().first()
             if (!enabled) return@withContext Result.success()
 
-            // Load already-created SMS metadata from existing expenses/income (sms_body + sms_timestamp)
-            val expenseSnapshot = expenseRepository.getAllExpenses().first()
-            val incomeSnapshot = incomeRepository.getAllIncome().first()
-            val seen = mutableSetOf<String>()
-            expenseSnapshot.forEach { e ->
-                if (e.smsBody != null && e.smsTimestamp != null) {
-                    seen.add(hashKey(e.smsBody, e.smsTimestamp))
-                }
-            }
-            incomeSnapshot.forEach { i ->
-                if (i.smsBody != null && i.smsTimestamp != null) {
-                    seen.add(hashKey(i.smsBody, i.smsTimestamp))
-                }
-            }
+            // Load already-created SMS metadata from existing expenses/income
+            val expenseSnapshot = expenseRepository.getSmsLinkedExpensesSince(0L)
+            val incomeSnapshot = incomeRepository.getSmsLinkedIncomeSince(0L)
+            val duplicateDetector = SmsDuplicateDetector()
+
+            val existingFingerprints =
+                SmsFingerprintPreload.fromExpenses(expenseSnapshot) +
+                    SmsFingerprintPreload.fromIncome(incomeSnapshot)
+            duplicateDetector.preload(existingFingerprints)
+
+            val defaultAccount = accountRepository.getAllAccounts().firstOrNull()?.firstOrNull()
+                ?: return@withContext Result.failure()
+            val categories = categoryRepository.getAllCategories().first()
 
             // Query SMS inbox
             val resolver: ContentResolver = applicationContext.contentResolver
@@ -121,18 +123,24 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                     lastProgressUpdateTime = currentTime
                 }
 
-                // Filter unknown senders
                 if (!SmsParser.isKnownBankSender(sender)) continue
-
-                // Skip if we already saw this sms (by body+timestamp)
-                val key = hashKey(body, date)
-                if (seen.contains(key)) continue
 
                 // Attempt parse
                 val parsed = SmsParser.parseBankSms(body, sender, date) ?: continue
 
+                val fingerprint = SmsFingerprintFactory.create(
+                    sender = sender,
+                    body = body,
+                    timestamp = date,
+                    parsed = parsed
+                )
+                val duplicateReason = duplicateDetector.findDuplicateReason(fingerprint)
+                if (duplicateReason != null) {
+                    Log.d(TAG, "dedup hit ${duplicateReason.name.lowercase()}")
+                    continue
+                }
+
                 // Create transaction similar to SmsTransactionCreationWorker
-                val categories = categoryRepository.getAllCategories().first()
                 val defaultCategoryId = when (parsed.transactionType) {
                     TransactionType.EXPENSE -> 13L
                     TransactionType.INCOME -> 101L
@@ -190,7 +198,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 }
 
                 // Mark seen to avoid duplicates within this run
-                seen.add(key)
+                duplicateDetector.markSeen(fingerprint)
 
                 // Check for cancellation
                 if (isStopped) {
@@ -210,8 +218,6 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             Result.retry()
         }
     }
-
-    private fun hashKey(body: String, timestamp: Long): String = "${body.hashCode()}_${timestamp}"
 
     private fun createForegroundInfo(processed: Int, total: Int): ForegroundInfo {
         val percent = if (total <= 0) 0 else (processed * 100 / total).coerceIn(0, 100)

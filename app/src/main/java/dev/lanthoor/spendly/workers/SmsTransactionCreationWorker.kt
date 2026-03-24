@@ -16,6 +16,9 @@ import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.utils.IncomeSource
 import dev.lanthoor.spendly.utils.SmsAccountMatcher
+import dev.lanthoor.spendly.utils.SmsDuplicateDetector
+import dev.lanthoor.spendly.utils.SmsFingerprintFactory
+import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsNotificationService
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
@@ -36,6 +39,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
 
     companion object {
         private const val TAG = "SmsTransactionCreationWorker"
+        private const val PRELOAD_LOOKBACK_MS = 60L * 60 * 1000
         const val KEY_SENDER = "sender"
         const val KEY_BODY = "body"
         const val KEY_TIMESTAMP = "timestamp"
@@ -57,6 +61,28 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
             // Parse SMS
             val parsed = SmsParser.parseBankSms(body, sender, timestamp)
                 ?: return Result.success()  // Not an error, just not a valid transaction
+
+            val duplicateDetector = SmsDuplicateDetector()
+            val minSmsTimestamp = timestamp - PRELOAD_LOOKBACK_MS
+            val expenseSnapshot = expenseRepository.getSmsLinkedExpensesSince(minSmsTimestamp)
+            val incomeSnapshot = incomeRepository.getSmsLinkedIncomeSince(minSmsTimestamp)
+
+            val existingFingerprints =
+                SmsFingerprintPreload.fromExpenses(expenseSnapshot) +
+                    SmsFingerprintPreload.fromIncome(incomeSnapshot)
+            duplicateDetector.preload(existingFingerprints)
+
+            val incomingFingerprint = SmsFingerprintFactory.create(
+                sender = sender,
+                body = body,
+                timestamp = timestamp,
+                parsed = parsed
+            )
+            val duplicateReason = duplicateDetector.findDuplicateReason(incomingFingerprint)
+            if (duplicateReason != null) {
+                Log.d(TAG, "dedup hit ${duplicateReason.name.lowercase()}")
+                return Result.success()
+            }
 
             val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
             val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)

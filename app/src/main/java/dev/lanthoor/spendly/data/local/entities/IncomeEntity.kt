@@ -32,7 +32,8 @@ import androidx.room.PrimaryKey
         Index(value = ["account_id"]),
         Index(value = ["source"]),
         Index(value = ["linked_expense_id"]),
-        Index(value = ["created_at"])
+        Index(value = ["created_at"]),
+        Index(value = ["sms_timestamp"])
     ],
     foreignKeys = [
         ForeignKey(
