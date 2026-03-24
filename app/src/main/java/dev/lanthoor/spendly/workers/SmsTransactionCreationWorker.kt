@@ -19,6 +19,7 @@ import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsDuplicateDetector
 import dev.lanthoor.spendly.utils.SmsFingerprintFactory
 import dev.lanthoor.spendly.utils.SmsFingerprintPreload
+import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsNotificationService
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
@@ -95,15 +96,21 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
             )
             val accountId = matchedAccountId ?: defaultAccountId
 
-            // Get default category based on transaction type
-            // Default expense category: "Others" (ID 13)
-            // Default income category: "Salary" (ID 101)
-            val defaultCategoryId = when (parsed.transactionType) {
-                TransactionType.EXPENSE -> 13L  // "Others"
-                TransactionType.INCOME -> 101L  // "Salary"
-            }
             val categories = categoryRepository.getAllCategories().first()
-            val defaultCategory = categories.firstOrNull { it.id == defaultCategoryId }
+            val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(categories)
+            val categoryResolution = SmsCategoryMatcher.resolveCategory(
+                parsed = parsed,
+                smsBody = body,
+                sender = sender,
+                categoryLookup = categoryLookup
+            )
+
+            if (categoryResolution.matchedCategory != null || categoryResolution.category == null) {
+                Log.d(
+                    TAG,
+                    "Category selected=${categoryResolution.category?.name ?: "None"} type=${parsed.transactionType} reason=${categoryResolution.reason}"
+                )
+            }
 
             // Create transaction
             val now = System.currentTimeMillis()
@@ -112,7 +119,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                     val expense = Expense(
                         id = 0,
                         amount = parsed.amount,
-                        categoryId = defaultCategory?.id,
+                        categoryId = categoryResolution.category?.id,
                         accountId = accountId,
                         date = parsed.date,
                         description = parsed.description,
@@ -138,7 +145,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                     val income = Income(
                         id = 0,
                         amount = parsed.amount,
-                        categoryId = defaultCategory?.id,
+                        categoryId = categoryResolution.category?.id,
                         source = IncomeSource.OTHER,  // Default source
                         accountId = accountId,
                         date = parsed.date,

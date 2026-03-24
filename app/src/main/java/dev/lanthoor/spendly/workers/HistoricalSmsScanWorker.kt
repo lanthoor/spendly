@@ -27,6 +27,7 @@ import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsDuplicateDetector
 import dev.lanthoor.spendly.utils.SmsFingerprintFactory
 import dev.lanthoor.spendly.utils.SmsFingerprintPreload
+import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.utils.TransactionType
 import kotlinx.coroutines.Dispatchers
@@ -81,10 +82,6 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                     SmsFingerprintPreload.fromIncome(incomeSnapshot)
             duplicateDetector.preload(existingFingerprints)
 
-            val defaultAccount = accountRepository.getAllAccounts().firstOrNull()?.firstOrNull()
-                ?: return@withContext Result.failure()
-            val categories = categoryRepository.getAllCategories().first()
-
             // Query SMS inbox
             val resolver: ContentResolver = applicationContext.contentResolver
             val uri = Telephony.Sms.Inbox.CONTENT_URI
@@ -101,20 +98,22 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
             val totalCount = cursor.count
             var processed = 0
             var lastProgressUpdateTime = 0L
-            val progressUpdateIntervalMs = 5000L // Update progress at most once every 5 seconds
+            val progressUpdateIntervalMs = 5000L // Update at most once per 5 seconds
             val accounts = accountRepository.getAllAccounts().firstOrNull().orEmpty()
             val defaultAccountId = SmsAccountMatcher.resolveDefaultAccountId(accounts)
             if (defaultAccountId == null) {
                 cursor.close()
                 return@withContext Result.success()
             }
+            val categories = categoryRepository.getAllCategories().first()
+            val categoryLookup = SmsCategoryMatcher.buildCategoryLookup(categories)
 
             while (cursor.moveToNext()) {
                 val sender = cursor.getString(1) ?: ""
                 val body = cursor.getString(2) ?: ""
                 val date = cursor.getLong(3)
 
-                // Progress update (debounced to once every 5 seconds)
+                // Progress update (debounced to once per 5 seconds)
                 processed++
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastProgressUpdateTime >= progressUpdateIntervalMs) {
@@ -141,11 +140,19 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                 }
 
                 // Create transaction similar to SmsTransactionCreationWorker
-                val defaultCategoryId = when (parsed.transactionType) {
-                    TransactionType.EXPENSE -> 13L
-                    TransactionType.INCOME -> 101L
+                val categoryResolution = SmsCategoryMatcher.resolveCategory(
+                    parsed = parsed,
+                    smsBody = body,
+                    sender = sender,
+                    categoryLookup = categoryLookup
+                )
+
+                if (categoryResolution.matchedCategory != null || categoryResolution.category == null) {
+                    Log.d(
+                        TAG,
+                        "Category selected=${categoryResolution.category?.name ?: "None"} type=${parsed.transactionType} reason=${categoryResolution.reason}"
+                    )
                 }
-                val defaultCategory = categories.firstOrNull { it.id == defaultCategoryId }
                 val now = System.currentTimeMillis()
                 val matchedAccountId = SmsAccountMatcher.resolveAccountId(
                     accounts = accounts,
@@ -160,7 +167,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                         val expense = Expense(
                             id = 0,
                             amount = parsed.amount,
-                            categoryId = defaultCategory?.id,
+                            categoryId = categoryResolution.category?.id,
                             accountId = accountId,
                             date = parsed.date,
                             description = parsed.description,
@@ -179,7 +186,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                         val income = Income(
                             id = 0,
                             amount = parsed.amount,
-                            categoryId = defaultCategory?.id,
+                            categoryId = categoryResolution.category?.id,
                             source = dev.lanthoor.spendly.utils.IncomeSource.OTHER,
                             accountId = accountId,
                             date = parsed.date,
