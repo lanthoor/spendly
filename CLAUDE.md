@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Package:** `dev.lanthoor.spendly`
 
-**Current Version:** 0.9.1-beta (versionCode 91)
+**Current Version:** 0.9.2-beta (versionCode 92)
 
 ## Build & Test Commands
 
@@ -89,7 +89,7 @@ app/src/main/java/dev/lanthoor/spendly/
 
 ## Database
 
-**Current Version:** 3
+**Current Version:** 4
 **Strategy:** Proper migrations enabled (NO destructive migrations)
 
 ### Entities (7 total)
@@ -120,6 +120,7 @@ val amountInRupees: Double = 100.50  // ❌ WRONG
 All migrations are defined in `SpendlyDatabase.kt`:
 - **MIGRATION_1_2**: Unified category system (removed type column)
 - **MIGRATION_2_3**: Fixed SMS timestamp handling
+- **MIGRATION_3_4**: Added indexes on SMS timestamp columns for expenses and income
 
 When adding new migrations:
 1. Increment version in `@Database` annotation

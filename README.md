@@ -3,7 +3,7 @@
 [![Android CI](https://github.com/lanthoor/spendly/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/lanthoor/spendly/actions/workflows/android.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=lanthoor_spendly&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=lanthoor_spendly)
 
-**Version:** 0.9.1-beta (versionCode 91)
+**Version:** 0.9.2-beta (versionCode 92)
 
 A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-only architecture with local data persistence.
 
@@ -58,7 +58,7 @@ A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-
 ### 6. Data Management ✅
 - Local SQLite database with Room
 - **Currency:** INR only (₹)
-- Database migrations enabled (v3 with SMS timestamp fix)
+- Database migrations enabled (v4 with SMS timestamp indexes)
 - **Import/Export:** Complete JSON backup and restore
   - Export all data: transactions, receipts, budgets, recurring transactions, categories, accounts
   - Import with validation and progress tracking
@@ -115,7 +115,7 @@ A native Android expense tracker built with Kotlin and Jetpack Compose. Offline-
 
 ## Development Status
 
-**Current Version:** 0.9.1-beta (code 91)
+**Current Version:** 0.9.2-beta (code 92)
 **Status:** Beta - Core features complete with import/export
 
 **Completed Phases:**
@@ -133,7 +133,7 @@ See [PLAN.md](PLAN.md) for detailed roadmap.
 
 ## Database
 
-**Version:** 2 (unified categories, established 2025-12-16)
+**Version:** 4 (SMS timestamp indexes, established 2026-03-24)
 **Entities:** 7 (Category, Expense, Receipt, Income, Budget, RecurringTransaction, Account)
 **Strategy:** Proper migrations enabled - see [MIGRATIONS.md](MIGRATIONS.md) for guide
 
