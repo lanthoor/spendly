@@ -19,6 +19,7 @@ data class SmsCategoryResolution(
 object SmsCategoryMatcher {
     private const val MIN_SCORE = 3f
     private const val OTHERS_CATEGORY_NAME = "Others"
+    private const val INVESTMENTS_CATEGORY_NAME = "Investments"
     private val NON_ALPHANUMERIC_REGEX = Regex("[^a-z0-9\\s]")
     private val MULTI_SPACE_REGEX = Regex("\\s+")
     private val SCORE_COMPARATOR = compareBy<MatchScore> { it.score }
@@ -53,6 +54,100 @@ object SmsCategoryMatcher {
         keywordRule("Bonus", listOf("bonus", "incentive", "ex gratia")),
         keywordRule("Freelance", listOf("invoice", "client payment", "consulting", "freelance", "project fee")),
         keywordRule("Business", listOf("business", "vendor payment", "settlement", "merchant settlement"))
+    )
+
+    private val investmentStrictVendorPatterns = buildPatterns(
+        listOf(
+            "cams",
+            "cams online",
+            "camsonline",
+            "mycams",
+            "kfintech",
+            "kfin",
+            "karvy",
+            "mf utility",
+            "mfu",
+            "mfcentral",
+            "bse star mf",
+            "bsestarmf",
+            "nse nmfii",
+            "nse mf",
+            "amfi",
+            "kuvera",
+            "etmoney",
+            "fundsindia",
+            "scripbox",
+            "nj e wealth",
+            "fisdom",
+            "sbi mutual fund",
+            "sbimf",
+            "hdfc mutual fund",
+            "hdfcmf",
+            "icici prudential mutual fund",
+            "icicipru",
+            "iciciprumf",
+            "nippon india mutual fund",
+            "nipponmf",
+            "axis mutual fund",
+            "axismf",
+            "kotak mutual fund",
+            "kotakmf",
+            "uti mutual fund",
+            "utimf",
+            "aditya birla sun life mutual fund",
+            "adityabirla",
+            "absl",
+            "abslmf",
+            "tata mutual fund",
+            "dsp mutual fund",
+            "mirae asset mutual fund",
+            "motilal oswal mutual fund",
+            "motilal oswal",
+            "pgim india mutual fund",
+            "franklin templeton",
+            "canara robeco",
+            "invesco mutual fund",
+            "hsbc mutual fund",
+            "mahindra manulife",
+            "sundaram mutual fund",
+            "bandhan mutual fund",
+            "idfc mutual fund",
+            "lic mutual fund",
+            "iti mutual fund",
+            "baroda bnp paribas mutual fund",
+            "union mutual fund",
+            "quant mutual fund",
+            "jm financial mutual fund",
+            "edelweiss mutual fund",
+            "whiteoak capital mutual fund",
+            "trust mutual fund"
+        )
+    )
+
+    private val investmentMixedPlatformPatterns = buildPatterns(
+        listOf(
+            "groww",
+            "indmoney",
+            "paytm money",
+            "upstox"
+        )
+    )
+
+    private val investmentContextPatterns = buildPatterns(
+        listOf(
+            "mutual fund",
+            "sip",
+            "systematic investment plan",
+            "folio",
+            "amc",
+            "units",
+            "nav",
+            "lumpsum",
+            "stp",
+            "swp",
+            "purchase",
+            "redemption"
+        )
     )
 
     fun buildCategoryLookup(categories: List<Category>): Map<String, Category> {
@@ -97,6 +192,11 @@ object SmsCategoryMatcher {
         val merchantBlob = normalize(listOfNotNull(parsed.merchantName))
         val descriptionBlob = normalize(listOf(parsed.description))
         val bodyBlob = normalize(listOf(smsBody, sender))
+
+        if (parsed.transactionType == TransactionType.EXPENSE) {
+            matchInvestmentHeuristic(merchantBlob, descriptionBlob, bodyBlob)?.let { return it }
+        }
+
         val rules = when (parsed.transactionType) {
             TransactionType.EXPENSE -> expenseRules
             TransactionType.INCOME -> incomeRules
@@ -141,6 +241,90 @@ object SmsCategoryMatcher {
         )
     }
 
+    private fun matchInvestmentHeuristic(
+        merchantBlob: String,
+        descriptionBlob: String,
+        bodyBlob: String
+    ): SmsCategoryMatch? {
+        var score = 0f
+        var merchantHits = 0
+        var strictVendorHits = 0
+        var mixedPlatformHits = 0
+        var contextHits = 0
+        val hits = mutableListOf<String>()
+
+        investmentStrictVendorPatterns.forEach { pattern ->
+            if (containsKeyword(merchantBlob, pattern)) {
+                score += 6f
+                merchantHits++
+                strictVendorHits++
+                hits += "merchant:${pattern.keyword}"
+            } else if (containsKeyword(descriptionBlob, pattern)) {
+                score += 4f
+                strictVendorHits++
+                hits += "description:${pattern.keyword}"
+            } else if (containsKeyword(bodyBlob, pattern)) {
+                score += 3f
+                strictVendorHits++
+                hits += "body:${pattern.keyword}"
+            }
+        }
+
+        investmentMixedPlatformPatterns.forEach { pattern ->
+            if (containsKeyword(merchantBlob, pattern)) {
+                score += 3f
+                merchantHits++
+                mixedPlatformHits++
+                hits += "merchant:${pattern.keyword}"
+            } else if (containsKeyword(descriptionBlob, pattern)) {
+                score += 2f
+                mixedPlatformHits++
+                hits += "description:${pattern.keyword}"
+            } else if (containsKeyword(bodyBlob, pattern)) {
+                score += 1.5f
+                mixedPlatformHits++
+                hits += "body:${pattern.keyword}"
+            }
+        }
+
+        investmentContextPatterns.forEach { pattern ->
+            if (containsKeyword(merchantBlob, pattern)) {
+                score += 3f
+                merchantHits++
+                contextHits++
+                hits += "merchant:${pattern.keyword}"
+            } else if (containsKeyword(descriptionBlob, pattern)) {
+                score += 2f
+                contextHits++
+                hits += "description:${pattern.keyword}"
+            } else if (containsKeyword(bodyBlob, pattern)) {
+                score += 1.5f
+                contextHits++
+                hits += "body:${pattern.keyword}"
+            }
+        }
+
+        val hasStrictVendorSignal = strictVendorHits > 0
+        val hasMixedPlatformSignal = mixedPlatformHits > 0
+        val hasMutualFundPhrase = hits.any {
+            it.endsWith(":mutual fund") || it.endsWith(":systematic investment plan")
+        }
+
+        val shouldClassify = when {
+            hasStrictVendorSignal -> score >= 3f
+            hasMixedPlatformSignal -> contextHits > 0 && score >= 4f
+            else -> hasMutualFundPhrase && contextHits >= 2 && score >= 3f
+        }
+
+        if (!shouldClassify) return null
+
+        return SmsCategoryMatch(
+            categoryName = INVESTMENTS_CATEGORY_NAME,
+            score = score,
+            reason = hits.take(2).joinToString(", ")
+        )
+    }
+
     private data class MatchScore(
         val categoryName: String,
         val score: Float,
@@ -157,13 +341,19 @@ object SmsCategoryMatcher {
         )
     }
 
+    private fun buildPatterns(keywords: List<String>): List<KeywordPattern> {
+        return keywords.map { keyword ->
+            KeywordPattern(keyword = keyword, regex = buildKeywordRegex(keyword))
+        }
+    }
+
     private fun buildKeywordRegex(rawKeyword: String): Regex {
         val keyword = normalizeText(rawKeyword)
         if (keyword.isBlank()) return Regex("(?!x)x")
         val pattern = if (keyword.contains(' ')) {
             "\\b" + keyword
                 .split(" ")
-                .joinToString("\\\\s+") { Regex.escape(it) } + "\\b"
+                .joinToString("\\s+") { Regex.escape(it) } + "\\b"
         } else {
             "\\b${Regex.escape(keyword)}\\b"
         }
