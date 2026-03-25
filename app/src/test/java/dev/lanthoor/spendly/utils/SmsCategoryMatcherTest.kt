@@ -41,6 +41,79 @@ class SmsCategoryMatcherTest {
     }
 
     @Test
+    fun `matches CAMS UPI merchant to Investments`() {
+        val parsed = parsedExpense(merchant = "camsonline@hdfcbank", description = "UPI payment")
+
+        val result = SmsCategoryMatcher.match(parsed, "Paid to camsonline@hdfcbank", "HDFCBK")
+
+        assertNotNull(result)
+        assertEquals("Investments", result!!.categoryName)
+    }
+
+    @Test
+    fun `matches KFintech transfer to Investments`() {
+        val parsed = parsedExpense(merchant = "KFINTECH", description = "bank transfer")
+
+        val result = SmsCategoryMatcher.match(parsed, "Amount debited to KFINTECH", "ICICIB")
+
+        assertNotNull(result)
+        assertEquals("Investments", result!!.categoryName)
+    }
+
+    @Test
+    fun `matches BSE STAR MF SIP in body to Investments`() {
+        val parsed = parsedExpense(merchant = null, description = "debit")
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "SIP purchase via BSE STAR MF completed",
+            "SBISMS"
+        )
+
+        assertNotNull(result)
+        assertEquals("Investments", result!!.categoryName)
+    }
+
+    @Test
+    fun `mixed platform Upstox requires mutual fund context`() {
+        val parsed = parsedExpense(merchant = "upstox", description = "UPI payment")
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "Paid to upstox", "HDFCBK"
+        )
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `mixed platform Upstox with SIP context matches Investments`() {
+        val parsed = parsedExpense(merchant = "upstox", description = "sip purchase")
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "SIP purchase on upstox mutual fund",
+            "HDFCBK"
+        )
+
+        assertNotNull(result)
+        assertEquals("Investments", result!!.categoryName)
+    }
+
+    @Test
+    fun `generic fund transfer is not classified as Investments`() {
+        val parsed = parsedExpense(merchant = null, description = "fund transfer")
+
+        val result = SmsCategoryMatcher.match(
+            parsed,
+            "Fund transfer successful",
+            "HDFCBK"
+        )
+
+        assertNull(result)
+    }
+
+    @Test
     fun `matches income salary credited to Salary`() {
         val parsed = parsedIncome(description = "salary credited")
 
