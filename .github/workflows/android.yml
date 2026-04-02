@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  NDK_VERSION: "30.0.14904198"
+
 jobs:
   test:
     name: Test & Lint
@@ -26,6 +29,15 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android NDK
+      run: |
+        sdkmanager --install "ndk;${NDK_VERSION}"
+        echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
 
     - name: Cache Gradle packages
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
@@ -63,6 +75,15 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android NDK
+      run: |
+        sdkmanager --install "ndk;${NDK_VERSION}"
+        echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+
     - name: Cache Gradle packages
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
       with:
@@ -95,6 +116,15 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android NDK
+      run: |
+        sdkmanager --install "ndk;${NDK_VERSION}"
+        echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
 
     - name: Cache Gradle packages
       uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1

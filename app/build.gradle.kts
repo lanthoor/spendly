@@ -17,7 +17,7 @@ android {
         applicationId = "dev.lanthoor.spendly"
         minSdk = 31
         targetSdk = 36
-        ndkVersion = "29.0.14206865"
+        ndkVersion = "30.0.14904198"
         versionCode = 92
         versionName = "0.9.2-beta"
 
