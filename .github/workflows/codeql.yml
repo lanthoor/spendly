@@ -23,6 +23,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
+env:
+  NDK_VERSION: "30.0.14904198"
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -61,7 +64,7 @@ jobs:
         # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
     steps:
     - name: Checkout repository
-      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
@@ -73,6 +76,17 @@ jobs:
       with:
         java-version: '21'
         distribution: 'temurin'
+
+    - name: Set up Android SDK
+      if: matrix.language == 'java-kotlin'
+      uses: android-actions/setup-android@v3
+
+    - name: Install Android NDK
+      if: matrix.language == 'java-kotlin'
+      run: |
+        sdkmanager --install "ndk;${NDK_VERSION}"
+        echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
 
     - name: Cache Gradle packages
       if: matrix.language == 'java-kotlin'
@@ -116,9 +130,12 @@ jobs:
         exit 1
 
     - name: Decode Keystore
+      if: matrix.language == 'java-kotlin'
+      env:
+        RELEASE_KEYSTORE_FILE_BASE64: ${{ secrets.RELEASE_KEYSTORE_FILE }}
       run: |
-        echo "${{ secrets.RELEASE_KEYSTORE_FILE }}" | base64 -d > "$HOME/release.keystore"
-        echo "KEYSTORE_FILE=$HOME/release.keystore" >> $GITHUB_ENV
+        printf '%s' "$RELEASE_KEYSTORE_FILE_BASE64" | tr -d '\n\r' | base64 -d > "$HOME/release.keystore"
+        echo "KEYSTORE_FILE=$HOME/release.keystore" >> "$GITHUB_ENV"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@5d4e8d1aca955e8d8589aabd499c5cae939e33c7 # v4.31.9
