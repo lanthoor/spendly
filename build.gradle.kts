@@ -5,16 +5,4 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
-    id("org.sonarqube") version "7.2.3.7755"
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "lanthoor_spendly")
-        property("sonar.organization", "lanthoor")
-        property(
-            "sonar.coverage.jacoco.xmlReportPaths",
-            "${rootProject.projectDir}/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
-        )
-    }
 }

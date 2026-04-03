@@ -150,6 +150,14 @@ jobs:
       run: ./gradlew jacocoTestReport
 
     - name: Run Sonar Scan
+      uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602 # v6.0.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: ./gradlew sonar --info
+      with:
+        args: >
+          -Dsonar.projectKey=lanthoor_spendly
+          -Dsonar.organization=lanthoor
+          -Dsonar.sources=app/src/main
+          -Dsonar.tests=app/src/test,app/src/androidTest
+          -Dsonar.java.binaries=app/build/intermediates/javac/debug/classes,app/build/tmp/kotlin-classes/debug
+          -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
