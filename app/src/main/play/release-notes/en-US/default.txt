@@ -1,3 +1,7 @@
-Version 0.9.1-beta - Beta Release
+What's new
 
-Offline expense tracker for Android. Track expenses & income with SMS auto-detection for Indian banks/UPI. Interactive pie & line charts, monthly budgets with notifications, recurring transactions. Multiple account types, 19 categories, unlimited receipt attachments. Biometric app lock, JSON backup/restore, Material 3 design with light/dark themes. 100% offline, no cloud sync required.
+- bump actions/checkout from 6.0.1 to 6.0.2 (#21)
+- bump github/codeql-action from 4.31.9 to 4.35.1 (#24)
+- bump androidx.biometric:biometric from 1.4.0-alpha05 to 1.4.0-alpha06 (#26)
+- bump androidx.core:core-ktx from 1.17.0 to 1.18.0 (#23)
+- release preparation pipeline (#28)
