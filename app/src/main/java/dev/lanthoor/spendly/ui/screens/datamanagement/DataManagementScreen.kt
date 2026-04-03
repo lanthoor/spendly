@@ -501,7 +501,7 @@ private fun ProgressDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Text(
-                    text = stringResource(R.string.label_percentage, progressPercent.toInt()),
+                    text = stringResource(R.string.label_percentage, progressPercent),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

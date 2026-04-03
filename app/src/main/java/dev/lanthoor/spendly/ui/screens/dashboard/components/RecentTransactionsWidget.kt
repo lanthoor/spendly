@@ -205,7 +205,7 @@ private fun RecentTransactionItem(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = income.description ?: "Income",
+                            text = income.description,
                             style = MaterialTheme.typography.bodyMedium,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,

@@ -24,7 +24,7 @@ import javax.inject.Singleton
 class ExpenseRepositoryImpl @Inject constructor(
     private val expenseDao: ExpenseDao,
     private val receiptDao: ReceiptDao,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ExpenseRepository {
 
     override suspend fun insertExpense(expense: Expense): Long {

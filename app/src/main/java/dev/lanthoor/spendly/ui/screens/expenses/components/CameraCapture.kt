@@ -5,8 +5,7 @@ import android.net.Uri
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,8 +43,6 @@ import com.adamglin.phosphoricons.regular.Camera
 import com.adamglin.phosphoricons.regular.X
 import dev.lanthoor.spendly.R
 import java.io.File
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Full-screen camera capture composable using CameraX.
@@ -62,50 +59,29 @@ fun CameraCapture(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
     var isCapturing by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     var isCameraReady by remember { mutableStateOf(false) }
+    val cameraController = remember {
+        LifecycleCameraController(context).apply {
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        }
+    }
     val previewView = remember { PreviewView(context) }
 
-    // Initialize camera asynchronously
-    DisposableEffect(Unit) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-
-        cameraProviderFuture.addListener({
-            try {
-                val cameraProvider = cameraProviderFuture.get()
-
-                val preview = Preview.Builder()
-                    .build()
-                    .also {
-                        it.surfaceProvider = previewView.surfaceProvider
-                    }
-
-                val imageCaptureBuilder = ImageCapture.Builder()
-                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                    .build()
-
-                imageCapture = imageCaptureBuilder
-
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    CameraSelector.DEFAULT_BACK_CAMERA,
-                    preview,
-                    imageCaptureBuilder
-                )
-                isCameraReady = true
-            } catch (e: Exception) {
-                error = "Failed to start camera: ${e.message}"
-            }
-        }, ContextCompat.getMainExecutor(context))
+    // Initialize and bind camera controller
+    DisposableEffect(lifecycleOwner) {
+        try {
+            previewView.controller = cameraController
+            cameraController.bindToLifecycle(lifecycleOwner)
+            isCameraReady = true
+        } catch (e: Exception) {
+            error = "Failed to start camera: ${e.message}"
+        }
 
         onDispose {
-            // Clean up camera when composable is disposed
             try {
-                val cameraProvider = cameraProviderFuture.get()
-                cameraProvider.unbindAll()
+                cameraController.unbind()
             } catch (e: Exception) {
                 // Ignore cleanup errors
             }
@@ -171,37 +147,35 @@ fun CameraCapture(
             // Capture button
             FloatingActionButton(
                 onClick = {
-                    imageCapture?.let { capture ->
-                        isCapturing = true
-                        error = null
+                    isCapturing = true
+                    error = null
 
-                        // Create temporary file in cache directory
-                        val photoFile = File.createTempFile(
-                            "receipt_${System.currentTimeMillis()}",
-                            ".jpg",
-                            context.cacheDir
-                        )
+                    // Create temporary file in cache directory
+                    val photoFile = File.createTempFile(
+                        "receipt_${System.currentTimeMillis()}",
+                        ".jpg",
+                        context.cacheDir
+                    )
 
-                        val outputOptions = ImageCapture.OutputFileOptions
-                            .Builder(photoFile)
-                            .build()
+                    val outputOptions = ImageCapture.OutputFileOptions
+                        .Builder(photoFile)
+                        .build()
 
-                        capture.takePicture(
-                            outputOptions,
-                            ContextCompat.getMainExecutor(context),
-                            object : ImageCapture.OnImageSavedCallback {
-                                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                                    isCapturing = false
-                                    onPhotoCaptured(Uri.fromFile(photoFile))
-                                }
-
-                                override fun onError(exception: ImageCaptureException) {
-                                    isCapturing = false
-                                    error = "Capture failed: ${exception.message}"
-                                }
+                    cameraController.takePicture(
+                        outputOptions,
+                        ContextCompat.getMainExecutor(context),
+                        object : ImageCapture.OnImageSavedCallback {
+                            override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                                isCapturing = false
+                                onPhotoCaptured(Uri.fromFile(photoFile))
                             }
-                        )
-                    }
+
+                            override fun onError(exception: ImageCaptureException) {
+                                isCapturing = false
+                                error = "Capture failed: ${exception.message}"
+                            }
+                        }
+                    )
                 },
                 modifier = Modifier.size(72.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -231,15 +205,3 @@ fun CameraCapture(
         }
     }
 }
-
-/**
- * Suspending function to get CameraProvider.
- * Useful for initializing camera in a coroutine.
- */
-private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-    suspendCoroutine { continuation ->
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            continuation.resume(cameraProviderFuture.get())
-        }, ContextCompat.getMainExecutor(this))
-    }

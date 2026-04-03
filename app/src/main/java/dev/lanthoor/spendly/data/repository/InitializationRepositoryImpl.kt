@@ -34,7 +34,7 @@ class InitializationRepositoryImpl @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
     private val preferencesRepository: PreferencesRepository,
-    @ApplicationScope private val applicationScope: CoroutineScope
+    @param:ApplicationScope private val applicationScope: CoroutineScope
 ) : InitializationRepository {
 
     private val _isInitialized = MutableStateFlow(false)

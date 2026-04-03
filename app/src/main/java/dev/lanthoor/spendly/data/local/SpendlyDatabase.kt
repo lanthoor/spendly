@@ -99,11 +99,11 @@ abstract class SpendlyDatabase : RoomDatabase() {
          * - Preserves all transaction data with updated category references
          */
         val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // Check if this is actually an upgrade from version 1
                 // If tables don't exist, this migration shouldn't run
                 val cursor =
-                    database.query("SELECT name FROM sqlite_master WHERE type='table' AND name='categories'")
+                    db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='categories'")
                 val categoriesExists = cursor.moveToFirst()
                 cursor.close()
 
@@ -114,7 +114,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 }
 
                 // Step 1: Create temporary mapping table
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE TABLE IF NOT EXISTS category_migration (
                         old_id INTEGER PRIMARY KEY,
@@ -133,14 +133,14 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 mappings.forEach { (oldId, newId) ->
-                    database.execSQL(
+                    db.execSQL(
                         "INSERT INTO category_migration (old_id, new_id) VALUES (?, ?)",
                         arrayOf(oldId, newId)
                     )
                 }
 
                 // Step 3: Update foreign key references in expenses (if table exists)
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE expenses
                     SET category_id = (
@@ -151,7 +151,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 // Step 4: Update foreign key references in incomes (if table exists)
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE incomes
                     SET category_id = (
@@ -162,7 +162,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 // Step 5: Update foreign key references in budgets (if table exists)
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE budgets
                     SET category_id = (
@@ -173,7 +173,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 // Step 6: Update recurring_transactions table (if table exists)
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE recurring_transactions
                     SET category_id = (
@@ -184,13 +184,13 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 // Step 7: Delete obsolete category rows
-                database.execSQL("DELETE FROM categories WHERE id IN (110, 104, 107, 105)")
+                db.execSQL("DELETE FROM categories WHERE id IN (110, 104, 107, 105)")
 
                 // Step 8: Drop old unique index on (name, type)
-                database.execSQL("DROP INDEX IF EXISTS index_categories_name_type")
+                db.execSQL("DROP INDEX IF EXISTS index_categories_name_type")
 
                 // Step 9: Remove type column using table recreation
-                database.execSQL(
+                db.execSQL(
                     """
                     CREATE TABLE categories_new (
                         id INTEGER PRIMARY KEY NOT NULL,
@@ -203,29 +203,29 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 """
                 )
 
-                database.execSQL(
+                db.execSQL(
                     """
                     INSERT INTO categories_new (id, name, icon, color, is_custom, sort_order)
                     SELECT id, name, icon, color, is_custom, sort_order FROM categories
                 """
                 )
 
-                database.execSQL("DROP TABLE categories")
-                database.execSQL("ALTER TABLE categories_new RENAME TO categories")
+                db.execSQL("DROP TABLE categories")
+                db.execSQL("ALTER TABLE categories_new RENAME TO categories")
 
                 // Step 10: Create new unique index on just name
-                database.execSQL("CREATE UNIQUE INDEX index_categories_name ON categories(name)")
+                db.execSQL("CREATE UNIQUE INDEX index_categories_name ON categories(name)")
 
                 // Step 11: Create index for performance
-                database.execSQL("CREATE INDEX index_categories_sort_order ON categories(sort_order)")
+                db.execSQL("CREATE INDEX index_categories_sort_order ON categories(sort_order)")
 
                 // Step 12: Update category names for better semantics
-                database.execSQL("UPDATE categories SET name = 'Investments' WHERE id = 11")
-                database.execSQL("UPDATE categories SET name = 'Gifts' WHERE id = 9")
-                database.execSQL("UPDATE categories SET name = 'Rent' WHERE id = 3")
+                db.execSQL("UPDATE categories SET name = 'Investments' WHERE id = 11")
+                db.execSQL("UPDATE categories SET name = 'Gifts' WHERE id = 9")
+                db.execSQL("UPDATE categories SET name = 'Rent' WHERE id = 3")
 
                 // Step 13: Drop migration table
-                database.execSQL("DROP TABLE category_migration")
+                db.execSQL("DROP TABLE category_migration")
             }
         }
 
@@ -253,11 +253,11 @@ abstract class SpendlyDatabase : RoomDatabase() {
          * - Makes timestamp behavior consistent across all SMS-detected transactions
          */
         val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 val currentTime = System.currentTimeMillis()
 
                 // Update expenses: set date to sms_timestamp for all SMS-linked transactions
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE expenses
                     SET date = sms_timestamp,
@@ -267,7 +267,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
 
                 // Update income: set date to sms_timestamp for all SMS-linked transactions
-                database.execSQL(
+                db.execSQL(
                     """
                     UPDATE income
                     SET date = sms_timestamp,
@@ -279,11 +279,11 @@ abstract class SpendlyDatabase : RoomDatabase() {
         }
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
                     "CREATE INDEX IF NOT EXISTS index_expenses_sms_timestamp ON expenses(sms_timestamp)"
                 )
-                database.execSQL(
+                db.execSQL(
                     "CREATE INDEX IF NOT EXISTS index_income_sms_timestamp ON income(sms_timestamp)"
                 )
             }

@@ -135,7 +135,6 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
 
                     // Send notification
                     smsNotificationService.showTransactionCreatedNotification(
-                        applicationContext,
                         expenseId,
                         parsed
                     )
@@ -163,7 +162,6 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
 
                     // Send notification
                     smsNotificationService.showTransactionCreatedNotification(
-                        applicationContext,
                         incomeId,
                         parsed
                     )
