@@ -236,5 +236,5 @@ git push origin v0.5.0
 
 - **Repository:** https://github.com/lanthoor/spendly
 - **CI/CD:** GitHub Actions (see badge above)
-- **Documentation:** See `CLAUDE.md`, `PLAN.md`, `MIGRATIONS.md`
+- **Documentation:** See `CLAUDE.md,`PLAN.md,`MIGRATIONS.md`
 
