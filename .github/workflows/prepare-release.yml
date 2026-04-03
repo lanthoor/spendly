@@ -1,0 +1,281 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.9.3-beta)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+  checks: read
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare changelog, bump, and tag
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout main
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Validate version and tag availability
+        run: |
+          set -euo pipefail
+          VERSION="${RELEASE_VERSION}"
+          TAG="v${VERSION}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version format: $VERSION"
+            echo "Use: X.Y.Z or X.Y.Z-suffix"
+            exit 1
+          fi
+
+          git fetch --tags origin
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists locally: $TAG"
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists on origin: $TAG"
+            exit 1
+          fi
+
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [ "$CURRENT_BRANCH" != "main" ]; then
+            echo "Workflow must run on main, got: $CURRENT_BRANCH"
+            exit 1
+          fi
+
+      - name: Generate commit list since last tag
+        run: |
+          set -euo pipefail
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname | sed -n '1p')
+
+          if [ -n "$LATEST_TAG" ]; then
+            echo "Using commit range: ${LATEST_TAG}..HEAD"
+            git log --pretty=format:'%s' "${LATEST_TAG}..HEAD" --reverse > /tmp/release-commits.txt
+            echo "latest_tag=${LATEST_TAG}" >> "$GITHUB_OUTPUT"
+          else
+            echo "No existing release tags found; using full history"
+            git log --pretty=format:'%s' --reverse > /tmp/release-commits.txt
+            echo "latest_tag=" >> "$GITHUB_OUTPUT"
+          fi
+        id: commits
+
+      - name: Update version, changelog, and Play release notes
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import datetime
+          import re
+          from pathlib import Path
+
+          import os
+          release_version = os.environ['RELEASE_VERSION']
+
+          build_file = Path('app/build.gradle.kts')
+          changelog_file = Path('CHANGELOG.md')
+          notes_file = Path('app/src/main/play/release-notes/en-US/default.txt')
+          commits_file = Path('/tmp/release-commits.txt')
+
+          build_text = build_file.read_text(encoding='utf-8')
+
+          code_match = re.search(r'versionCode\s*=\s*(\d+)', build_text)
+          if not code_match:
+              raise RuntimeError('Could not find versionCode in app/build.gradle.kts')
+
+          current_code = int(code_match.group(1))
+          next_code = current_code + 1
+          build_text = re.sub(r'versionCode\s*=\s*\d+', f'versionCode = {next_code}', build_text, count=1)
+          build_text = re.sub(r'versionName\s*=\s*"[^"]+"', f'versionName = "{release_version}"', build_text, count=1)
+          build_file.write_text(build_text, encoding='utf-8')
+
+          commits = []
+          if commits_file.exists():
+              commits = [line.strip() for line in commits_file.read_text(encoding='utf-8').splitlines() if line.strip()]
+
+          if not commits:
+              commits = ['Maintenance and stability improvements']
+
+          today = datetime.date.today().isoformat()
+
+          changelog_text = changelog_file.read_text(encoding='utf-8')
+          if f'## [{release_version}] - ' in changelog_text:
+              raise RuntimeError(f'CHANGELOG already contains version {release_version}')
+
+          new_section_lines = [
+              f'## [{release_version}] - {today}',
+              '',
+              '### Changed',
+          ]
+          for subject in commits:
+              new_section_lines.append(f'- {subject}')
+          new_section = '\n'.join(new_section_lines) + '\n\n---\n\n'
+
+          insert_at = changelog_text.find('## [')
+          if insert_at == -1:
+              if not changelog_text.endswith('\n'):
+                  changelog_text += '\n'
+              changelog_text += '\n' + new_section
+          else:
+              changelog_text = changelog_text[:insert_at] + new_section + changelog_text[insert_at:]
+
+          link_ref = f'[{release_version}]: https://github.com/lanthoor/spendly/releases/tag/v{release_version}'
+          if link_ref not in changelog_text:
+              lines = changelog_text.splitlines()
+              link_insert_index = len(lines)
+              for idx, line in enumerate(lines):
+                  if re.match(r'^\[[^\]]+\]:\s+https://github\.com/.+/releases/tag/v', line):
+                      link_insert_index = idx
+                      break
+              lines.insert(link_insert_index, link_ref)
+              changelog_text = '\n'.join(lines) + '\n'
+
+          changelog_file.write_text(changelog_text, encoding='utf-8')
+
+          def simplify(subject: str) -> str:
+              cleaned = re.sub(r'^(feat|fix|docs|chore|refactor|perf|test|build|ci|style)(\([^)]+\))?:\s*', '', subject, flags=re.IGNORECASE)
+              cleaned = re.sub(r'\s+', ' ', cleaned).strip(' .')
+              return cleaned[:110] if cleaned else 'General improvements'
+
+          play_candidates = [s for s in commits if not s.lower().startswith('merge ')]
+          if not play_candidates:
+              play_candidates = commits
+          play_items = [simplify(s) for s in play_candidates[-5:]]
+
+          notes_lines = ["What's new", '']
+          notes_lines.extend(f'- {item}' for item in play_items)
+          notes_file.write_text('\n'.join(notes_lines) + '\n', encoding='utf-8')
+
+          Path('/tmp/release-next-version-code.txt').write_text(str(next_code), encoding='utf-8')
+          PY
+
+      - name: Commit and push to main
+        id: commit
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add app/build.gradle.kts CHANGELOG.md app/src/main/play/release-notes/en-US/default.txt
+          git commit -m "chore: bump version to ${RELEASE_VERSION}"
+          git push origin main
+
+          TARGET_SHA=$(git rev-parse HEAD)
+          NEXT_CODE=$(cat /tmp/release-next-version-code.txt)
+
+          echo "target_sha=${TARGET_SHA}" >> "$GITHUB_OUTPUT"
+          echo "next_version_code=${NEXT_CODE}" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for Android CI and CodeQL
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          set -euo pipefail
+
+          REPO="${{ github.repository }}"
+          TARGET_SHA="${{ steps.commit.outputs.target_sha }}"
+          TIMEOUT_SECONDS=3600
+          POLL_SECONDS=30
+          DEADLINE=$((SECONDS + TIMEOUT_SECONDS))
+
+          while [ "$SECONDS" -lt "$DEADLINE" ]; do
+            mapfile -t RUNS < <(gh api "/repos/${REPO}/actions/runs?head_sha=${TARGET_SHA}&event=push&per_page=100" --jq '.workflow_runs[] | select(.name == "Android CI" or .name == "CodeQL") | [.name, .status, (.conclusion // ""), .html_url] | @tsv')
+
+            declare -A STATUS_BY_NAME=()
+            declare -A CONCLUSION_BY_NAME=()
+            declare -A URL_BY_NAME=()
+
+            for run in "${RUNS[@]}"; do
+              IFS=$'\t' read -r name status conclusion url <<<"$run"
+              if [ -z "${STATUS_BY_NAME[$name]+x}" ]; then
+                STATUS_BY_NAME[$name]="$status"
+                CONCLUSION_BY_NAME[$name]="$conclusion"
+                URL_BY_NAME[$name]="$url"
+              fi
+            done
+
+            ALL_PRESENT=true
+            ALL_COMPLETE=true
+
+            for workflow_name in "Android CI" "CodeQL"; do
+              if [ -z "${STATUS_BY_NAME[$workflow_name]+x}" ]; then
+                echo "⏳ ${workflow_name}: waiting for run creation"
+                ALL_PRESENT=false
+                ALL_COMPLETE=false
+                continue
+              fi
+
+              echo "${workflow_name}: status=${STATUS_BY_NAME[$workflow_name]}, conclusion=${CONCLUSION_BY_NAME[$workflow_name]}, url=${URL_BY_NAME[$workflow_name]}"
+
+              if [ "${STATUS_BY_NAME[$workflow_name]}" != "completed" ]; then
+                ALL_COMPLETE=false
+              fi
+            done
+
+            if [ "$ALL_PRESENT" = true ] && [ "$ALL_COMPLETE" = true ]; then
+              for workflow_name in "Android CI" "CodeQL"; do
+                if [ "${CONCLUSION_BY_NAME[$workflow_name]}" != "success" ]; then
+                  echo "❌ ${workflow_name} did not succeed"
+                  exit 1
+                fi
+              done
+
+              echo "✅ Android CI and CodeQL both passed for ${TARGET_SHA}"
+              exit 0
+            fi
+
+            sleep "$POLL_SECONDS"
+          done
+
+          echo "❌ Timed out waiting for Android CI and CodeQL for ${TARGET_SHA}"
+          exit 1
+
+      - name: Tag commit and push tag
+        run: |
+          set -euo pipefail
+          TAG="v${RELEASE_VERSION}"
+          TARGET_SHA="${{ steps.commit.outputs.target_sha }}"
+
+          git fetch --tags origin
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists locally: $TAG"
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists on origin: $TAG"
+            exit 1
+          fi
+
+          git tag "$TAG" "$TARGET_SHA"
+          git push origin "$TAG"
+
+          echo "✅ Prepared release ${RELEASE_VERSION}"
+          echo "- versionCode: ${{ steps.commit.outputs.next_version_code }}"
+          echo "- commit: ${TARGET_SHA}"
+          echo "- tag: ${TAG}"
