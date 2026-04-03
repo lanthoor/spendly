@@ -238,5 +238,3 @@ git push origin v0.5.0
 - **CI/CD:** GitHub Actions (see badge above)
 - **Documentation:** See `CLAUDE.md`, `PLAN.md`, `MIGRATIONS.md`
 
-
-
