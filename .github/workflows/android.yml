@@ -31,7 +31,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@651bceb6f9ca583f16b8d75b62c36ded2ae6fc9c # v4.0.0
 
     - name: Install Android NDK
       run: |
@@ -76,7 +76,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@651bceb6f9ca583f16b8d75b62c36ded2ae6fc9c # v4.0.0
 
     - name: Install Android NDK
       run: |
@@ -118,7 +118,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@651bceb6f9ca583f16b8d75b62c36ded2ae6fc9c # v4.0.0
 
     - name: Install Android NDK
       run: |
@@ -150,6 +150,14 @@ jobs:
       run: ./gradlew jacocoTestReport
 
     - name: Run Sonar Scan
+      uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4 # v7.1.0
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: ./gradlew sonar --info
+      with:
+        args: >
+          -Dsonar.projectKey=lanthoor_spendly
+          -Dsonar.organization=lanthoor
+          -Dsonar.sources=app/src/main
+          -Dsonar.tests=app/src/test,app/src/androidTest
+          -Dsonar.java.binaries=app/build/intermediates/javac/debug/classes,app/build/tmp/kotlin-classes/debug
+          -Dsonar.coverage.jacoco.xmlReportPaths=app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml

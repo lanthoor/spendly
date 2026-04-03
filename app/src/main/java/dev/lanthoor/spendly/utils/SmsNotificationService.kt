@@ -18,7 +18,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class SmsNotificationService @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "budget_alerts"  // Reuse existing channel
@@ -31,12 +31,10 @@ class SmsNotificationService @Inject constructor(
     /**
      * Shows a notification for a newly created SMS transaction.
      *
-     * @param context Application context
      * @param transactionId The created transaction ID (expense or income)
      * @param parsed The parsed transaction data
      */
     fun showTransactionCreatedNotification(
-        context: Context,
         transactionId: Long,
         parsed: ParsedTransaction
     ) {
@@ -49,34 +47,34 @@ class SmsNotificationService @Inject constructor(
         lastNotificationTimestamps[notificationId] = now
 
         val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            this.context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Build notification text
         val typeEmoji = if (parsed.transactionType == TransactionType.EXPENSE) "💸" else "💰"
         val amountStr = CurrencyUtils.paiseToRupeeString(parsed.amount)
-        val title = context.getString(R.string.notification_transaction_added, typeEmoji)
+        val title = this.context.getString(R.string.notification_transaction_added, typeEmoji)
         val actionWord =
-            if (parsed.transactionType == TransactionType.EXPENSE) context.getString(R.string.label_spent) else context.getString(
+            if (parsed.transactionType == TransactionType.EXPENSE) this.context.getString(R.string.label_spent) else this.context.getString(
                 R.string.label_received
             )
         val merchantPart =
-            parsed.merchantName?.let { context.getString(R.string.msg_at_merchant, it) } ?: ""
+            parsed.merchantName?.let { this.context.getString(R.string.msg_at_merchant, it) } ?: ""
         val text = "$amountStr $actionWord$merchantPart"
 
         // Create intent to open main app
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(this.context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context,
+            this.context,
             transactionId.toInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         // Build notification
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this.context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(text)

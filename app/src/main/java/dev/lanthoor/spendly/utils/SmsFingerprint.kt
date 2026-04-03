@@ -32,9 +32,10 @@ object SmsFingerprintFactory {
             (parsed.accountHint?.isNotBlank() == true || parsed.merchantName?.isNotBlank() == true)
 
         val semanticAnySenderKey = if (hasStrongSemanticFields) {
-            val accountHint = normalizeToken(parsed?.accountHint)
-            val merchant = normalizeToken(parsed?.merchantName ?: parsed?.description)
-            "a:${parsed?.amount}|ty:${parsed?.transactionType?.name}|acc:$accountHint|m:$merchant"
+            val parsedTransaction = checkNotNull(parsed)
+            val accountHint = normalizeToken(parsedTransaction.accountHint)
+            val merchant = normalizeToken(parsedTransaction.merchantName ?: parsedTransaction.description)
+            "a:${parsedTransaction.amount}|ty:${parsedTransaction.transactionType.name}|acc:$accountHint|m:$merchant"
         } else {
             null
         }

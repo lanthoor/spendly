@@ -28,7 +28,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class BudgetNotificationService @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val budgetRepository: BudgetRepository,
     private val expenseRepository: ExpenseRepository,
     private val categoryRepository: CategoryRepository

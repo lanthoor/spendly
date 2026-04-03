@@ -31,7 +31,7 @@ import javax.inject.Singleton
 @Singleton
 class ReceiptRepositoryImpl @Inject constructor(
     private val receiptDao: ReceiptDao,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ReceiptRepository {
 
     override suspend fun insertReceipt(receipt: Receipt): Long {

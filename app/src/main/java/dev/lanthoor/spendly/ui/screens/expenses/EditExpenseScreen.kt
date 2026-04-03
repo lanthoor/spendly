@@ -139,7 +139,7 @@ fun EditExpenseScreen(
             Text(
                 text = stringResource(
                     R.string.label_error_with_msg,
-                    formState.submitError?.toString() ?: ""
+                    formState.submitError ?: ""
                 ),
                 color = MaterialTheme.colorScheme.error
             )

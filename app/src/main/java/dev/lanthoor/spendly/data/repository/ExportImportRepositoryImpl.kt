@@ -66,7 +66,7 @@ class ExportImportRepositoryImpl @Inject constructor(
     private val budgetDao: BudgetDao,
     private val recurringTransactionDao: RecurringTransactionDao,
     private val database: SpendlyDatabase,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ExportImportRepository {
 
     private val json = Json {
