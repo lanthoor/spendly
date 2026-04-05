@@ -547,7 +547,7 @@ Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`,
 
 ## Phase 7 - Hardening and Cleanup
 
-Evidence: `arch/phase-7-hardening-cleanup` (commits: `<pending-after-commit>`)
+Evidence: `arch/phase-7-hardening-cleanup` (commits: `511681c`, `4894767`)
 
 **Risk:** Low  
 **Purpose:** Remove migration artifacts and lock in architecture quality.
