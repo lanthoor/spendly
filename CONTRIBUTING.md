@@ -30,6 +30,7 @@ Optional commands:
 ## Commit and PR Guidelines
 
 - Use Conventional Commits (for example: `feat: ...`, `fix: ...`, `docs: ...`).
+- Use a Conventional Commit formatted PR title as well (for example: `feat: ...`, `fix: ...`, `chore(architecture): ...`).
 - Include tests for behavior changes when possible.
 - Update user-facing docs when behavior changes.
 - PR description should explain:

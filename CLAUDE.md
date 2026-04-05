@@ -274,6 +274,9 @@ This project uses **Conventional Commits**:
 - `test:` - Test additions/changes
 - `chore:` - Maintenance (version bumps, dependency updates)
 
+Pull request titles should also follow Conventional Commit format.
+For architecture migration work, use `chore(architecture): phase <n> <scope>`.
+
 ## Release Process
 
 1. Update `versionName` and `versionCode` in `app/build.gradle.kts`

@@ -38,6 +38,11 @@
 - never commit changes
 - always touch minimal files, no need to update README, CHANGELOG, etc. on each interaction. explicit instructions will be given if needed.
 
+## Commit and PR Title Conventions
+- Use Conventional Commit format for commit messages.
+- Use Conventional Commit format for pull request titles as well.
+- For architecture migration phases, prefer: `chore(architecture): phase <n> <scope>`.
+
 ## Code Patterns
 - Flow-based reactive queries
 - State hoisted to ViewModels
