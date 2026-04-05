@@ -1,6 +1,6 @@
 package dev.lanthoor.spendly.utils.parsers
 
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 
 /**
  * Parser for UPI transaction SMS.

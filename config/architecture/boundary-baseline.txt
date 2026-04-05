@@ -19,24 +19,14 @@ CROSS_FEATURE_INTERNAL_IMPORT|app/src/main/java/dev/lanthoor/spendly/ui/screens/
 CROSS_FEATURE_INTERNAL_IMPORT|app/src/main/java/dev/lanthoor/spendly/ui/screens/transactions/TransactionListViewModel.kt|14|Feature 'transactions' must not import feature 'dashboard' internals: dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 CROSS_FEATURE_INTERNAL_IMPORT|app/src/main/java/dev/lanthoor/spendly/ui/screens/transactions/components/FilterBottomSheet.kt|53|Feature 'transactions' must not import feature 'dashboard' internals: dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/BiometricAuthManager.kt|109|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|7|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|56|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|87|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|125|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|195|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|209|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|256|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|295|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/Enums.kt|377|Do not add new data or enum declarations under utils without explicit ownership
 UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/ImageCompressor.kt|38|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/LockTimeout.kt|13|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsAccountMatcher.kt|149|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|6|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|12|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|28|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|33|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|328|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsAccountMatcher.kt|151|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|8|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|14|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|30|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|35|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsCategoryMatcher.kt|330|Do not add new data or enum declarations under utils without explicit ownership
 UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsDuplicateDetector.kt|6|Do not add new data or enum declarations under utils without explicit ownership
 UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsFingerprint.kt|3|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsParser.kt|6|Do not add new data or enum declarations under utils without explicit ownership
-UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsParser.kt|25|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsParser.kt|8|Do not add new data or enum declarations under utils without explicit ownership
+UTILS_BUSINESS_DECLARATION|app/src/main/java/dev/lanthoor/spendly/utils/SmsParser.kt|27|Do not add new data or enum declarations under utils without explicit ownership

@@ -8,6 +8,8 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+import dev.lanthoor.spendly.core.model.finance.TransactionType
+
 /**
  * Comprehensive unit tests for SmsParser.
  *

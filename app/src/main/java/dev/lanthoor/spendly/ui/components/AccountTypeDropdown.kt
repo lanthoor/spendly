@@ -38,9 +38,9 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretDown
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.utils.AccountType
-import dev.lanthoor.spendly.utils.getDefaultIcon
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.finance.AccountType
+import dev.lanthoor.spendly.core.ui.format.getDefaultIcon
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Dropdown menu for selecting an account type.

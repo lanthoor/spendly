@@ -13,7 +13,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ArrowCircleDown
 import com.adamglin.phosphoricons.regular.ArrowCircleUp
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 
 /**
  * Segmented button for selecting transaction type (Expense/Income).

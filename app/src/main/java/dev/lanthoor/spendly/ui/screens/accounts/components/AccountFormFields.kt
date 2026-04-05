@@ -41,7 +41,7 @@ import dev.lanthoor.spendly.ui.components.AccountTypeDropdown
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.screens.accounts.AccountFormField
 import dev.lanthoor.spendly.ui.screens.accounts.AccountFormState
-import dev.lanthoor.spendly.utils.getDefaultIcon
+import dev.lanthoor.spendly.core.ui.format.getDefaultIcon
 
 /**
  * Reusable form fields component for add/edit account screens.

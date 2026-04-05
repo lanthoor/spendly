@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.lanthoor.spendly.utils.AppTheme
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.preferences.AppTheme
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Segmented button control for theme selection.

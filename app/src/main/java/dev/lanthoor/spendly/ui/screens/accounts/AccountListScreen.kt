@@ -32,8 +32,8 @@ import dev.lanthoor.spendly.ui.components.EmptyState
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
 import dev.lanthoor.spendly.ui.components.SpendlyTopAppBar
 import dev.lanthoor.spendly.ui.screens.accounts.components.AccountListItem
-import dev.lanthoor.spendly.utils.AccountType
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.finance.AccountType
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Screen displaying all accounts grouped by type.

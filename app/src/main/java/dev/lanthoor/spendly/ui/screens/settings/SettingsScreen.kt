@@ -51,6 +51,7 @@ import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.Lock
 import com.adamglin.phosphoricons.regular.Translate
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.ui.format.displayNameRes
 import dev.lanthoor.spendly.ui.components.LockTimeoutDropdown
 import dev.lanthoor.spendly.ui.components.ThemeSegmentedButton
 import dev.lanthoor.spendly.utils.BiometricAuthManager

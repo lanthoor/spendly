@@ -29,7 +29,7 @@ import dev.lanthoor.spendly.ui.components.DatePickerField
 import dev.lanthoor.spendly.ui.components.TimeField
 import dev.lanthoor.spendly.ui.screens.expenses.ExpenseFormState
 import dev.lanthoor.spendly.ui.screens.expenses.FormField
-import dev.lanthoor.spendly.utils.AccountType
+import dev.lanthoor.spendly.core.model.finance.AccountType
 
 /**
  * Reusable form fields for adding and editing expenses.

@@ -40,7 +40,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretDown
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.domain.model.Account
-import dev.lanthoor.spendly.utils.AccountType
+import dev.lanthoor.spendly.core.model.finance.AccountType
 
 /**
  * Dropdown menu for selecting an account.

@@ -10,8 +10,8 @@ import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.RecurringTransactionRepository
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.RecurringFrequency
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.RecurringFrequency
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

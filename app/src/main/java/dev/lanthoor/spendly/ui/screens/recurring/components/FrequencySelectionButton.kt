@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.utils.RecurringFrequency
+import dev.lanthoor.spendly.core.model.finance.RecurringFrequency
 
 /**
  * Segmented button for selecting recurring frequency (Daily/Weekly/Monthly).

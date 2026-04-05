@@ -37,8 +37,8 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretDown
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.utils.LockTimeout
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.preferences.LockTimeout
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Dropdown menu for selecting a lock timeout duration.

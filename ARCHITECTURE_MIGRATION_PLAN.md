@@ -10,15 +10,15 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` weekly (or
 
 | Phase | Name | Weight (%) | % Complete | Weighted Progress | Status | Current Focus / Blocker |
 | --- | --- | --- | --- | --- | --- | --- |
-| 0 | Baseline and Guardrails | 10 | 0% | 0.0% | Not Started | - |
-| 1 | Decompose `utils` Ownership | 15 | 0% | 0.0% | Not Started | - |
+| 0 | Baseline and Guardrails | 10 | 100% | 10.0% | Completed | Merged: native Gradle boundary checks + CI guardrail |
+| 1 | Decompose `utils` Ownership | 15 | 100% | 15.0% | In Review | PR open: ownership types moved from `utils` to `core/*` |
 | 2 | Shared Contracts Decoupling | 15 | 0% | 0.0% | Not Started | - |
 | 3 | File Decomposition | 20 | 0% | 0.0% | Not Started | - |
 | 4 | Use Case Introduction | 15 | 0% | 0.0% | Not Started | - |
 | 5 | Package-First Isolation | 10 | 0% | 0.0% | Not Started | - |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **0%** | **0.0%** | **Not Started** | **No active phase yet** |
+| **Overall Progress** | **Whole Migration** | **100** | **25%** | **25.0%** | **In Progress** | **Phase 1 PR in review; Phase 2 queued** |
 
 ### How to calculate progress
 
@@ -184,6 +184,8 @@ Every phase must be implemented on a separate branch and merged through a separa
 
 ## Phase 0 - Baseline and Guardrails
 
+Evidence: PR #34
+
 **Duration:** 1-2 days  
 **Risk:** Low  
 **Purpose:** Freeze behavior and prevent new architecture regressions.
@@ -226,6 +228,8 @@ Every phase must be implemented on a separate branch and merged through a separa
 ---
 
 ## Phase 1 - Decompose `utils` and Establish Explicit Ownership
+
+Evidence: PR #35
 
 **Duration:** 3-5 days  
 **Risk:** Medium  

@@ -6,6 +6,10 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
 
+import dev.lanthoor.spendly.core.model.preferences.YearType
+import dev.lanthoor.spendly.core.ui.format.getDisplayRange
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
+
 /**
  * Instrumented tests for YearType enum.
  *

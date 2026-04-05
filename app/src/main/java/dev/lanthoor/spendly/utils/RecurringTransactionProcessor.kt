@@ -10,6 +10,8 @@ import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
+
 /**
  * Processor for recurring transactions.
  * Handles automatic creation of expenses/income based on recurring schedules.

@@ -6,6 +6,9 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 import java.util.Locale
 
+import dev.lanthoor.spendly.core.model.finance.AccountType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
+
 class SmsAccountMatcherTest {
 
     @Test

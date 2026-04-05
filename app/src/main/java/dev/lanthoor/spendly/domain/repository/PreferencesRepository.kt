@@ -1,10 +1,10 @@
 package dev.lanthoor.spendly.domain.repository
 
-import dev.lanthoor.spendly.utils.AppLanguage
-import dev.lanthoor.spendly.utils.AppTheme
-import dev.lanthoor.spendly.utils.LockTimeout
-import dev.lanthoor.spendly.utils.TimePeriod
-import dev.lanthoor.spendly.utils.YearType
+import dev.lanthoor.spendly.core.model.preferences.AppLanguage
+import dev.lanthoor.spendly.core.model.preferences.AppTheme
+import dev.lanthoor.spendly.core.model.preferences.LockTimeout
+import dev.lanthoor.spendly.core.model.preferences.TimePeriod
+import dev.lanthoor.spendly.core.model.preferences.YearType
 import kotlinx.coroutines.flow.Flow
 
 /**

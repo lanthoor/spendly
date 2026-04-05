@@ -14,7 +14,7 @@ import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import dev.lanthoor.spendly.utils.SmsAccountMatcher
 import dev.lanthoor.spendly.utils.SmsDuplicateDetector
 import dev.lanthoor.spendly.utils.SmsFingerprintFactory
@@ -22,7 +22,7 @@ import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsNotificationService
 import dev.lanthoor.spendly.utils.SmsParser
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 

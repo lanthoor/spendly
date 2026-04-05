@@ -31,7 +31,7 @@ import dev.lanthoor.spendly.ui.theme.balanceColor
 import dev.lanthoor.spendly.ui.theme.expenseColor
 import dev.lanthoor.spendly.ui.theme.incomeColor
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.TimePeriod
+import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 
 /**
  * Card displaying period summary with income, expenses, and net balance

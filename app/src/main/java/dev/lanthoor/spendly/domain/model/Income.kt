@@ -1,7 +1,7 @@
 package dev.lanthoor.spendly.domain.model
 
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 
 /**
  * Domain model representing an income transaction.

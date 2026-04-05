@@ -8,8 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.lanthoor.spendly.utils.TimePeriod
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.preferences.TimePeriod
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Chip component displaying the current time period.

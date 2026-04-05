@@ -30,7 +30,7 @@ import dev.lanthoor.spendly.ui.theme.balanceColor
 import dev.lanthoor.spendly.ui.theme.expenseColor
 import dev.lanthoor.spendly.ui.theme.incomeColor
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.YearType
+import dev.lanthoor.spendly.core.model.preferences.YearType
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

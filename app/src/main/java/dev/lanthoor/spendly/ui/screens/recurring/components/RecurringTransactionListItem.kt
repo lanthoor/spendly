@@ -30,8 +30,8 @@ import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.theme.expenseColor
 import dev.lanthoor.spendly.ui.theme.incomeColor
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.RecurringFrequency
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.RecurringFrequency
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
