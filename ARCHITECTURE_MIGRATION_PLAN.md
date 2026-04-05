@@ -170,7 +170,8 @@ Every phase must be implemented on a separate branch and merged through a separa
 
 - Branch naming convention: `arch/phase-<n>-<short-topic>`
   - Example: `arch/phase-2-shared-contracts`
-- PR naming convention: `Architecture Phase <n>: <scope>`
+- PR naming convention: Conventional Commit format.
+  - Preferred for migration phases: `chore(architecture): phase <n> <scope>`
 - One phase per PR:
   - Do not combine work from different phases in the same PR.
   - If needed, use stacked PRs under the same phase branch lineage, then merge one phase PR to `main`.

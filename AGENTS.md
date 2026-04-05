@@ -39,6 +39,12 @@ This file contains guidelines for agentic coding agents operating in this Spendl
 
 ## Code Style Guidelines
 
+## Commit and PR Title Conventions
+
+- Use Conventional Commit format for commit messages (e.g., `feat: ...`, `fix: ...`, `docs: ...`, `chore: ...`).
+- Use Conventional Commit format for pull request titles as well.
+- For architecture migration phases, prefer: `chore(architecture): phase <n> <scope>`.
+
 ### Kotlin Conventions
 - Use `val` for immutable variables, `var` for mutable ones
 - Prefer `private` visibility over `internal` when possible
