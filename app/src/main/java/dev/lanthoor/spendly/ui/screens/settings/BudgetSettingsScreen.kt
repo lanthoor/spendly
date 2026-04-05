@@ -1,9 +1,9 @@
 package dev.lanthoor.spendly.ui.screens.settings
 
 import androidx.compose.runtime.Composable
-import dev.lanthoor.spendly.ui.screens.budgets.api.BudgetManagementScreen
+import dev.lanthoor.spendly.feature.budgets.api.BudgetFeatureEntry
 
 @Composable
 fun BudgetSettingsScreen(onNavigateBack: () -> Unit) {
-    BudgetManagementScreen(onNavigateBack = onNavigateBack)
+    BudgetFeatureEntry(onNavigateBack = onNavigateBack)
 }
