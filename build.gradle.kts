@@ -6,3 +6,5 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
 }
+
+apply(plugin = "dev.lanthoor.spendly.architecture-boundaries")
