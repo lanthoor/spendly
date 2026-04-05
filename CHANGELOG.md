@@ -4,6 +4,22 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.4] - 2026-04-05
+
+### Changed
+- feat: improve mutual fund investment category detection (#20)
+- chore(deps): bump actions/checkout from 6.0.1 to 6.0.2 (#21)
+- chore(deps): bump github/codeql-action from 4.31.9 to 4.35.1 (#24)
+- chore(deps): bump androidx.biometric:biometric from 1.4.0-alpha05 to 1.4.0-alpha06 (#26)
+- chore(deps): bump androidx.core:core-ktx from 1.17.0 to 1.18.0 (#23)
+- chore(ci): release preparation pipeline (#28)
+- chore: bump version to 0.9.3
+- chore(deps): bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.7.3 to 1.10.0 (#22)
+- docs: minimize README and add AGPL + contributing guide (#29)
+- chore(deps): bump android-actions/setup-android from 4.0.0 to 4.0.1 (#30)
+
+---
+
 ## [0.9.3] - 2026-04-03
 
 ### Changed
@@ -79,6 +95,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.4]: https://github.com/lanthoor/spendly/releases/tag/v0.9.4
 [0.9.3]: https://github.com/lanthoor/spendly/releases/tag/v0.9.3
 [0.9.2-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.2-beta
 [0.9.1-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.1-beta

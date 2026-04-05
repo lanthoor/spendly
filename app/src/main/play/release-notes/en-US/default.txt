@@ -1,7 +1,7 @@
 What's new
 
-- bump actions/checkout from 6.0.1 to 6.0.2 (#21)
-- bump github/codeql-action from 4.31.9 to 4.35.1 (#24)
-- bump androidx.biometric:biometric from 1.4.0-alpha05 to 1.4.0-alpha06 (#26)
-- bump androidx.core:core-ktx from 1.17.0 to 1.18.0 (#23)
 - release preparation pipeline (#28)
+- bump version to 0.9.3
+- bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.7.3 to 1.10.0 (#22)
+- minimize README and add AGPL + contributing guide (#29)
+- bump android-actions/setup-android from 4.0.0 to 4.0.1 (#30)
