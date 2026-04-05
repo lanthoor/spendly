@@ -24,3 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Spendly"
 include(":app")
+include(":core:model")
+include(":core:common")
+include(":core:ui")
