@@ -27,8 +27,8 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Plus
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.ui.components.IconMapper.getIcon
-import dev.lanthoor.spendly.ui.screens.budgets.BudgetWithProgress
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.budgetProgressColor
 import dev.lanthoor.spendly.ui.theme.isDark

@@ -35,6 +35,7 @@ import com.adamglin.phosphoricons.regular.CalendarBlank
 import com.adamglin.phosphoricons.regular.CaretLeft
 import com.adamglin.phosphoricons.regular.CaretRight
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.ui.components.EmptyState
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
 import dev.lanthoor.spendly.ui.components.MonthPickerDialog

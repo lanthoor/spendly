@@ -3,6 +3,7 @@ package dev.lanthoor.spendly.ui.screens.budgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.repository.BudgetRepository
@@ -316,16 +317,4 @@ data class BudgetFormState(
     val isEditMode: Boolean = false,
     val isSubmitting: Boolean = false,
     val submitError: String? = null
-)
-
-/**
- * Budget with calculated progress information.
- */
-data class BudgetWithProgress(
-    val budget: Budget,
-    val category: Category?, // null for overall budget
-    val currentSpent: Long, // in paise
-    val progress: Float, // 0.0 to 100.0+
-    val shouldNotify75: Boolean,
-    val shouldNotify100: Boolean
 )

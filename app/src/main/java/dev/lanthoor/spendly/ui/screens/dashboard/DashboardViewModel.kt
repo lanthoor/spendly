@@ -3,6 +3,8 @@ package dev.lanthoor.spendly.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
@@ -14,7 +16,6 @@ import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.ui.screens.budgets.BudgetWithProgress
 import dev.lanthoor.spendly.core.model.preferences.YearType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -397,14 +398,6 @@ data class FinancialSummary(
     // Year type used
     val yearType: YearType
 )
-
-/**
- * Recent transaction (can be expense or income)
- */
-sealed class RecentTransaction {
-    data class ExpenseTransaction(val expense: Expense) : RecentTransaction()
-    data class IncomeTransaction(val income: Income) : RecentTransaction()
-}
 
 /**
  * Category spending data for top categories

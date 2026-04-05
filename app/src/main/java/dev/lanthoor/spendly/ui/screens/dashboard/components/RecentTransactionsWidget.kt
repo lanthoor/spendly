@@ -25,10 +25,10 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChatText
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.ui.components.IconMapper
-import dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.expenseColor
 import dev.lanthoor.spendly.ui.theme.incomeColor

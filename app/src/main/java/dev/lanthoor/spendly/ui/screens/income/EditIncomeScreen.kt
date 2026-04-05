@@ -35,8 +35,8 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChatText
 import com.adamglin.phosphoricons.regular.Trash
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.ui.components.DeleteConfirmDialog
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
-import dev.lanthoor.spendly.ui.screens.expenses.components.DeleteConfirmDialog
 import dev.lanthoor.spendly.ui.screens.income.components.IncomeFormFields
 import dev.lanthoor.spendly.ui.screens.income.components.RefundExpensePicker
 import dev.lanthoor.spendly.core.model.finance.IncomeSource

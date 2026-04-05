@@ -46,12 +46,12 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChatText
 import com.adamglin.phosphoricons.regular.Funnel
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.ui.components.EmptyState
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
-import dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 import dev.lanthoor.spendly.ui.screens.expenses.EditExpenseScreen
 import dev.lanthoor.spendly.ui.screens.income.EditIncomeScreen
 import dev.lanthoor.spendly.ui.screens.transactions.components.FilterBottomSheet
