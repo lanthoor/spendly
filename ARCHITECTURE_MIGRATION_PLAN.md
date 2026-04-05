@@ -380,7 +380,7 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 
 ## Phase 4 - Introduce Use Cases for Dense Business Logic
 
-Evidence: `arch/phase-4-use-cases` (commits: `<pending-after-commit>`)
+Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1cff884`)
 
 **Risk:** Medium  
 **Purpose:** Make business rules testable and reusable.
