@@ -3,8 +3,6 @@ package dev.lanthoor.spendly.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
-import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
@@ -102,8 +100,8 @@ class DashboardViewModel @Inject constructor(
         val (yearType, selectedMonth, selectedYear) = selectionData
 
         // Calculate selected month boundaries
-        val monthStart = getMonthStartMillis(selectedYear, selectedMonth)
-        val monthEnd = getMonthEndMillis(selectedYear, selectedMonth)
+        val monthStart = DashboardDateUtils.getMonthStartMillis(selectedYear, selectedMonth)
+        val monthEnd = DashboardDateUtils.getMonthEndMillis(selectedYear, selectedMonth)
 
         // Filter transactions for selected month
         val monthExpenses = expenses.filter { it.date in monthStart..monthEnd }
@@ -120,8 +118,8 @@ class DashboardViewModel @Inject constructor(
         }
         val prevYear = prevCalendar.get(Calendar.YEAR)
         val prevMonth = prevCalendar.get(Calendar.MONTH) + 1
-        val prevMonthStart = getMonthStartMillis(prevYear, prevMonth)
-        val prevMonthEnd = getMonthEndMillis(prevYear, prevMonth)
+        val prevMonthStart = DashboardDateUtils.getMonthStartMillis(prevYear, prevMonth)
+        val prevMonthEnd = DashboardDateUtils.getMonthEndMillis(prevYear, prevMonth)
         val prevMonthExpenses = expenses.filter { it.date in prevMonthStart..prevMonthEnd }
         val prevMonthIncome = incomes.filter { it.date in prevMonthStart..prevMonthEnd }
         val prevMonthExpenseTotal = prevMonthExpenses.sumOf { it.amount }
@@ -129,13 +127,13 @@ class DashboardViewModel @Inject constructor(
         val prevMonthNetBalance = prevMonthIncomeTotal - prevMonthExpenseTotal
 
         // Month percentage changes
-        val monthExpenseChange = calculatePercentageChange(prevMonthExpenseTotal, monthExpenseTotal)
-        val monthIncomeChange = calculatePercentageChange(prevMonthIncomeTotal, monthIncomeTotal)
-        val monthBalanceChange = calculatePercentageChange(prevMonthNetBalance, monthNetBalance)
+        val monthExpenseChange = DashboardCalculators.calculatePercentageChange(prevMonthExpenseTotal, monthExpenseTotal)
+        val monthIncomeChange = DashboardCalculators.calculatePercentageChange(prevMonthIncomeTotal, monthIncomeTotal)
+        val monthBalanceChange = DashboardCalculators.calculatePercentageChange(prevMonthNetBalance, monthNetBalance)
 
         // Calculate full year boundaries based on selected month's year
         val (ytdStartYear, ytdStartMonth) = yearType.getYearStart(selectedYear, selectedMonth)
-        val ytdStart = getMonthStartMillis(ytdStartYear, ytdStartMonth)
+        val ytdStart = DashboardDateUtils.getMonthStartMillis(ytdStartYear, ytdStartMonth)
 
         // Calculate year end based on year type
         val ytdEndYear: Int
@@ -159,7 +157,7 @@ class DashboardViewModel @Inject constructor(
                 }
             }
         }
-        val ytdEnd = getMonthEndMillis(ytdEndYear, ytdEndMonth)
+        val ytdEnd = DashboardDateUtils.getMonthEndMillis(ytdEndYear, ytdEndMonth)
 
         // Filter transactions for full year
         val ytdExpenses = expenses.filter { it.date in ytdStart..ytdEnd }
@@ -169,8 +167,8 @@ class DashboardViewModel @Inject constructor(
         val ytdNetBalance = ytdIncomeTotal - ytdExpenseTotal
 
         // Calculate previous year for comparison
-        val prevYtdStart = getMonthStartMillis(ytdStartYear - 1, ytdStartMonth)
-        val prevYtdEnd = getMonthEndMillis(ytdEndYear - 1, ytdEndMonth)
+        val prevYtdStart = DashboardDateUtils.getMonthStartMillis(ytdStartYear - 1, ytdStartMonth)
+        val prevYtdEnd = DashboardDateUtils.getMonthEndMillis(ytdEndYear - 1, ytdEndMonth)
         val prevYtdExpenses = expenses.filter { it.date in prevYtdStart..prevYtdEnd }
         val prevYtdIncome = incomes.filter { it.date in prevYtdStart..prevYtdEnd }
         val prevYtdExpenseTotal = prevYtdExpenses.sumOf { it.amount }
@@ -178,33 +176,24 @@ class DashboardViewModel @Inject constructor(
         val prevYtdNetBalance = prevYtdIncomeTotal - prevYtdExpenseTotal
 
         // YTD percentage changes
-        val ytdExpenseChange = calculatePercentageChange(prevYtdExpenseTotal, ytdExpenseTotal)
-        val ytdIncomeChange = calculatePercentageChange(prevYtdIncomeTotal, ytdIncomeTotal)
-        val ytdBalanceChange = calculatePercentageChange(prevYtdNetBalance, ytdNetBalance)
+        val ytdExpenseChange = DashboardCalculators.calculatePercentageChange(prevYtdExpenseTotal, ytdExpenseTotal)
+        val ytdIncomeChange = DashboardCalculators.calculatePercentageChange(prevYtdIncomeTotal, ytdIncomeTotal)
+        val ytdBalanceChange = DashboardCalculators.calculatePercentageChange(prevYtdNetBalance, ytdNetBalance)
 
         // Get recent 5 transactions from selected month
-        val recentTransactions = buildRecentTransactions(monthExpenses, monthIncome).take(5)
+        val recentTransactions = DashboardCalculators.buildRecentTransactions(monthExpenses, monthIncome).take(5)
 
         // Get top 3 categories for selected month
-        val topCategories = getTopCategories(monthExpenses, categories)
+        val topCategories = DashboardCalculators.getTopCategories(monthExpenses, categories)
 
         // Get budgets for selected month
-        val monthBudgets =
-            allBudgets.filter { it.month == selectedMonth && it.year == selectedYear }
-        val budgetsWithProgress = monthBudgets.map { budget ->
-            val spent = calculateSpentForBudget(budget, monthExpenses)
-            val category = budget.categoryId?.let { id -> categories.find { it.id == id } }
-            val progress = budget.calculateProgress(spent)
-
-            BudgetWithProgress(
-                budget = budget,
-                category = category,
-                currentSpent = spent,
-                progress = progress,
-                shouldNotify75 = budget.shouldNotify75(spent),
-                shouldNotify100 = budget.shouldNotify100(spent)
-            )
-        }.sortedByDescending { it.progress }
+        val budgetsWithProgress = DashboardCalculators.toBudgetsWithProgress(
+            allBudgets = allBudgets,
+            selectedMonth = selectedMonth,
+            selectedYear = selectedYear,
+            categories = categories,
+            monthExpenses = monthExpenses
+        )
 
         DashboardUiState.Success(
             financialSummary = FinancialSummary(
@@ -247,163 +236,4 @@ class DashboardViewModel @Inject constructor(
         // No-op: Room Flows provide automatic real-time updates
     }
 
-    /**
-     * Calculate percentage change between two values
-     */
-    private fun calculatePercentageChange(previous: Long, current: Long): Float {
-        if (previous == 0L) {
-            return if (current > 0) 100f else 0f
-        }
-        return ((current - previous).toFloat() / previous.toFloat()) * 100f
-    }
-
-    /**
-     * Build list of recent transactions combining expenses and income
-     */
-    private fun buildRecentTransactions(
-        expenses: List<Expense>,
-        incomes: List<Income>
-    ): List<RecentTransaction> {
-        val expenseTransactions = expenses.map { expense ->
-            RecentTransaction.ExpenseTransaction(expense)
-        }
-        val incomeTransactions = incomes.map { income ->
-            RecentTransaction.IncomeTransaction(income)
-        }
-        return (expenseTransactions + incomeTransactions)
-            .sortedByDescending {
-                when (it) {
-                    is RecentTransaction.ExpenseTransaction -> it.expense.date
-                    is RecentTransaction.IncomeTransaction -> it.income.date
-                }
-            }
-    }
-
-    /**
-     * Get all spending categories for current month, sorted by amount
-     */
-    private fun getTopCategories(
-        expenses: List<Expense>,
-        categories: List<Category>
-    ): List<CategorySpending> {
-        val categoryMap = categories.associateBy { it.id }
-
-        return expenses
-            .groupBy { it.categoryId }
-            .mapNotNull { (categoryId, expenses) ->
-                categoryId?.let { id ->
-                    categoryMap[id]?.let { category ->
-                        CategorySpending(
-                            category = category,
-                            totalAmount = expenses.sumOf { it.amount },
-                            transactionCount = expenses.size
-                        )
-                    }
-                }
-            }
-            .sortedByDescending { it.totalAmount }
-    }
-
-    /**
-     * Get start of month timestamp for given year and month.
-     * Month is 1-indexed (1=Jan, 12=Dec).
-     */
-    private fun getMonthStartMillis(year: Int, month: Int): Long {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month - 1) // Calendar uses 0-indexed months
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return calendar.timeInMillis
-    }
-
-    /**
-     * Get end of month timestamp for given year and month.
-     * Month is 1-indexed (1=Jan, 12=Dec).
-     */
-    private fun getMonthEndMillis(year: Int, month: Int): Long {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month - 1) // Calendar uses 0-indexed months
-            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-            set(Calendar.HOUR_OF_DAY, 23)
-            set(Calendar.MINUTE, 59)
-            set(Calendar.SECOND, 59)
-            set(Calendar.MILLISECOND, 999)
-        }
-        return calendar.timeInMillis
-    }
-
-    /**
-     * Calculate spent amount for a budget
-     */
-    private fun calculateSpentForBudget(budget: Budget, monthExpenses: List<Expense>): Long {
-        return if (budget.categoryId != null) {
-            monthExpenses
-                .filter { it.categoryId == budget.categoryId }
-                .sumOf { it.amount }
-        } else {
-            // Overall budget includes all expenses
-            monthExpenses.sumOf { it.amount }
-        }
-    }
 }
-
-/**
- * UI state for dashboard screen
- */
-sealed interface DashboardUiState {
-    data object Loading : DashboardUiState
-    data class Success(
-        val financialSummary: FinancialSummary,
-        val recentTransactions: List<RecentTransaction>,
-        val topCategories: List<CategorySpending>,
-        val budgets: List<BudgetWithProgress>,
-        val allCategories: List<Category>,
-        val allAccounts: List<Account>,
-        val hasTransactions: Boolean
-    ) : DashboardUiState
-
-    data class Error(val message: String) : DashboardUiState
-}
-
-/**
- * Financial summary data with both month and YTD metrics.
- */
-data class FinancialSummary(
-    // Selected month info
-    val selectedMonth: Int,        // 1-12
-    val selectedYear: Int,
-
-    // Selected month metrics
-    val monthExpenses: Long,       // in paise
-    val monthIncome: Long,         // in paise
-    val monthNetBalance: Long,     // in paise
-    val monthExpenseChange: Float, // % vs previous month
-    val monthIncomeChange: Float,
-    val monthBalanceChange: Float,
-
-    // Year-to-date metrics (from year start to end of selected month)
-    val ytdExpenses: Long,         // in paise
-    val ytdIncome: Long,           // in paise
-    val ytdNetBalance: Long,       // in paise
-    val ytdExpenseChange: Float,   // % vs previous year same period
-    val ytdIncomeChange: Float,
-    val ytdBalanceChange: Float,
-
-    // Year type used
-    val yearType: YearType
-)
-
-/**
- * Category spending data for top categories
- */
-data class CategorySpending(
-    val category: Category,
-    val totalAmount: Long,      // in paise
-    val transactionCount: Int
-)
