@@ -229,7 +229,7 @@ class IncomeViewModel @Inject constructor(
                     val amountStr = value as String
                     currentState.copy(
                         amount = amountStr,
-                        amountError = validateAmount(amountStr)
+                        amountError = IncomeFormValidator.validateAmount(amountStr)
                     )
                 }
 
@@ -241,7 +241,7 @@ class IncomeViewModel @Inject constructor(
                     val descStr = value as String
                     currentState.copy(
                         description = descStr,
-                        descriptionError = validateDescription(descStr)
+                        descriptionError = IncomeFormValidator.validateDescription(descStr)
                     )
                 }
 
@@ -259,8 +259,8 @@ class IncomeViewModel @Inject constructor(
      */
     fun validateForm(): Boolean {
         val state = _formState.value
-        val amountError = validateAmount(state.amount)
-        val descError = validateDescription(state.description)
+        val amountError = IncomeFormValidator.validateAmount(state.amount)
+        val descError = IncomeFormValidator.validateDescription(state.description)
 
         _formState.update {
             it.copy(
@@ -270,31 +270,6 @@ class IncomeViewModel @Inject constructor(
         }
 
         return amountError == null && descError == null
-    }
-
-    /**
-     * Validates amount field
-     */
-    private fun validateAmount(amount: String): String? {
-        val cleanAmount = amount.replace(",", "")
-        return when {
-            cleanAmount.isBlank() -> "Amount is required"
-            cleanAmount.toDoubleOrNull() == null -> "Invalid amount format"
-            cleanAmount.toDouble() <= 0 -> "Amount must be greater than 0"
-            else -> null
-        }
-    }
-
-    /**
-     * Validates description field
-     */
-    private fun validateDescription(description: String): String? {
-        return when {
-            description.isBlank() -> "Description is required"
-            description.length < 3 -> "Description must be at least 3 characters"
-            description.length > 200 -> "Description must not exceed 200 characters"
-            else -> null
-        }
     }
 
     /**
@@ -400,67 +375,4 @@ class IncomeViewModel @Inject constructor(
         val salaryCategory = Category.PREDEFINED.find { it.id == 101L }
         _formState.value = IncomeFormState(selectedCategory = salaryCategory)
     }
-}
-
-/**
- * UI state for income list screen
- */
-sealed interface IncomeListUiState {
-    data object Loading : IncomeListUiState
-    data class Success(
-        val incomes: List<Income>,
-        val filters: IncomeFilters,
-        val totalIncome: String
-    ) : IncomeListUiState
-
-    data class Error(val message: String) : IncomeListUiState
-}
-
-/**
- * Form state for add/edit income screens
- */
-data class IncomeFormState(
-    val id: Long = 0,
-    val amount: String = "",
-    val amountError: String? = null,
-    val selectedCategory: Category? = null,
-    val accountId: Long = Account.DEFAULT_ACCOUNT_ID,
-    val source: IncomeSource = IncomeSource.SALARY, // DEPRECATED - use selectedCategory
-    val date: Long = System.currentTimeMillis(),
-    val description: String = "",
-    val descriptionError: String? = null,
-    val isRecurring: Boolean = false,
-    val linkedExpenseId: Long? = null,
-    val createdAt: Long? = null,
-    val isEditMode: Boolean = false,
-    val isSubmitting: Boolean = false,
-    val submitError: String? = null,
-    val smsSourceId: Long? = null,
-    val smsBody: String? = null,
-    val smsConfidence: Float? = null,
-    val smsTimestamp: Long? = null
-)
-
-/**
- * Filter state for income list
- */
-data class IncomeFilters(
-    val startDate: Long? = null,
-    val endDate: Long? = null,
-    val sources: Set<IncomeSource> = emptySet(),
-    val recurringOnly: Boolean = false
-)
-
-/**
- * Form fields enum for type-safe updates
- */
-enum class IncomeFormField {
-    AMOUNT,
-    CATEGORY,
-    ACCOUNT_ID,
-    SOURCE, // DEPRECATED - use CATEGORY
-    DATE,
-    DESCRIPTION,
-    IS_RECURRING,
-    LINKED_EXPENSE_ID
 }
