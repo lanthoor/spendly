@@ -492,7 +492,7 @@ Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c
 
 ## Phase 6 - Optional Gradle Modularization
 
-Evidence: `arch/phase-6-optional-modularization` (commits: `<pending-after-commit>`)
+Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`, `3f1fb3a`)
 
 **Risk:** Medium-High  
 **Purpose:** Enforce stronger boundaries and improve build performance.
