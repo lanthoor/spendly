@@ -12,11 +12,9 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -36,6 +34,8 @@ import com.adamglin.phosphoricons.regular.CaretLeft
 import com.adamglin.phosphoricons.regular.CaretRight
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
+import dev.lanthoor.spendly.ui.components.EditExpenseBottomSheet
+import dev.lanthoor.spendly.ui.components.EditIncomeBottomSheet
 import dev.lanthoor.spendly.ui.components.EmptyState
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
 import dev.lanthoor.spendly.ui.components.MonthPickerDialog
@@ -43,8 +43,6 @@ import dev.lanthoor.spendly.ui.screens.dashboard.components.BudgetProgressWidget
 import dev.lanthoor.spendly.ui.screens.dashboard.components.FinancialSummaryCard
 import dev.lanthoor.spendly.ui.screens.dashboard.components.RecentTransactionsWidget
 import dev.lanthoor.spendly.ui.screens.dashboard.components.TopCategoriesChart
-import dev.lanthoor.spendly.ui.screens.expenses.EditExpenseScreen
-import dev.lanthoor.spendly.ui.screens.income.EditIncomeScreen
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -257,30 +255,18 @@ fun DashboardScreen(
 
     // Edit Expense Modal Bottom Sheet
     if (showEditExpenseSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showEditExpenseSheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ) {
-            EditExpenseScreen(
-                expenseId = editExpenseId,
-                onNavigateBack = { showEditExpenseSheet = false }
-            )
-        }
+        EditExpenseBottomSheet(
+            expenseId = editExpenseId,
+            onDismiss = { showEditExpenseSheet = false }
+        )
     }
 
     // Edit Income Modal Bottom Sheet
     if (showEditIncomeSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showEditIncomeSheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ) {
-            EditIncomeScreen(
-                incomeId = editIncomeId,
-                onDismiss = { showEditIncomeSheet = false },
-                onSuccess = { showEditIncomeSheet = false },
-                onDelete = { showEditIncomeSheet = false }
-            )
-        }
+        EditIncomeBottomSheet(
+            incomeId = editIncomeId,
+            onDismiss = { showEditIncomeSheet = false }
+        )
     }
 
     // Month Picker Dialog

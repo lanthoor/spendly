@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
+import dev.lanthoor.spendly.ui.screens.budgets.api.BudgetListUiState
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.repository.BudgetRepository
@@ -288,21 +289,6 @@ class BudgetViewModel @Inject constructor(
     fun resetForm() {
         _formState.value = BudgetFormState()
     }
-}
-
-/**
- * UI state for budget list screen.
- */
-sealed interface BudgetListUiState {
-    data object Loading : BudgetListUiState
-    data class Success(
-        val budgets: List<BudgetWithProgress>,
-        val selectedMonth: Int,
-        val selectedYear: Int,
-        val hasOverallBudget: Boolean
-    ) : BudgetListUiState
-
-    data class Error(val message: String) : BudgetListUiState
 }
 
 /**

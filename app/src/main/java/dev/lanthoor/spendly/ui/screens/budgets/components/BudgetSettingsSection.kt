@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.settings.components
+package dev.lanthoor.spendly.ui.screens.budgets.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,14 +34,6 @@ import dev.lanthoor.spendly.ui.theme.budgetProgressColor
 import dev.lanthoor.spendly.ui.theme.isDark
 import dev.lanthoor.spendly.utils.CurrencyUtils
 
-/**
- * Budget settings section showing current budgets with progress.
- * Displays in Settings screen.
- *
- * @param budgets List of budgets with progress for current month
- * @param onAddBudget Callback to add new budget
- * @param onEditBudget Callback to edit existing budget with ID
- */
 @Composable
 fun BudgetSettingsSection(
     budgets: List<BudgetWithProgress>,
@@ -50,7 +42,6 @@ fun BudgetSettingsSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        // Add budget button
         Card(
             onClick = onAddBudget,
             modifier = Modifier.fillMaxWidth(),
@@ -89,8 +80,6 @@ fun BudgetSettingsSection(
             )
         } else {
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Budget cards
             budgets.forEach { budgetWithProgress ->
                 BudgetSettingCard(
                     budgetWithProgress = budgetWithProgress,
@@ -102,9 +91,6 @@ fun BudgetSettingsSection(
     }
 }
 
-/**
- * Individual budget card for settings section.
- */
 @Composable
 private fun BudgetSettingCard(
     budgetWithProgress: BudgetWithProgress,
@@ -115,8 +101,6 @@ private fun BudgetSettingCard(
     val category = budgetWithProgress.category
     val progress = budgetWithProgress.progress.coerceIn(0f, 100f) / 100f
     val progressPercent = budgetWithProgress.progress
-
-    // Determine progress color
     val progressColor = MaterialTheme.colorScheme.budgetProgressColor(progressPercent / 100f)
 
     Card(
@@ -131,7 +115,6 @@ private fun BudgetSettingCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Header: Icon + Name + Progress %
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -141,7 +124,6 @@ private fun BudgetSettingCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
-                    // Category icon or overall budget indicator
                     val isDark = MaterialTheme.colorScheme.isDark
                     if (category != null) {
                         Icon(
@@ -172,7 +154,6 @@ private fun BudgetSettingCard(
                     }
                 }
 
-                // Progress percentage
                 Text(
                     text = "${progressPercent.toInt()}%",
                     style = MaterialTheme.typography.titleSmall,
@@ -183,7 +164,6 @@ private fun BudgetSettingCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Progress bar
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
@@ -196,7 +176,6 @@ private fun BudgetSettingCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Spent / Budget amounts
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
