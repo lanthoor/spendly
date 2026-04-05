@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
-import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Receipt
 import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
@@ -44,6 +43,7 @@ class ExpenseViewModel @Inject constructor(
         private const val TAG = "ExpenseViewModel"
     }
 
+    private val editorService = ExpenseEditorService(expenseRepository)
     private val receiptService = ExpenseReceiptService(receiptRepository)
 
     private val _uiState = MutableStateFlow<ExpenseListUiState>(ExpenseListUiState.Loading)
@@ -299,31 +299,7 @@ class ExpenseViewModel @Inject constructor(
 
         return try {
             val state = _formState.value
-            val amountInPaise = CurrencyUtils.parseRupeesToPaise(state.amount)
-            val currentTime = System.currentTimeMillis()
-
-            val expense = Expense(
-                id = state.id,
-                amount = amountInPaise,
-                categoryId = state.categoryId,
-                date = state.date,
-                description = state.description.trim(),
-                accountId = state.accountId,
-                createdAt = state.createdAt ?: currentTime,
-                modifiedAt = currentTime,
-                smsSourceId = state.smsSourceId,
-                smsBody = state.smsBody,
-                smsConfidence = state.smsConfidence,
-                smsTimestamp = state.smsTimestamp
-            )
-
-            val result = if (state.isEditMode) {
-                expenseRepository.updateExpense(expense)
-                Result.success(expense.id)
-            } else {
-                val id = expenseRepository.insertExpense(expense)
-                Result.success(id)
-            }
+            val result = editorService.saveExpense(state)
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
@@ -347,22 +323,7 @@ class ExpenseViewModel @Inject constructor(
     }
 
     suspend fun deleteExpense(id: Long): Result<Unit> {
-        return try {
-            val expense = Expense(
-                id = id,
-                amount = 0,
-                categoryId = null,
-                date = 0,
-                description = "",
-                accountId = Account.DEFAULT_ACCOUNT_ID,
-                createdAt = 0,
-                modifiedAt = 0
-            )
-            expenseRepository.deleteExpense(expense)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return editorService.deleteExpense(id)
     }
 
     fun applyFilters(filters: ExpenseFilters) {

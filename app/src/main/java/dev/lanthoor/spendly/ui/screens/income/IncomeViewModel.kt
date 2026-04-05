@@ -3,24 +3,18 @@ package dev.lanthoor.spendly.ui.screens.income
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
-import dev.lanthoor.spendly.domain.model.Income
 import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
-import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.core.model.finance.IncomeSource
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +31,8 @@ class IncomeViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository
 ) : ViewModel() {
+
+    private val editorService = IncomeEditorService(incomeRepository)
 
     // UI State for income list screen
     private val _uiState = MutableStateFlow<IncomeListUiState>(IncomeListUiState.Loading)
@@ -109,10 +105,10 @@ class IncomeViewModel @Inject constructor(
                 // Combine with total income calculation
                 combine(
                     incomesFlow,
-                    calculateTotalIncome()
+                    IncomeFilteringEngine.calculateTotalIncome(filters, incomeRepository)
                 ) { incomes, total ->
                     IncomeListUiState.Success(
-                        incomes = applyClientSideFilters(incomes),
+                        incomes = IncomeFilteringEngine.applyClientSideFilters(incomes, filters),
                         filters = filters,
                         totalIncome = CurrencyUtils.formatPaise(total)
                     )
@@ -128,48 +124,6 @@ class IncomeViewModel @Inject constructor(
                     message = e.message ?: "Failed to load income"
                 )
             }
-        }
-    }
-
-    /**
-     * Apply client-side filters when multiple filter types are active
-     */
-    private fun applyClientSideFilters(incomes: List<Income>): List<Income> {
-        val filters = _filters.value
-        var filtered = incomes
-
-        // Apply date range if set
-        if (filters.startDate != null && filters.endDate != null) {
-            filtered = filtered.filter { it.date in filters.startDate..filters.endDate }
-        }
-
-        // Apply source filter if set
-        if (filters.sources.isNotEmpty()) {
-            filtered = filtered.filter { it.source in filters.sources }
-        }
-
-        // Apply recurring filter if set
-        if (filters.recurringOnly) {
-            filtered = filtered.filter { it.isRecurring }
-        }
-
-        return filtered
-    }
-
-    /**
-     * Calculates total income based on current filters
-     */
-    private fun calculateTotalIncome(): Flow<Long> {
-        val filters = _filters.value
-        return if (filters.startDate != null && filters.endDate != null) {
-            incomeRepository.getTotalIncomeInRange(filters.startDate, filters.endDate)
-        } else {
-            // Calculate from all incomes
-            incomeRepository.getAllIncome()
-                .catch { emit(emptyList()) }
-                .map { incomes ->
-                    incomes.sumOf { it.amount }
-                }
         }
     }
 
@@ -284,34 +238,7 @@ class IncomeViewModel @Inject constructor(
 
         return try {
             val state = _formState.value
-            val amountInPaise = CurrencyUtils.parseRupeesToPaise(state.amount)
-            val currentTime = System.currentTimeMillis()
-
-            val income = Income(
-                id = state.id,
-                amount = amountInPaise,
-                categoryId = state.selectedCategory?.id,
-                accountId = state.accountId,
-                source = state.source,
-                date = state.date,
-                description = state.description.trim(),
-                isRecurring = state.isRecurring,
-                linkedExpenseId = state.linkedExpenseId,
-                createdAt = state.createdAt ?: currentTime,
-                modifiedAt = currentTime,
-                smsSourceId = state.smsSourceId,
-                smsBody = state.smsBody,
-                smsConfidence = state.smsConfidence,
-                smsTimestamp = state.smsTimestamp
-            )
-
-            val result = if (state.isEditMode) {
-                incomeRepository.updateIncome(income)
-                Result.success(income.id)
-            } else {
-                val id = incomeRepository.insertIncome(income)
-                Result.success(id)
-            }
+            val result = editorService.saveIncome(state)
 
             _formState.update { it.copy(isSubmitting = false) }
             result
@@ -330,25 +257,7 @@ class IncomeViewModel @Inject constructor(
      * Deletes an income
      */
     suspend fun deleteIncome(id: Long): Result<Unit> {
-        return try {
-            val income = Income(
-                id = id,
-                amount = 0,
-                categoryId = null,
-                accountId = Account.DEFAULT_ACCOUNT_ID,
-                source = IncomeSource.OTHER,
-                date = 0,
-                description = "",
-                isRecurring = false,
-                linkedExpenseId = null,
-                createdAt = 0,
-                modifiedAt = 0
-            )
-            incomeRepository.deleteIncome(income)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return editorService.deleteIncome(id)
     }
 
     /**
