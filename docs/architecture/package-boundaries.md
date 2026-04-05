@@ -84,7 +84,7 @@ Current legacy violations are tracked in `config/architecture/boundary-baseline.
 
 CI fails only on **new** violations compared to baseline. Existing baseline entries must be reduced over subsequent phases.
 
-Temporary compatibility shims for moved enums/extensions are retained in `app/src/main/java/dev/lanthoor/spendly/utils/LegacyEnumShims.kt` and marked deprecated. They are scheduled for removal in later migration phases.
+Legacy compatibility shims from enum/extension migration have been removed.
 
 ## CI Integration
 
