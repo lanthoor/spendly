@@ -275,7 +275,7 @@ Evidence: PR #35
 
 ## Phase 2 - Shared Contracts and Cross-Feature Decoupling
 
-Evidence: PR #TBD
+Evidence: PR #36
 
 **Duration:** 2-4 days  
 **Risk:** Medium  
