@@ -49,6 +49,7 @@ class CustomPieChartTest {
             transactionCount = 3
         )
     )
+    private val tapSliceText = "Tap a slice to see details."
 
     @Test
     fun emptyData_showsPlaceholderText() {
@@ -60,7 +61,7 @@ class CustomPieChartTest {
         }
 
         // Should show "Tap a slice to see details" placeholder
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -74,7 +75,7 @@ class CustomPieChartTest {
         }
 
         // Placeholder text should be visible initially (no selection)
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -100,7 +101,7 @@ class CustomPieChartTest {
         }
 
         // Should render without crashing
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -126,7 +127,7 @@ class CustomPieChartTest {
         }
 
         // Should render without crashing
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -142,7 +143,7 @@ class CustomPieChartTest {
         // The chart should have accessibility semantics
         // Note: Compose testing doesn't directly expose contentDescription,
         // but we can verify it renders without accessibility issues
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -156,7 +157,7 @@ class CustomPieChartTest {
         }
 
         // Chart should render immediately without animation
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -171,7 +172,7 @@ class CustomPieChartTest {
 
         // Chart should eventually render after animation
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -206,7 +207,7 @@ class CustomPieChartTest {
         }
 
         // Should render without crashing
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 
@@ -241,7 +242,7 @@ class CustomPieChartTest {
         }
 
         // Should render without crashing
-        composeTestRule.onNodeWithText("Tap a slice to see details")
+        composeTestRule.onNodeWithText(tapSliceText)
             .assertIsDisplayed()
     }
 }

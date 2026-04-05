@@ -6,19 +6,19 @@
 
 ## Migration Progress Summary
 
-Use this as the quick "how far are we" dashboard. Update `% Complete` weekly (or per PR merge), then update `Weighted Progress` and the `Overall Progress` row.
+Use this as the quick "how far are we" dashboard. Update `% Complete` regularly (or per PR merge), then update `Weighted Progress` and the `Overall Progress` row.
 
 | Phase | Name | Weight (%) | % Complete | Weighted Progress | Status | Current Focus / Blocker |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0 | Baseline and Guardrails | 10 | 100% | 10.0% | Completed | Merged: native Gradle boundary checks + CI guardrail |
 | 1 | Decompose `utils` Ownership | 15 | 100% | 15.0% | Completed | Merged: ownership types moved from `utils` to `core/*` |
-| 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | In Review | PR prepared: shared contracts extracted and baseline reduced |
-| 3 | File Decomposition | 20 | 0% | 0.0% | Not Started | - |
+| 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
+| 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
 | 4 | Use Case Introduction | 15 | 0% | 0.0% | Not Started | - |
 | 5 | Package-First Isolation | 10 | 0% | 0.0% | Not Started | - |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **40%** | **40.0%** | **In Progress** | **Phase 2 PR ready; Phase 3 queued** |
+| **Overall Progress** | **Whole Migration** | **100** | **60%** | **60.0%** | **In Progress** | **Phase 3 completed; ready to start Phase 4 use-case extraction** |
 
 ### How to calculate progress
 
@@ -186,7 +186,6 @@ Every phase must be implemented on a separate branch and merged through a separa
 
 Evidence: PR #34
 
-**Duration:** 1-2 days  
 **Risk:** Low  
 **Purpose:** Freeze behavior and prevent new architecture regressions.
 
@@ -231,7 +230,6 @@ Evidence: PR #34
 
 Evidence: PR #35
 
-**Duration:** 3-5 days  
 **Risk:** Medium  
 **Purpose:** Remove major ambiguity source and clarify model ownership.
 
@@ -277,7 +275,6 @@ Evidence: PR #35
 
 Evidence: PR #36
 
-**Duration:** 2-4 days  
 **Risk:** Medium  
 **Purpose:** Remove direct feature-to-feature internals coupling.
 
@@ -316,7 +313,8 @@ Evidence: PR #36
 
 ## Phase 3 - File Decomposition (God-File Reduction)
 
-**Duration:** 1-2 weeks  
+Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bffd3b`, `7b5c8a0`, `4f246bd`, `f422725`, `e8eb5d9`, `8ea8746`, `232b95d`, `bed59ee`)
+
 **Risk:** Medium  
 **Purpose:** Improve cohesion, testability, and maintainability.
 
@@ -345,6 +343,20 @@ Evidence: PR #36
 
 - Reduced file size and complexity across top offenders.
 
+### Top Offender Decomposition (Phase 3)
+
+| File | Before | After | Notes |
+| --- | ---: | ---: | --- |
+| `ui/screens/datamanagement/DataManagementScreen.kt` | 574 | 91 | Section cards + dialogs extracted to components |
+| `data/repository/ExportImportRepositoryImpl.kt` | 683 | 287 | Validator, mapper, and import operations extracted |
+| `ui/screens/settings/SettingsScreen.kt` | 531 | 266 | Settings items/dialogs/sections split into components |
+| `ui/screens/analytics/AnalyticsViewModel.kt` | 485 | 253 | Trend and period calculations extracted |
+| `ui/screens/dashboard/DashboardViewModel.kt` | 409 | 239 | Date utilities/calculators/ui-state extracted |
+| `ui/screens/income/IncomeViewModel.kt` | 466 | 287 | UI state, validation, filtering, editor services extracted |
+| `ui/screens/expenses/ExpenseViewModel.kt` | 492 | 342 | Receipt/form/filter/editor services extracted |
+| `ui/screens/transactions/TransactionListScreen.kt` | 412 | 248 | Transaction row composable extracted |
+| `ui/screens/analytics/components/canvas/CustomLineChart.kt` | 749 | 303 | Accessibility/selection/tooltip/draw helpers extracted |
+
 ### Exit Criteria
 
 - Most files below ~300 lines unless justified.
@@ -368,7 +380,6 @@ Evidence: PR #36
 
 ## Phase 4 - Introduce Use Cases for Dense Business Logic
 
-**Duration:** 4-7 days  
 **Risk:** Medium  
 **Purpose:** Make business rules testable and reusable.
 
@@ -409,7 +420,6 @@ Evidence: PR #36
 
 ## Phase 5 - Package-First Feature Isolation (Still Single Module)
 
-**Duration:** 4-6 days  
 **Risk:** Medium  
 **Purpose:** Achieve target package shape before Gradle module extraction.
 
@@ -446,7 +456,6 @@ Evidence: PR #36
 
 ## Phase 6 - Optional Gradle Modularization
 
-**Duration:** 1-2 weeks  
 **Risk:** Medium-High  
 **Purpose:** Enforce stronger boundaries and improve build performance.
 
@@ -484,7 +493,6 @@ Evidence: PR #36
 
 ## Phase 7 - Hardening and Cleanup
 
-**Duration:** 2-3 days  
 **Risk:** Low  
 **Purpose:** Remove migration artifacts and lock in architecture quality.
 
@@ -573,6 +581,7 @@ Run at minimum after every phase:
 
 - `./gradlew test`
 - `./gradlew lint`
+- `./gradlew connectedAndroidTest`
 - Architecture checks (Detekt/lint custom rules)
 
 For high-risk phases (3, 4, 6), also run:

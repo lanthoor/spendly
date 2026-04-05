@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
-import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Receipt
 import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
@@ -16,12 +15,8 @@ import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.ReceiptRepository
 import dev.lanthoor.spendly.utils.BudgetNotificationService
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.FileTypeValidator
-import dev.lanthoor.spendly.utils.FileUtils
-import dev.lanthoor.spendly.utils.ImageCompressor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,12 +24,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,6 +42,9 @@ class ExpenseViewModel @Inject constructor(
     companion object {
         private const val TAG = "ExpenseViewModel"
     }
+
+    private val editorService = ExpenseEditorService(expenseRepository)
+    private val receiptService = ExpenseReceiptService(receiptRepository)
 
     private val _uiState = MutableStateFlow<ExpenseListUiState>(ExpenseListUiState.Loading)
     val uiState: StateFlow<ExpenseListUiState> = _uiState.asStateFlow()
@@ -119,10 +115,10 @@ class ExpenseViewModel @Inject constructor(
 
                 combine(
                     expensesFlow,
-                    calculateTotalSpent()
+                    ExpenseFilteringEngine.calculateTotalSpent(filters, expenseRepository)
                 ) { expenses, total ->
                     ExpenseListUiState.Success(
-                        expenses = applyClientSideFilters(expenses),
+                        expenses = ExpenseFilteringEngine.applyClientSideFilters(expenses, filters),
                         filters = filters,
                         totalSpent = CurrencyUtils.formatPaise(total)
                     )
@@ -138,41 +134,6 @@ class ExpenseViewModel @Inject constructor(
                     message = e.message ?: "Failed to load expenses"
                 )
             }
-        }
-    }
-
-    private fun applyClientSideFilters(expenses: List<Expense>): List<Expense> {
-        val filters = _filters.value
-        var filtered = expenses
-
-        if (filters.startDate != null && filters.endDate != null) {
-            filtered = filtered.filter { it.date in filters.startDate..filters.endDate }
-        }
-
-        if (filters.categoryIds.isNotEmpty()) {
-            filtered = filtered.filter { expense ->
-                expense.categoryId in filters.categoryIds ||
-                        (expense.categoryId == null && filters.includeOthers)
-            }
-        }
-
-        if (filters.accountIds.isNotEmpty()) {
-            filtered = filtered.filter { it.accountId in filters.accountIds }
-        }
-
-        return filtered
-    }
-
-    private fun calculateTotalSpent(): Flow<Long> {
-        val filters = _filters.value
-        return if (filters.startDate != null && filters.endDate != null) {
-            expenseRepository.getTotalSpentInRange(filters.startDate, filters.endDate)
-        } else {
-            expenseRepository.getAllExpenses()
-                .catch { emit(emptyList()) }
-                .map { expenses ->
-                    expenses.sumOf { it.amount }
-                }
         }
     }
 
@@ -238,59 +199,8 @@ class ExpenseViewModel @Inject constructor(
         expenseId: Long,
         sourceUri: Uri
     ): Result<Receipt> = withContext(Dispatchers.IO) {
-        var tempFile: File? = null
         try {
-            if (expenseId == 0L) {
-                return@withContext Result.failure(Exception("Please save the expense before adding receipts"))
-            }
-
-            val extension = FileUtils.getFileExtension(sourceUri, context)
-
-            tempFile = FileUtils.copyUriToTempFile(context, sourceUri, extension)
-            if (tempFile == null) {
-                return@withContext Result.failure(Exception("Failed to read file"))
-            }
-
-            val validationResult = FileUtils.validateReceiptFile(tempFile)
-            if (validationResult != FileTypeValidator.ValidationResult.Valid) {
-                return@withContext Result.failure(Exception(validationResult.getErrorMessage()))
-            }
-
-            val fileSize = tempFile.length()
-            if (!FileUtils.hasEnoughStorage(context, fileSize + (1024 * 1024))) {
-                return@withContext Result.failure(Exception("Not enough storage space"))
-            }
-
-            val timestamp = System.currentTimeMillis()
-            val fileName = FileUtils.generateReceiptFileName(expenseId, timestamp, extension)
-            val receiptsDir = FileUtils.getReceiptsDirectory(context)
-            val destFile = File(receiptsDir, fileName)
-
-            val compressionResult = ImageCompressor.compressImage(
-                context = context,
-                sourceUri = sourceUri,
-                destFile = destFile,
-                fileExtension = extension
-            )
-
-            if (!compressionResult.success) {
-                return@withContext Result.failure(
-                    Exception(
-                        compressionResult.error ?: "Failed to process file"
-                    )
-                )
-            }
-
-            val receipt = Receipt(
-                expenseId = expenseId,
-                filePath = "receipts/$fileName",
-                fileType = extension.uppercase(),
-                fileSizeBytes = compressionResult.fileSizeBytes,
-                compressed = compressionResult.wasCompressed
-            )
-
-            val receiptId = receiptRepository.insertReceipt(receipt)
-            val savedReceipt = receipt.copy(id = receiptId)
+            val savedReceipt = receiptService.addReceipt(context, expenseId, sourceUri).getOrThrow()
 
             withContext(Dispatchers.Main) {
                 _formState.update { currentState ->
@@ -310,15 +220,13 @@ class ExpenseViewModel @Inject constructor(
                 }
             }
             Result.failure(e)
-        } finally {
-            tempFile?.delete()
         }
     }
 
-    suspend fun deleteReceipt(context: Context, receipt: Receipt): Result<Unit> =
+    suspend fun deleteReceipt(@Suppress("UNUSED_PARAMETER") context: Context, receipt: Receipt): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
-                receiptRepository.deleteReceipt(receipt)
+                receiptService.deleteReceipt(receipt).getOrThrow()
 
                 withContext(Dispatchers.Main) {
                     _formState.update { currentState ->
@@ -348,7 +256,7 @@ class ExpenseViewModel @Inject constructor(
                     val amountStr = value as String
                     currentState.copy(
                         amount = amountStr,
-                        amountError = validateAmount(amountStr)
+                        amountError = ExpenseFormValidator.validateAmount(amountStr)
                     )
                 }
 
@@ -358,7 +266,7 @@ class ExpenseViewModel @Inject constructor(
                     val descStr = value as String
                     currentState.copy(
                         description = descStr,
-                        descriptionError = validateDescription(descStr)
+                        descriptionError = ExpenseFormValidator.validateDescription(descStr)
                     )
                 }
 
@@ -369,8 +277,8 @@ class ExpenseViewModel @Inject constructor(
 
     fun validateForm(): Boolean {
         val state = _formState.value
-        val amountError = validateAmount(state.amount)
-        val descError = validateDescription(state.description)
+        val amountError = ExpenseFormValidator.validateAmount(state.amount)
+        val descError = ExpenseFormValidator.validateDescription(state.description)
 
         _formState.update {
             it.copy(
@@ -382,25 +290,6 @@ class ExpenseViewModel @Inject constructor(
         return amountError == null && descError == null
     }
 
-    private fun validateAmount(amount: String): String? {
-        val cleanAmount = amount.replace(",", "")
-        return when {
-            cleanAmount.isBlank() -> "Amount is required"
-            cleanAmount.toDoubleOrNull() == null -> "Invalid amount format"
-            cleanAmount.toDouble() <= 0 -> "Amount must be greater than 0"
-            else -> null
-        }
-    }
-
-    private fun validateDescription(description: String): String? {
-        return when {
-            description.isBlank() -> "Description is required"
-            description.length < 3 -> "Description must be at least 3 characters"
-            description.length > 200 -> "Description must not exceed 200 characters"
-            else -> null
-        }
-    }
-
     suspend fun saveExpense(): Result<Long> {
         if (!validateForm()) {
             return Result.failure(Exception("Please fix validation errors"))
@@ -410,31 +299,7 @@ class ExpenseViewModel @Inject constructor(
 
         return try {
             val state = _formState.value
-            val amountInPaise = CurrencyUtils.parseRupeesToPaise(state.amount)
-            val currentTime = System.currentTimeMillis()
-
-            val expense = Expense(
-                id = state.id,
-                amount = amountInPaise,
-                categoryId = state.categoryId,
-                date = state.date,
-                description = state.description.trim(),
-                accountId = state.accountId,
-                createdAt = state.createdAt ?: currentTime,
-                modifiedAt = currentTime,
-                smsSourceId = state.smsSourceId,
-                smsBody = state.smsBody,
-                smsConfidence = state.smsConfidence,
-                smsTimestamp = state.smsTimestamp
-            )
-
-            val result = if (state.isEditMode) {
-                expenseRepository.updateExpense(expense)
-                Result.success(expense.id)
-            } else {
-                val id = expenseRepository.insertExpense(expense)
-                Result.success(id)
-            }
+            val result = editorService.saveExpense(state)
 
             viewModelScope.launch(Dispatchers.IO) {
                 try {
@@ -458,22 +323,7 @@ class ExpenseViewModel @Inject constructor(
     }
 
     suspend fun deleteExpense(id: Long): Result<Unit> {
-        return try {
-            val expense = Expense(
-                id = id,
-                amount = 0,
-                categoryId = null,
-                date = 0,
-                description = "",
-                accountId = Account.DEFAULT_ACCOUNT_ID,
-                createdAt = 0,
-                modifiedAt = 0
-            )
-            expenseRepository.deleteExpense(expense)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return editorService.deleteExpense(id)
     }
 
     fun applyFilters(filters: ExpenseFilters) {
