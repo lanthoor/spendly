@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.ui.components.DeleteConfirmDialog
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
-import dev.lanthoor.spendly.ui.screens.expenses.components.DeleteConfirmDialog
 import dev.lanthoor.spendly.ui.screens.recurring.components.RecurringTransactionFormFields
 import kotlinx.coroutines.launch
 

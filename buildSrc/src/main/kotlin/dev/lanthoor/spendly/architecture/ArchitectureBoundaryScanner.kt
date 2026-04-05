@@ -64,7 +64,12 @@ class ArchitectureBoundaryScanner(
                 }
 
                 val importedFeature = extractFeatureFromImport(importTarget)
-                if (currentFeature != null && importedFeature != null && currentFeature != importedFeature) {
+                if (
+                    currentFeature != null &&
+                    importedFeature != null &&
+                    currentFeature != importedFeature &&
+                    !isFeatureApiImport(importTarget, importedFeature)
+                ) {
                     violations += ArchitectureViolation(
                         ruleId = "CROSS_FEATURE_INTERNAL_IMPORT",
                         filePath = relativePath,
@@ -106,6 +111,10 @@ class ArchitectureBoundaryScanner(
     private fun extractFeatureFromImport(importTarget: String): String? {
         val match = featureSegmentRegex.find(importTarget) ?: return null
         return match.groupValues[1]
+    }
+
+    private fun isFeatureApiImport(importTarget: String, featureName: String): Boolean {
+        return importTarget.contains(".ui.screens.$featureName.api.")
     }
 
     private fun isDomainPackage(packageName: String): Boolean =

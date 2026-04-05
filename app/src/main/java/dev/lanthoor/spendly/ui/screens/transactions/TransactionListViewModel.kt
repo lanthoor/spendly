@@ -3,6 +3,7 @@ package dev.lanthoor.spendly.ui.screens.transactions
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
@@ -11,7 +12,6 @@ import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
-import dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

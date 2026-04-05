@@ -48,9 +48,9 @@ import com.adamglin.phosphoricons.regular.CalendarBlank
 import com.adamglin.phosphoricons.regular.TrendDown
 import com.adamglin.phosphoricons.regular.TrendUp
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.ui.components.IconMapper
-import dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
 import dev.lanthoor.spendly.ui.screens.transactions.TransactionType
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.isDark

@@ -19,7 +19,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -46,14 +45,14 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChatText
 import com.adamglin.phosphoricons.regular.Funnel
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.RecentTransaction
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
+import dev.lanthoor.spendly.ui.components.EditExpenseBottomSheet
+import dev.lanthoor.spendly.ui.components.EditIncomeBottomSheet
 import dev.lanthoor.spendly.ui.components.EmptyState
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.components.LoadingIndicator
-import dev.lanthoor.spendly.ui.screens.dashboard.RecentTransaction
-import dev.lanthoor.spendly.ui.screens.expenses.EditExpenseScreen
-import dev.lanthoor.spendly.ui.screens.income.EditIncomeScreen
 import dev.lanthoor.spendly.ui.screens.transactions.components.FilterBottomSheet
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.expenseColor
@@ -216,30 +215,18 @@ fun TransactionListScreen(
 
     // Edit Expense Modal Bottom Sheet
     if (showEditExpenseSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showEditExpenseSheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ) {
-            EditExpenseScreen(
-                expenseId = editExpenseId,
-                onNavigateBack = { showEditExpenseSheet = false }
-            )
-        }
+        EditExpenseBottomSheet(
+            expenseId = editExpenseId,
+            onDismiss = { showEditExpenseSheet = false }
+        )
     }
 
     // Edit Income Modal Bottom Sheet
     if (showEditIncomeSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showEditIncomeSheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-        ) {
-            EditIncomeScreen(
-                incomeId = editIncomeId,
-                onDismiss = { showEditIncomeSheet = false },
-                onSuccess = { showEditIncomeSheet = false },
-                onDelete = { showEditIncomeSheet = false }
-            )
-        }
+        EditIncomeBottomSheet(
+            incomeId = editIncomeId,
+            onDismiss = { showEditIncomeSheet = false }
+        )
     }
 
     // Filter Bottom Sheet

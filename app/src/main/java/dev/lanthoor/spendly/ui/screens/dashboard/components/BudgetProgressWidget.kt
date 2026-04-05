@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.ui.screens.budgets.BudgetWithProgress
+import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.ui.theme.budgetProgressColor
 import dev.lanthoor.spendly.utils.CurrencyUtils
 

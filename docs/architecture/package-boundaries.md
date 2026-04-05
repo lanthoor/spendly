@@ -23,11 +23,13 @@ Example:
 ### Rule 2: Feature internals must not be imported cross-feature
 
 - **Forbidden:** imports from `ui.screens.<featureB>.*` inside `ui.screens.<featureA>.*` when `featureA != featureB`.
+- **Allowed exception:** imports from `ui.screens.<featureB>.api.*` are allowed as explicit public contracts.
 - **Why:** Feature boundaries should be explicit and prevent hidden coupling.
 
 Example:
 
 - Forbidden: `ui.screens.transactions.*` importing `ui.screens.dashboard.RecentTransaction`
+- Allowed: `ui.screens.settings.*` importing `ui.screens.budgets.api.BudgetManagementScreen`
 - Allowed: `ui.navigation.*` importing feature screens for app-level routing
 
 ### Rule 3: No new data/enum type declarations under `utils`

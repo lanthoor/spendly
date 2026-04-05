@@ -24,8 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.ui.components.IconMapper.getIcon
-import dev.lanthoor.spendly.ui.screens.budgets.BudgetWithProgress
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.budgetProgressColor
 import dev.lanthoor.spendly.ui.theme.isDark
