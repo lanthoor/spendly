@@ -3,6 +3,8 @@ package dev.lanthoor.spendly.utils
 import dev.lanthoor.spendly.domain.model.Account
 import java.util.Locale
 
+import dev.lanthoor.spendly.core.model.finance.AccountType
+
 object SmsAccountMatcher {
     private const val HINT_SCORE = 100
     private const val KEYWORD_SCORE = 20

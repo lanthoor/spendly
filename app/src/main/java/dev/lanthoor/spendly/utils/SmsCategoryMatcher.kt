@@ -3,6 +3,8 @@ package dev.lanthoor.spendly.utils
 import dev.lanthoor.spendly.domain.model.Category
 import java.util.Locale
 
+import dev.lanthoor.spendly.core.model.finance.TransactionType
+
 data class SmsCategoryMatch(
     val categoryName: String,
     val score: Float,

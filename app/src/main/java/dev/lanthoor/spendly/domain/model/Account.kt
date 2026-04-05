@@ -1,6 +1,6 @@
 package dev.lanthoor.spendly.domain.model
 
-import dev.lanthoor.spendly.utils.AccountType
+import dev.lanthoor.spendly.core.model.finance.AccountType
 
 /**
  * Domain model representing a financial account.

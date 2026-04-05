@@ -2,7 +2,7 @@ package dev.lanthoor.spendly.utils.parsers
 
 import android.util.Log
 import dev.lanthoor.spendly.utils.ParsedTransaction
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 
 /**
  * Abstract base class for bank SMS parsers.

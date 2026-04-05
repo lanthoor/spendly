@@ -30,7 +30,7 @@ import dev.lanthoor.spendly.ui.screens.expenses.components.ExpenseFormFields
 import dev.lanthoor.spendly.ui.screens.income.IncomeViewModel
 import dev.lanthoor.spendly.ui.screens.income.components.IncomeFormFields
 import dev.lanthoor.spendly.ui.screens.recurring.components.TransactionTypeSelectionButton
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import kotlinx.coroutines.launch
 
 /**

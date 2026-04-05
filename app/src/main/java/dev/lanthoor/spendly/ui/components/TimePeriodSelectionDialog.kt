@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.utils.TimePeriod
+import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 
 /**
  * Dialog for selecting analytics time period.

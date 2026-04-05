@@ -10,6 +10,23 @@ class ArchitectureBoundaryScanner(
     private val dataClassRegex = Regex("""\bdata\s+class\s+[A-Z][A-Za-z0-9_]*""")
     private val enumClassRegex = Regex("""\benum\s+class\s+[A-Z][A-Za-z0-9_]*""")
     private val featureSegmentRegex = Regex("""\.ui\.screens\.([a-z][a-z0-9_]*)\.""")
+    private val legacyUtilsOwnershipImports = setOf(
+        "${config.packagePrefix}.utils.IncomeSource",
+        "${config.packagePrefix}.utils.RecurringFrequency",
+        "${config.packagePrefix}.utils.TransactionType",
+        "${config.packagePrefix}.utils.AccountType",
+        "${config.packagePrefix}.utils.AppTheme",
+        "${config.packagePrefix}.utils.AppLanguage",
+        "${config.packagePrefix}.utils.YearType",
+        "${config.packagePrefix}.utils.TimePeriod",
+        "${config.packagePrefix}.utils.LockTimeout",
+        "${config.packagePrefix}.utils.toDisplayString",
+        "${config.packagePrefix}.utils.toDisplayName",
+        "${config.packagePrefix}.utils.getDefaultIcon",
+        "${config.packagePrefix}.utils.getDisplayRange",
+        "${config.packagePrefix}.utils.getDateRange",
+        "${config.packagePrefix}.utils.displayNameRes",
+    )
 
     fun scan(baseDir: File): List<ArchitectureViolation> {
         val sourceRootDir = baseDir.resolve(config.sourceRoot)
@@ -53,6 +70,15 @@ class ArchitectureBoundaryScanner(
                         filePath = relativePath,
                         lineNumber = lineNumber,
                         message = "Feature '$currentFeature' must not import feature '$importedFeature' internals: $importTarget"
+                    )
+                }
+
+                if (importTarget in legacyUtilsOwnershipImports) {
+                    violations += ArchitectureViolation(
+                        ruleId = "LEGACY_UTILS_OWNERSHIP_IMPORT",
+                        filePath = relativePath,
+                        lineNumber = lineNumber,
+                        message = "Import moved ownership type from explicit core package instead of utils: $importTarget"
                     )
                 }
             }

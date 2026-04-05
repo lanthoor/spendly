@@ -11,6 +11,8 @@ import dev.lanthoor.spendly.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import dev.lanthoor.spendly.core.model.finance.TransactionType
+
 /**
  * Service for showing notifications when SMS transactions are detected.
  *

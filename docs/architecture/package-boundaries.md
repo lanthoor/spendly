@@ -40,6 +40,22 @@ Example:
 - Forbidden: adding `enum class` in `dev.lanthoor.spendly.utils.*` for business state
 - Allowed: pure helper functions in `dev.lanthoor.spendly.utils.*`
 
+### Rule 4: Do not import migrated ownership types from `utils`
+
+- **Forbidden:** importing migrated ownership types/extensions from `utils` paths.
+- **Why:** ownership has moved to explicit `core/model` and `core/ui` packages.
+
+Current migrated paths:
+
+- `core.model.finance`: `IncomeSource`, `RecurringFrequency`, `TransactionType`, `AccountType`
+- `core.model.preferences`: `AppTheme`, `AppLanguage`, `YearType`, `TimePeriod`, `LockTimeout`
+- `core.ui.format`: `toDisplayString`, `toDisplayName`, `getDefaultIcon`, `getDisplayRange`, `getDateRange`, `displayNameRes`
+
+Example:
+
+- Forbidden: `import dev.lanthoor.spendly.utils.YearType`
+- Allowed: `import dev.lanthoor.spendly.core.model.preferences.YearType`
+
 ## Baseline Policy
 
 Current legacy violations are tracked in `config/architecture/boundary-baseline.txt`.
@@ -48,6 +64,8 @@ Current legacy violations are tracked in `config/architecture/boundary-baseline.
 - Verify no new violations: `./gradlew checkArchitectureBoundaries`
 
 CI fails only on **new** violations compared to baseline. Existing baseline entries must be reduced over subsequent phases.
+
+Temporary compatibility shims for moved enums/extensions are retained in `app/src/main/java/dev/lanthoor/spendly/utils/LegacyEnumShims.kt` and marked deprecated. They are scheduled for removal in later migration phases.
 
 ## CI Integration
 

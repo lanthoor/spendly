@@ -5,7 +5,7 @@ import dev.lanthoor.spendly.data.local.dao.IncomeDao
 import dev.lanthoor.spendly.data.local.entities.IncomeEntity
 import dev.lanthoor.spendly.domain.model.Income
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

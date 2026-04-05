@@ -12,7 +12,7 @@ import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.utils.CurrencyUtils
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

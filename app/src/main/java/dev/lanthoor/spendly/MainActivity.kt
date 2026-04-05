@@ -49,7 +49,7 @@ import dev.lanthoor.spendly.ui.screens.settings.SettingsViewModel
 import dev.lanthoor.spendly.ui.theme.SpendlyTheme
 import dev.lanthoor.spendly.ui.viewmodels.AppLockViewModel
 import dev.lanthoor.spendly.ui.viewmodels.InitializationViewModel
-import dev.lanthoor.spendly.utils.AppLanguage
+import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.utils.BiometricAuthManager
 import dev.lanthoor.spendly.utils.LocaleHelper
 

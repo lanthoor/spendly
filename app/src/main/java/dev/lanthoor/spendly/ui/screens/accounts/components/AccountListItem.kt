@@ -26,7 +26,7 @@ import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.screens.accounts.TransactionCount
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * List item component for displaying an account.

@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.utils.AppLanguage
-import dev.lanthoor.spendly.utils.AppTheme
-import dev.lanthoor.spendly.utils.LockTimeout
-import dev.lanthoor.spendly.utils.YearType
+import dev.lanthoor.spendly.core.model.preferences.AppLanguage
+import dev.lanthoor.spendly.core.model.preferences.AppTheme
+import dev.lanthoor.spendly.core.model.preferences.LockTimeout
+import dev.lanthoor.spendly.core.model.preferences.YearType
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

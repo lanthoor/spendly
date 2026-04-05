@@ -13,8 +13,8 @@ import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.utils.ChartDataTransformer
-import dev.lanthoor.spendly.utils.TimePeriod
-import dev.lanthoor.spendly.utils.getDateRange
+import dev.lanthoor.spendly.core.model.preferences.TimePeriod
+import dev.lanthoor.spendly.core.model.preferences.getDateRange
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

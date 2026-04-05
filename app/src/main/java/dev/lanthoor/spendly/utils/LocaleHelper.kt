@@ -5,6 +5,8 @@ import android.content.res.Configuration
 import android.os.Build
 import java.util.Locale
 
+import dev.lanthoor.spendly.core.model.preferences.AppLanguage
+
 /**
  * Helper object for managing runtime locale changes.
  * Provides methods to update context configuration with selected language.

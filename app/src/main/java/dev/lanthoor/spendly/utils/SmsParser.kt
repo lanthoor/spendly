@@ -1,5 +1,7 @@
 package dev.lanthoor.spendly.utils
 
+import dev.lanthoor.spendly.core.model.finance.TransactionType
+
 /**
  * Result of SMS parsing with confidence score.
  */

@@ -29,7 +29,7 @@ import dev.lanthoor.spendly.utils.SmsFingerprintFactory
 import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsParser
-import dev.lanthoor.spendly.utils.TransactionType
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -187,7 +187,7 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                             id = 0,
                             amount = parsed.amount,
                             categoryId = categoryResolution.category?.id,
-                            source = dev.lanthoor.spendly.utils.IncomeSource.OTHER,
+                            source = dev.lanthoor.spendly.core.model.finance.IncomeSource.OTHER,
                             accountId = accountId,
                             date = parsed.date,
                             description = parsed.description,

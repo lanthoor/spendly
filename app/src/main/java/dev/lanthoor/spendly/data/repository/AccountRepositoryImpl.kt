@@ -4,7 +4,7 @@ import dev.lanthoor.spendly.data.local.dao.AccountDao
 import dev.lanthoor.spendly.data.local.entities.AccountEntity
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.repository.AccountRepository
-import dev.lanthoor.spendly.utils.AccountType
+import dev.lanthoor.spendly.core.model.finance.AccountType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

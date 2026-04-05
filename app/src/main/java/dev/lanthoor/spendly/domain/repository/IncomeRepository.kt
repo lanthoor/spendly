@@ -1,7 +1,7 @@
 package dev.lanthoor.spendly.domain.repository
 
 import dev.lanthoor.spendly.domain.model.Income
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import kotlinx.coroutines.flow.Flow
 
 /**

@@ -39,7 +39,7 @@ import dev.lanthoor.spendly.ui.components.LoadingIndicator
 import dev.lanthoor.spendly.ui.screens.expenses.components.DeleteConfirmDialog
 import dev.lanthoor.spendly.ui.screens.income.components.IncomeFormFields
 import dev.lanthoor.spendly.ui.screens.income.components.RefundExpensePicker
-import dev.lanthoor.spendly.utils.IncomeSource
+import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import kotlinx.coroutines.launch
 
 /**

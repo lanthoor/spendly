@@ -35,9 +35,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.ui.components.IconMapper
-import dev.lanthoor.spendly.utils.AccountType
-import dev.lanthoor.spendly.utils.getDefaultIcon
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.finance.AccountType
+import dev.lanthoor.spendly.core.ui.format.getDefaultIcon
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Dialog for selecting an account type with grid layout.

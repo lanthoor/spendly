@@ -23,7 +23,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.ui.components.SpendlyTopAppBar
-import dev.lanthoor.spendly.utils.AppLanguage
+import dev.lanthoor.spendly.core.model.preferences.AppLanguage
+import dev.lanthoor.spendly.core.ui.format.displayNameRes
 
 /**
  * Language settings screen displaying language options with radio buttons.

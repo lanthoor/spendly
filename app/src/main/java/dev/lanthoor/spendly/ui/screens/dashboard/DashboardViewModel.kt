@@ -15,7 +15,7 @@ import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.ui.screens.budgets.BudgetWithProgress
-import dev.lanthoor.spendly.utils.YearType
+import dev.lanthoor.spendly.core.model.preferences.YearType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

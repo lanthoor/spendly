@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.utils.YearType
-import dev.lanthoor.spendly.utils.getDisplayRange
-import dev.lanthoor.spendly.utils.toDisplayName
+import dev.lanthoor.spendly.core.model.preferences.YearType
+import dev.lanthoor.spendly.core.ui.format.getDisplayRange
+import dev.lanthoor.spendly.core.ui.format.toDisplayName
 
 /**
  * Dialog for selecting financial year type.
