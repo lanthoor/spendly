@@ -30,3 +30,5 @@ logs/
 play-store-credentials.json
 *-credentials.json
 *.env
+
+/buildSrc/build
