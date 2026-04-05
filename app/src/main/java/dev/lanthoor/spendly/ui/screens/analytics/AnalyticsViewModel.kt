@@ -20,9 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -88,7 +86,7 @@ class AnalyticsViewModel @Inject constructor(
             val netBalance = totalIncome - totalExpense
 
             // Calculate previous period data for comparison
-            val (prevStartDate, prevEndDate) = getPreviousPeriodRange(period)
+            val (prevStartDate, prevEndDate) = AnalyticsPeriodRangeCalculator.getPreviousPeriodRange(period)
             val prevExpenses = expenses.filter { it.date in prevStartDate..prevEndDate }
             val prevIncomes = incomes.filter { it.date in prevStartDate..prevEndDate }
 
@@ -117,7 +115,7 @@ class AnalyticsViewModel @Inject constructor(
             )
 
             // Calculate net worth (cumulative running total)
-            val netWorthTrendData = calculateNetWorthData(
+            val netWorthTrendData = AnalyticsTrendCalculator.calculateNetWorthData(
                 incomeData = incomeTrendData,
                 expenseData = expenseTrendData
             )
@@ -173,7 +171,7 @@ class AnalyticsViewModel @Inject constructor(
         if (expenses.isEmpty()) return emptyList()
 
         // Monthly aggregation for both FY and Calendar Year
-        return aggregateExpensesByMonth(expenses)
+        return AnalyticsTrendCalculator.aggregateExpensesByMonth(expenses)
     }
 
     /**
@@ -189,237 +187,7 @@ class AnalyticsViewModel @Inject constructor(
         if (incomes.isEmpty()) return emptyList()
 
         // Monthly aggregation for both FY and Calendar Year
-        return aggregateIncomesByMonth(incomes)
-    }
-
-    /**
-     * Calculate net worth as cumulative running total (Income - Expense).
-     * Merges income and expense data by date and calculates running sum.
-     * Supports negative values when cumulative expenses exceed cumulative income.
-     */
-    private fun calculateNetWorthData(
-        incomeData: List<LineChartEntry>,
-        expenseData: List<LineChartEntry>
-    ): List<LineChartEntry> {
-        // If both lists are empty, return empty
-        if (incomeData.isEmpty() && expenseData.isEmpty()) return emptyList()
-
-        // Create maps for quick lookup by date
-        val incomeMap = incomeData.associateBy { it.date }
-        val expenseMap = expenseData.associateBy { it.date }
-
-        // Get all unique dates from both datasets and sort by timestamp
-        val allDates = (incomeMap.keys + expenseMap.keys).toSet()
-            .map { date ->
-                // Get timestamp from either income or expense entry
-                val timestamp = incomeMap[date]?.timestamp ?: expenseMap[date]?.timestamp ?: 0L
-                date to timestamp
-            }
-            .sortedBy { it.second }
-
-        // Calculate cumulative net worth
-        val result = mutableListOf<LineChartEntry>()
-        var cumulativeNetWorth = 0L
-
-        allDates.forEach { (date, timestamp) ->
-            val incomeAmount = incomeMap[date]?.amount ?: 0L
-            val expenseAmount = expenseMap[date]?.amount ?: 0L
-
-            // Update cumulative total
-            cumulativeNetWorth += (incomeAmount - expenseAmount)
-
-            // Get date label from either source
-            val dateLabel = incomeMap[date]?.dateLabel ?: expenseMap[date]?.dateLabel ?: date
-
-            result.add(
-                LineChartEntry(
-                    date = date,
-                    dateLabel = dateLabel,
-                    amount = cumulativeNetWorth,
-                    timestamp = timestamp
-                )
-            )
-        }
-
-        return result
-    }
-
-    /**
-     * Aggregate expenses by month.
-     */
-    private fun aggregateExpensesByMonth(expenses: List<Expense>): List<LineChartEntry> {
-        val monthFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val labelFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-
-        // Group expenses by month
-        val monthlyTotals = expenses.groupBy { expense ->
-            calendar.timeInMillis = expense.date
-            monthFormat.format(calendar.time)
-        }.mapValues { (_, expenseList) ->
-            expenseList.sumOf { it.amount }
-        }
-
-        // Convert to LineChartEntry
-        return monthlyTotals.map { (monthStr, amount) ->
-            val parts = monthStr.split("-")
-            calendar.set(Calendar.YEAR, parts[0].toInt())
-            calendar.set(Calendar.MONTH, parts[1].toInt() - 1)
-            calendar.set(Calendar.DAY_OF_MONTH, 1)
-
-            LineChartEntry(
-                date = monthStr,
-                dateLabel = labelFormat.format(calendar.time),
-                amount = amount,
-                timestamp = calendar.timeInMillis
-            )
-        }.sortedBy { it.timestamp }
-    }
-
-    /**
-     * Aggregate incomes by month.
-     */
-    private fun aggregateIncomesByMonth(incomes: List<Income>): List<LineChartEntry> {
-        val monthFormat = SimpleDateFormat("yyyy-MM", Locale.getDefault())
-        val labelFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-
-        // Group incomes by month
-        val monthlyTotals = incomes.groupBy { income ->
-            calendar.timeInMillis = income.date
-            monthFormat.format(calendar.time)
-        }.mapValues { (_, incomeList) ->
-            incomeList.sumOf { it.amount }
-        }
-
-        // Convert to LineChartEntry
-        return monthlyTotals.map { (monthStr, amount) ->
-            val parts = monthStr.split("-")
-            calendar.set(Calendar.YEAR, parts[0].toInt())
-            calendar.set(Calendar.MONTH, parts[1].toInt() - 1)
-            calendar.set(Calendar.DAY_OF_MONTH, 1)
-
-            LineChartEntry(
-                date = monthStr,
-                dateLabel = labelFormat.format(calendar.time),
-                amount = amount,
-                timestamp = calendar.timeInMillis
-            )
-        }.sortedBy { it.timestamp }
-    }
-
-    /**
-     * Get the previous period date range based on the current period type.
-     * ThisMonth → LastMonth
-     * LastMonth → MonthBeforeLast
-     * Last3Months → Previous3Months
-     * Last6Months → Previous6Months
-     * ThisYear → LastYear
-     * LastYear → YearBeforeLast
-     * Custom → Previous period of same length
-     */
-    private fun getPreviousPeriodRange(period: TimePeriod): Pair<Long, Long> {
-        val calendar = Calendar.getInstance()
-        val (currentStart, currentEnd) = period.getDateRange()
-
-        return when (period) {
-            is TimePeriod.ThisMonth -> {
-                // Go back one month
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.MONTH, -1)
-                val start = calendar.timeInMillis
-                calendar.set(
-                    Calendar.DAY_OF_MONTH,
-                    calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-                )
-                calendar.set(Calendar.HOUR_OF_DAY, 23)
-                calendar.set(Calendar.MINUTE, 59)
-                calendar.set(Calendar.SECOND, 59)
-                calendar.set(Calendar.MILLISECOND, 999)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.LastMonth -> {
-                // Go back to month before last
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.MONTH, -1)
-                val start = calendar.timeInMillis
-                calendar.set(
-                    Calendar.DAY_OF_MONTH,
-                    calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-                )
-                calendar.set(Calendar.HOUR_OF_DAY, 23)
-                calendar.set(Calendar.MINUTE, 59)
-                calendar.set(Calendar.SECOND, 59)
-                calendar.set(Calendar.MILLISECOND, 999)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.Last3Months -> {
-                // Previous 3 months (months 4-6 ago)
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.MONTH, -3)
-                val start = calendar.timeInMillis
-                calendar.timeInMillis = currentEnd
-                calendar.add(Calendar.MONTH, -3)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.Last6Months -> {
-                // Previous 6 months (months 7-12 ago)
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.MONTH, -6)
-                val start = calendar.timeInMillis
-                calendar.timeInMillis = currentEnd
-                calendar.add(Calendar.MONTH, -6)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.ThisYear -> {
-                // Last year (same calendar year range)
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.YEAR, -1)
-                val start = calendar.timeInMillis
-                calendar.timeInMillis = currentEnd
-                calendar.add(Calendar.YEAR, -1)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.ThisFinancialYear -> {
-                // Last financial year
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.YEAR, -1)
-                val start = calendar.timeInMillis
-                calendar.timeInMillis = currentEnd
-                calendar.add(Calendar.YEAR, -1)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.LastYear -> {
-                // Year before last
-                calendar.timeInMillis = currentStart
-                calendar.add(Calendar.YEAR, -1)
-                val start = calendar.timeInMillis
-                calendar.timeInMillis = currentEnd
-                calendar.add(Calendar.YEAR, -1)
-                val end = calendar.timeInMillis
-                start to end
-            }
-
-            is TimePeriod.Custom -> {
-                // Previous period of same length
-                val periodLength = currentEnd - currentStart
-                val start = currentStart - periodLength
-                val end = currentEnd - periodLength
-                start to end
-            }
-        }
+        return AnalyticsTrendCalculator.aggregateIncomesByMonth(incomes)
     }
 
 }
