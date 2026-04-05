@@ -12,13 +12,13 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` weekly (or
 | --- | --- | --- | --- | --- | --- | --- |
 | 0 | Baseline and Guardrails | 10 | 100% | 10.0% | Completed | Merged: native Gradle boundary checks + CI guardrail |
 | 1 | Decompose `utils` Ownership | 15 | 100% | 15.0% | Completed | Merged: ownership types moved from `utils` to `core/*` |
-| 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | In Review | PR prepared: shared contracts extracted and baseline reduced |
-| 3 | File Decomposition | 20 | 0% | 0.0% | Not Started | - |
+| 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
+| 3 | File Decomposition | 20 | 55% | 11.0% | In Progress | Repository + settings + analytics decomposition slices completed |
 | 4 | Use Case Introduction | 15 | 0% | 0.0% | Not Started | - |
 | 5 | Package-First Isolation | 10 | 0% | 0.0% | Not Started | - |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **40%** | **40.0%** | **In Progress** | **Phase 2 PR ready; Phase 3 queued** |
+| **Overall Progress** | **Whole Migration** | **100** | **51%** | **51.0%** | **In Progress** | **Phase 3 decomposition progressing with multiple slices committed** |
 
 ### How to calculate progress
 
@@ -316,6 +316,8 @@ Evidence: PR #36
 
 ## Phase 3 - File Decomposition (God-File Reduction)
 
+Evidence: In progress on `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bffd3b`, `7b5c8a0`)
+
 **Duration:** 1-2 weeks  
 **Risk:** Medium  
 **Purpose:** Improve cohesion, testability, and maintainability.
@@ -573,6 +575,7 @@ Run at minimum after every phase:
 
 - `./gradlew test`
 - `./gradlew lint`
+- `./gradlew connectedAndroidTest`
 - Architecture checks (Detekt/lint custom rules)
 
 For high-risk phases (3, 4, 6), also run:
