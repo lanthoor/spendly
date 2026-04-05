@@ -437,7 +437,7 @@ Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1
 
 ## Phase 5 - Package-First Feature Isolation (Still Single Module)
 
-Evidence: `arch/phase-5-package-isolation` (commits: `<pending-after-commit>`)
+Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c11e`)
 
 **Risk:** Medium  
 **Purpose:** Achieve target package shape before Gradle module extraction.
