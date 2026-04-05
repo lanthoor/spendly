@@ -8,6 +8,22 @@ This document defines the architecture boundaries enforced during migration.
 - Source scope for checks: `app/src/main/java`
 - Enforcement entrypoint: `./gradlew checkArchitectureBoundaries`
 
+## Current package map (single-module target)
+
+This repository is currently organized in a package-first layout inside `:app`.
+
+- `app`: app shell and navigation wiring
+- `core/model`: shared stable value types
+- `core/ui`: shared UI formatting/extensions
+- `feature/*`: feature-facing API entrypoints used by app shell or other features
+- `ui/screens/*`: feature implementation internals (to be progressively moved under `feature/*`)
+
+Contribution guidance:
+
+- Add new reusable feature entrypoints under `feature/<feature>/api`.
+- Keep cross-feature consumption through API packages, not internal implementation packages.
+- Prefer adding new shared types to `core/model` and shared UI helpers to `core/ui`.
+
 ## Rules
 
 ### Rule 1: Domain must not import UI
@@ -23,13 +39,14 @@ Example:
 ### Rule 2: Feature internals must not be imported cross-feature
 
 - **Forbidden:** imports from `ui.screens.<featureB>.*` inside `ui.screens.<featureA>.*` when `featureA != featureB`.
-- **Allowed exception:** imports from `ui.screens.<featureB>.api.*` are allowed as explicit public contracts.
+- **Allowed exception:** imports from `ui.screens.<featureB>.api.*` or `feature.<featureB>.api.*` are allowed as explicit public contracts.
 - **Why:** Feature boundaries should be explicit and prevent hidden coupling.
 
 Example:
 
 - Forbidden: `ui.screens.transactions.*` importing `ui.screens.dashboard.RecentTransaction`
 - Allowed: `ui.screens.settings.*` importing `ui.screens.budgets.api.BudgetManagementScreen`
+- Allowed: `ui.screens.settings.*` importing `feature.budgets.api.BudgetFeatureEntry`
 - Allowed: `ui.navigation.*` importing feature screens for app-level routing
 
 ### Rule 3: No new data/enum type declarations under `utils`
