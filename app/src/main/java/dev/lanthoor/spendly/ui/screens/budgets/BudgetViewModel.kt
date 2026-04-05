@@ -3,8 +3,9 @@ package dev.lanthoor.spendly.ui.screens.budgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.ui.screens.budgets.api.BudgetListUiState
+import dev.lanthoor.spendly.ui.screens.budgets.usecase.BudgetListStateInput
+import dev.lanthoor.spendly.ui.screens.budgets.usecase.BuildBudgetListStateUseCase
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.repository.BudgetRepository
@@ -31,7 +32,8 @@ import javax.inject.Inject
 class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
-    private val expenseRepository: ExpenseRepository
+    private val expenseRepository: ExpenseRepository,
+    private val buildBudgetListStateUseCase: BuildBudgetListStateUseCase
 ) : ViewModel() {
 
     // UI State for budget list screen
@@ -74,73 +76,14 @@ class BudgetViewModel @Inject constructor(
                     expenseRepository.getAllExpenses(),
                     categoryRepository.getAllCategories()
                 ) { allBudgets, expenses, categories ->
-                    // Get latest budget per category (including overall)
-                    // Group by categoryId (null for overall) and take the one with latest month/year
-                    val latestBudgets = allBudgets
-                        .groupBy { it.categoryId }
-                        .mapValues { (_, budgets) ->
-                            budgets.maxByOrNull { budget ->
-                                budget.year * 12 + budget.month // Sort by year+month
-                            }
-                        }
-                        .values
-                        .filterNotNull()
-
-                    // Filter to only active budgets (set on or before current month)
-                    val activeBudgets = latestBudgets.filter { budget ->
-                        val budgetMonthIndex = budget.year * 12 + budget.month
-                        val currentMonthIndex = currentYear * 12 + currentMonth
-                        budgetMonthIndex <= currentMonthIndex
-                    }
-
-                    // Calculate current month's expenses
-                    val monthStart = Calendar.getInstance().apply {
-                        set(Calendar.YEAR, currentYear)
-                        set(Calendar.MONTH, currentMonth - 1)
-                        set(Calendar.DAY_OF_MONTH, 1)
-                        set(Calendar.HOUR_OF_DAY, 0)
-                        set(Calendar.MINUTE, 0)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }.timeInMillis
-
-                    val monthEnd = Calendar.getInstance().apply {
-                        set(Calendar.YEAR, currentYear)
-                        set(Calendar.MONTH, currentMonth - 1)
-                        set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
-                        set(Calendar.HOUR_OF_DAY, 23)
-                        set(Calendar.MINUTE, 59)
-                        set(Calendar.SECOND, 59)
-                        set(Calendar.MILLISECOND, 999)
-                    }.timeInMillis
-
-                    val currentMonthExpenses = expenses.filter { it.date in monthStart..monthEnd }
-
-                    // Calculate progress for each active budget
-                    val budgetsWithProgress = activeBudgets.map { budget ->
-                        val spent = calculateSpentForBudget(budget, currentMonthExpenses)
-                        val category = budget.categoryId?.let { id ->
-                            categories.find { it.id == id }
-                        }
-                        val progress = budget.calculateProgress(spent)
-
-                        BudgetWithProgress(
-                            budget = budget,
-                            category = category,
-                            currentSpent = spent,
-                            progress = progress,
-                            shouldNotify75 = budget.shouldNotify75(spent),
-                            shouldNotify100 = budget.shouldNotify100(spent)
+                    buildBudgetListStateUseCase.execute(
+                        BudgetListStateInput(
+                            allBudgets = allBudgets,
+                            expenses = expenses,
+                            categories = categories,
+                            currentMonth = currentMonth,
+                            currentYear = currentYear
                         )
-                    }.sortedByDescending { it.progress } // Sort by progress descending
-
-                    val hasOverallBudget = activeBudgets.any { it.isOverallBudget() }
-
-                    BudgetListUiState.Success(
-                        budgets = budgetsWithProgress,
-                        selectedMonth = currentMonth,
-                        selectedYear = currentYear,
-                        hasOverallBudget = hasOverallBudget
                     )
                 }.collect { state ->
                     _uiState.value = state
@@ -148,23 +91,6 @@ class BudgetViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = BudgetListUiState.Error(e.message ?: "Failed to load budgets")
             }
-        }
-    }
-
-    /**
-     * Calculate spent amount for a budget (already filtered to current month expenses).
-     */
-    private fun calculateSpentForBudget(
-        budget: Budget,
-        monthExpenses: List<dev.lanthoor.spendly.domain.model.Expense>
-    ): Long {
-        return if (budget.categoryId != null) {
-            monthExpenses
-                .filter { it.categoryId == budget.categoryId }
-                .sumOf { it.amount }
-        } else {
-            // Overall budget includes all expenses
-            monthExpenses.sumOf { it.amount }
         }
     }
 

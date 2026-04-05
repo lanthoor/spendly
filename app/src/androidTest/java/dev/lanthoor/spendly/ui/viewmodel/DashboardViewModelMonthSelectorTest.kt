@@ -17,6 +17,7 @@ import dev.lanthoor.spendly.data.repository.IncomeRepositoryImpl
 import dev.lanthoor.spendly.data.repository.PreferencesRepositoryImpl
 import dev.lanthoor.spendly.ui.screens.dashboard.DashboardUiState
 import dev.lanthoor.spendly.ui.screens.dashboard.DashboardViewModel
+import dev.lanthoor.spendly.ui.screens.dashboard.usecase.BuildDashboardSummaryUseCase
 import dev.lanthoor.spendly.utils.TestDataBuilders
 import dev.lanthoor.spendly.core.model.preferences.YearType
 import dev.lanthoor.spendly.utils.createTestDatabase
@@ -97,7 +98,8 @@ class DashboardViewModelMonthSelectorTest {
             categoryRepository = categoryRepository,
             accountRepository = accountRepository,
             budgetRepository = budgetRepository,
-            preferencesRepository = preferencesRepository
+            preferencesRepository = preferencesRepository,
+            buildDashboardSummaryUseCase = BuildDashboardSummaryUseCase()
         )
     }
 

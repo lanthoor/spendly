@@ -14,11 +14,11 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 1 | Decompose `utils` Ownership | 15 | 100% | 15.0% | Completed | Merged: ownership types moved from `utils` to `core/*` |
 | 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
-| 4 | Use Case Introduction | 15 | 0% | 0.0% | Not Started | - |
+| 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
 | 5 | Package-First Isolation | 10 | 0% | 0.0% | Not Started | - |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **60%** | **60.0%** | **In Progress** | **Phase 3 completed; ready to start Phase 4 use-case extraction** |
+| **Overall Progress** | **Whole Migration** | **100** | **75%** | **75.0%** | **In Progress** | **Phase 4 completed; ready to start Phase 5 package-first isolation** |
 
 ### How to calculate progress
 
@@ -380,6 +380,8 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 
 ## Phase 4 - Introduce Use Cases for Dense Business Logic
 
+Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1cff884`)
+
 **Risk:** Medium  
 **Purpose:** Make business rules testable and reusable.
 
@@ -397,6 +399,21 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 
 - Use case classes with tests.
 
+### Use Cases Introduced (Phase 4)
+
+- `ui/screens/dashboard/usecase/BuildDashboardSummaryUseCase.kt`
+  - Extracts month/YTD summary, period comparisons, top categories, budget progress, and recent transactions.
+- `ui/screens/analytics/usecase/BuildAnalyticsStateUseCase.kt`
+  - Extracts analytics period transformations, previous-period comparisons, and trend/net-worth aggregation.
+- `ui/screens/budgets/usecase/BuildBudgetListStateUseCase.kt`
+  - Extracts latest-active-budget selection, current-month spend calculation, progress, and threshold checks.
+
+### Validation Evidence (Phase 4)
+
+- `./gradlew :app:compileDebugKotlin test lint checkArchitectureBoundaries connectedAndroidTest` -> Passed
+- `connectedAndroidTest`: `184/184` passed
+- `checkArchitectureBoundaries`: passed with existing baseline (`12`/`12`, no new violations)
+
 ### Exit Criteria
 
 - Business logic coverage primarily in use case tests.
@@ -404,16 +421,16 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 
 ### Definition of Done Checklist
 
-- [ ] A dedicated Phase 4 branch is created from latest `main` using `arch/phase-4-...`.
-- [ ] A dedicated Phase 4 PR is opened with only Phase 4 scope.
-- [ ] Targeted business logic paths are extracted into use case classes with explicit input/output contracts.
-- [ ] ViewModels delegate calculations/transforms to use cases instead of embedding complex logic.
-- [ ] Use cases are platform-agnostic where possible (no Android UI dependencies).
-- [ ] Unit tests exist for each new use case, including edge cases and error paths.
-- [ ] Existing ViewModel tests are updated to validate orchestration and state transitions only.
-- [ ] Coverage trend shows increased logic coverage in use-case tests relative to ViewModel tests.
-- [ ] Performance remains acceptable (no obvious regressions from added abstraction layers).
-- [ ] Architecture checks confirm no invalid dependency direction introduced by use case extraction.
+- [x] A dedicated Phase 4 branch is created from latest `main` using `arch/phase-4-...`.
+- [x] A dedicated Phase 4 PR is opened with only Phase 4 scope.
+- [x] Targeted business logic paths are extracted into use case classes with explicit input/output contracts.
+- [x] ViewModels delegate calculations/transforms to use cases instead of embedding complex logic.
+- [x] Use cases are platform-agnostic where possible (no Android UI dependencies).
+- [x] Unit tests exist for each new use case, including edge cases and error paths.
+- [x] Existing ViewModel tests are updated to validate orchestration and state transitions only.
+- [x] Coverage trend shows increased logic coverage in use-case tests relative to ViewModel tests.
+- [x] Performance remains acceptable (no obvious regressions from added abstraction layers).
+- [x] Architecture checks confirm no invalid dependency direction introduced by use case extraction.
 - [ ] Phase 4 PR is merged before Phase 5 PR is opened.
 
 ---
