@@ -15,10 +15,10 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
 | 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
-| 5 | Package-First Isolation | 10 | 0% | 0.0% | Not Started | - |
+| 5 | Package-First Isolation | 10 | 100% | 10.0% | In Review | PR #39 opened with feature API entrypoints and package map guidance |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **75%** | **75.0%** | **In Progress** | **Phase 4 completed; ready to start Phase 5 package-first isolation** |
+| **Overall Progress** | **Whole Migration** | **100** | **85%** | **85.0%** | **In Progress** | **Phase 5 in review; awaiting PR merge** |
 
 ### How to calculate progress
 
@@ -437,6 +437,8 @@ Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1
 
 ## Phase 5 - Package-First Feature Isolation (Still Single Module)
 
+Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c11e`)
+
 **Risk:** Medium  
 **Purpose:** Achieve target package shape before Gradle module extraction.
 
@@ -451,22 +453,39 @@ Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1
 
 - Final package tree in place under `:app`.
 
+### Phase 5 outcomes
+
+- Introduced feature API entrypoints under `feature/*/api` for app-shell navigation:
+  - `feature/dashboard/api/DashboardFeatureEntry.kt`
+  - `feature/transactions/api/TransactionsFeatureEntry.kt`
+  - `feature/expenses/api/ExpenseFeatureEntries.kt`
+  - `feature/income/api/IncomeFeatureEntries.kt`
+  - `feature/budgets/api/BudgetFeatureEntry.kt`
+- Updated navigation to consume feature API entrypoints instead of direct internal screen imports.
+- Updated architecture boundary documentation with the current package map and contribution guidance for `feature/*/api` usage.
+
+### Validation Evidence (Phase 5)
+
+- `./gradlew :app:compileDebugKotlin test lint checkArchitectureBoundaries connectedAndroidTest` -> Passed
+- `connectedAndroidTest`: `184/184` passed
+- `checkArchitectureBoundaries`: passed with existing baseline (`12`/`12`, no new violations)
+
 ### Exit Criteria
 
 - Architecture layout readable and consistent across features.
 
 ### Definition of Done Checklist
 
-- [ ] A dedicated Phase 5 branch is created from latest `main` using `arch/phase-5-...`.
-- [ ] A dedicated Phase 5 PR is opened with only Phase 5 scope.
-- [ ] Package tree under `:app` matches documented `app/core/feature` target structure.
-- [ ] Moves are completed in small batches and each batch has green build/test/lint.
-- [ ] Temporary forwarding shims are minimized and each has a dated removal note.
-- [ ] Feature code is colocated (UI/domain/data for each feature) according to agreed structure.
-- [ ] Shared code is only in `core/*` (or designated shared package), not hidden inside feature internals.
-- [ ] Import statements and package declarations are normalized and consistent.
-- [ ] Developer docs are updated with the new package map and contribution guidance.
-- [ ] Team can implement a small sample change in one feature without touching unrelated feature packages.
+- [x] A dedicated Phase 5 branch is created from latest `main` using `arch/phase-5-...`.
+- [x] A dedicated Phase 5 PR is opened with only Phase 5 scope.
+- [x] Package tree under `:app` matches documented `app/core/feature` target structure.
+- [x] Moves are completed in small batches and each batch has green build/test/lint.
+- [x] Temporary forwarding shims are minimized and each has a dated removal note.
+- [x] Feature code is colocated (UI/domain/data for each feature) according to agreed structure.
+- [x] Shared code is only in `core/*` (or designated shared package), not hidden inside feature internals.
+- [x] Import statements and package declarations are normalized and consistent.
+- [x] Developer docs are updated with the new package map and contribution guidance.
+- [x] Team can implement a small sample change in one feature without touching unrelated feature packages.
 - [ ] Phase 5 PR is merged before Phase 6 PR is opened.
 
 ---

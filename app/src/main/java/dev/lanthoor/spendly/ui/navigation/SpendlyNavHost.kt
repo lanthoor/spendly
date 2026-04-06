@@ -7,21 +7,21 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import dev.lanthoor.spendly.feature.dashboard.api.DashboardFeatureEntry
+import dev.lanthoor.spendly.feature.expenses.api.AddExpenseFeatureEntry
+import dev.lanthoor.spendly.feature.expenses.api.EditExpenseFeatureEntry
+import dev.lanthoor.spendly.feature.income.api.AddIncomeFeatureEntry
+import dev.lanthoor.spendly.feature.income.api.EditIncomeFeatureEntry
+import dev.lanthoor.spendly.feature.transactions.api.TransactionsFeatureEntry
 import dev.lanthoor.spendly.ui.screens.accounts.AccountListScreen
 import dev.lanthoor.spendly.ui.screens.accounts.EditAccountScreen
 import dev.lanthoor.spendly.ui.screens.analytics.AnalyticsScreen
-import dev.lanthoor.spendly.ui.screens.dashboard.DashboardScreen
 import dev.lanthoor.spendly.ui.screens.datamanagement.DataManagementScreen
-import dev.lanthoor.spendly.ui.screens.expenses.AddExpenseScreen
-import dev.lanthoor.spendly.ui.screens.expenses.EditExpenseScreen
-import dev.lanthoor.spendly.ui.screens.income.AddIncomeScreen
-import dev.lanthoor.spendly.ui.screens.income.EditIncomeScreen
 import dev.lanthoor.spendly.ui.screens.recurring.RecurringTransactionListScreen
 import dev.lanthoor.spendly.ui.screens.settings.AboutScreen
 import dev.lanthoor.spendly.ui.screens.settings.BudgetSettingsScreen
 import dev.lanthoor.spendly.ui.screens.settings.LanguageSettingsScreen
 import dev.lanthoor.spendly.ui.screens.settings.SettingsScreen
-import dev.lanthoor.spendly.ui.screens.transactions.TransactionListScreen
 
 /**
  * Main navigation host for the Spendly app.
@@ -42,7 +42,7 @@ fun SpendlyNavHost(
     ) {
         // Dashboard (Home) Screen
         composable(Screen.Dashboard.route) {
-            DashboardScreen(
+            DashboardFeatureEntry(
                 onNavigateToBudgets = {
                     navController.navigate(Screen.BudgetList.route)
                 }
@@ -51,14 +51,14 @@ fun SpendlyNavHost(
 
         // All Transactions Screen (combined expenses and income)
         composable(Screen.AllTransactions.route) {
-            TransactionListScreen(
+            TransactionsFeatureEntry(
                 onNavigateBack = null  // Top-level destination, no back button
             )
         }
 
         // Add Expense Screen
         composable(Screen.AddExpense.route) { backStackEntry ->
-            AddExpenseScreen(
+            AddExpenseFeatureEntry(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
@@ -77,7 +77,7 @@ fun SpendlyNavHost(
         ) { backStackEntry ->
             val expenseId =
                 backStackEntry.arguments?.getLong(Screen.EditExpense.ARG_EXPENSE_ID) ?: 0L
-            EditExpenseScreen(
+            EditExpenseFeatureEntry(
                 expenseId = expenseId,
                 onNavigateBack = {
                     navController.popBackStack()
@@ -87,7 +87,7 @@ fun SpendlyNavHost(
 
         // Add Income Screen
         composable(Screen.AddIncome.route) { backStackEntry ->
-            AddIncomeScreen(
+            AddIncomeFeatureEntry(
                 onDismiss = {
                     navController.popBackStack()
                 },
@@ -108,7 +108,7 @@ fun SpendlyNavHost(
             )
         ) { backStackEntry ->
             val incomeId = backStackEntry.arguments?.getLong(Screen.EditIncome.ARG_INCOME_ID) ?: 0L
-            EditIncomeScreen(
+            EditIncomeFeatureEntry(
                 incomeId = incomeId,
                 onDismiss = {
                     navController.popBackStack()
