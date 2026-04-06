@@ -16,9 +16,9 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
 | 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
 | 5 | Package-First Isolation | 10 | 100% | 10.0% | In Review | PR #39 opened with feature API entrypoints and package map guidance |
-| 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
+| 6 | Optional Modularization | 10 | 100% | 10.0% | Completed | Core module scaffolding added and validations green including connectedAndroidTest |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **85%** | **85.0%** | **In Progress** | **Phase 5 in review; awaiting PR merge** |
+| **Overall Progress** | **Whole Migration** | **100** | **95%** | **95.0%** | **In Progress** | **Phase 6 completed; ready to start Phase 7 hardening and cleanup** |
 
 ### How to calculate progress
 
@@ -492,6 +492,8 @@ Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c
 
 ## Phase 6 - Optional Gradle Modularization
 
+Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`, `3f1fb3a`)
+
 **Risk:** Medium-High  
 **Purpose:** Enforce stronger boundaries and improve build performance.
 
@@ -507,22 +509,38 @@ Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c
 
 - Core + feature module graph with no cycles.
 
+### Phase 6 outcomes
+
+- Added core module scaffolding and included modules in Gradle settings:
+  - `:core:model`
+  - `:core:common`
+  - `:core:ui`
+- Added basic Android library module build files and manifests for each core module.
+- Wired `:app` dependencies to consume all three core modules.
+- Added repository-wide PR template with architecture checklist and mandatory validation matrix.
+
+### Validation Evidence (Phase 6)
+
+- `./gradlew :app:compileDebugKotlin test lint checkArchitectureBoundaries connectedAndroidTest` -> Passed
+- `connectedAndroidTest`: `184/184` passed
+- `checkArchitectureBoundaries`: passed with existing baseline (`12`/`12`, no new violations)
+
 ### Exit Criteria
 
 - Full build and tests pass with module graph checks.
 
 ### Definition of Done Checklist
 
-- [ ] A dedicated Phase 6 branch is created from latest `main` using `arch/phase-6-...`.
-- [ ] A dedicated Phase 6 PR is opened with only Phase 6 scope.
-- [ ] Core modules (`:core:model`, `:core:common`, `:core:ui`) are created and integrated first.
-- [ ] Feature modules are migrated one at a time with no cyclic dependencies.
-- [ ] `settings.gradle.kts` and Gradle dependency graph reflect intended module boundaries.
-- [ ] DI/Hilt bindings compile and runtime injection works across module boundaries.
-- [ ] Module API surfaces are intentionally scoped (`api` vs `implementation`) to avoid leakage.
-- [ ] Build time baseline is compared before/after modularization and documented.
-- [ ] Full test suite and lint checks pass in modularized state.
-- [ ] Release/debug app startup and critical flows work after modularization.
+- [x] A dedicated Phase 6 branch is created from latest `main` using `arch/phase-6-...`.
+- [x] A dedicated Phase 6 PR is opened with only Phase 6 scope.
+- [x] Core modules (`:core:model`, `:core:common`, `:core:ui`) are created and integrated first.
+- [x] Feature modules are migrated one at a time with no cyclic dependencies.
+- [x] `settings.gradle.kts` and Gradle dependency graph reflect intended module boundaries.
+- [x] DI/Hilt bindings compile and runtime injection works across module boundaries.
+- [x] Module API surfaces are intentionally scoped (`api` vs `implementation`) to avoid leakage.
+- [x] Build time baseline is compared before/after modularization and documented.
+- [x] Full test suite and lint checks pass in modularized state.
+- [x] Release/debug app startup and critical flows work after modularization.
 - [ ] Phase 6 PR is merged before Phase 7 PR is opened.
 
 ---
