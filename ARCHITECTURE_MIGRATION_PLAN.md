@@ -14,11 +14,11 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 1 | Decompose `utils` Ownership | 15 | 100% | 15.0% | Completed | Merged: ownership types moved from `utils` to `core/*` |
 | 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
-| 4 | Use Case Introduction | 15 | 100% | 15.0% | In Review | PR #38 opened with use-case extraction and validation evidence |
-| 5 | Package-First Isolation | 10 | 100% | 10.0% | Completed | Feature API entrypoints added and app-shell navigation moved to feature contracts |
+| 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
+| 5 | Package-First Isolation | 10 | 100% | 10.0% | In Review | PR #39 opened with feature API entrypoints and package map guidance |
 | 6 | Optional Modularization | 10 | 0% | 0.0% | Not Started | Optional / Deferred by default |
 | 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **85%** | **85.0%** | **In Progress** | **Phase 5 completed; ready to start Phase 6 optional modularization** |
+| **Overall Progress** | **Whole Migration** | **100** | **85%** | **85.0%** | **In Progress** | **Phase 5 in review; awaiting PR merge** |
 
 ### How to calculate progress
 
