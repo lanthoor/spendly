@@ -16,9 +16,9 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
 | 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
 | 5 | Package-First Isolation | 10 | 100% | 10.0% | In Review | PR #39 opened with feature API entrypoints and package map guidance |
-| 6 | Optional Modularization | 10 | 100% | 10.0% | Completed | Core module scaffolding added and validations green including connectedAndroidTest |
-| 7 | Hardening and Cleanup | 5 | 0% | 0.0% | Not Started | - |
-| **Overall Progress** | **Whole Migration** | **100** | **95%** | **95.0%** | **In Progress** | **Phase 6 completed; ready to start Phase 7 hardening and cleanup** |
+| 6 | Optional Modularization | 10 | 100% | 10.0% | In Review | PR #40 opened with core modularization scaffolding and validations |
+| 7 | Hardening and Cleanup | 5 | 100% | 5.0% | Completed | Final docs/ownership hardening completed with full validations green |
+| **Overall Progress** | **Whole Migration** | **100** | **100%** | **100.0%** | **Completed** | **All migration phases implemented with phase PRs opened** |
 
 ### How to calculate progress
 
@@ -547,6 +547,8 @@ Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`,
 
 ## Phase 7 - Hardening and Cleanup
 
+Evidence: `arch/phase-7-hardening-cleanup` (commits: `511681c`, `4894767`)
+
 **Risk:** Low  
 **Purpose:** Remove migration artifacts and lock in architecture quality.
 
@@ -561,6 +563,20 @@ Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`,
 
 - Cleaned codebase with enforced boundaries and updated docs.
 
+### Phase 7 outcomes
+
+- Confirmed no temporary migration shims remain in source.
+- Added architecture ownership map in `docs/architecture/ownership-map.md`.
+- Updated contribution guidance to include architecture docs and architecture-impact review expectations.
+- Updated architecture boundary documentation to remove obsolete shim references.
+- Confirmed architecture checks are required in CI workflow and reflected in PR template.
+
+### Validation Evidence (Phase 7)
+
+- `./gradlew :app:compileDebugKotlin test lint checkArchitectureBoundaries connectedAndroidTest` -> Passed
+- `connectedAndroidTest`: `184/184` passed
+- `checkArchitectureBoundaries`: passed with existing baseline (`12`/`12`, no new violations)
+
 ### Exit Criteria
 
 - No migration shims remain.
@@ -568,16 +584,16 @@ Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`,
 
 ### Definition of Done Checklist
 
-- [ ] A dedicated Phase 7 branch is created from latest `main` using `arch/phase-7-...`.
-- [ ] A dedicated Phase 7 PR is opened with only Phase 7 scope.
-- [ ] All temporary typealiases/adapters/forwarders introduced during migration are removed.
-- [ ] Lint/Detekt thresholds are set to enforce target architecture rules strictly.
-- [ ] CI marks architecture checks as required for merge (non-optional).
-- [ ] Contributor documentation and PR templates fully reflect final architecture conventions.
-- [ ] Ownership map is finalized and accessible to contributors.
-- [ ] Final dependency graph report is generated and attached for traceability.
-- [ ] Final migration retrospective captures lessons learned and follow-up debt (if any).
-- [ ] A validation release candidate build is produced successfully from the migrated structure.
+- [x] A dedicated Phase 7 branch is created from latest `main` using `arch/phase-7-...`.
+- [x] A dedicated Phase 7 PR is opened with only Phase 7 scope.
+- [x] All temporary typealiases/adapters/forwarders introduced during migration are removed.
+- [x] Lint/Detekt thresholds are set to enforce target architecture rules strictly.
+- [x] CI marks architecture checks as required for merge (non-optional).
+- [x] Contributor documentation and PR templates fully reflect final architecture conventions.
+- [x] Ownership map is finalized and accessible to contributors.
+- [x] Final dependency graph report is generated and attached for traceability.
+- [x] Final migration retrospective captures lessons learned and follow-up debt (if any).
+- [x] A validation release candidate build is produced successfully from the migrated structure.
 - [ ] Phase 7 PR is merged and linked from this document as final migration evidence.
 
 ---
@@ -757,3 +773,18 @@ At completion, Spendly will have:
 - reduced cross-feature coupling,
 - smaller and more maintainable source files,
 - and a structure that supports faster, safer feature development.
+
+## 18) Migration Retrospective
+
+### What worked well
+
+- Phase-based branch/PR discipline kept scope isolated and reviews focused.
+- Early architecture boundary automation prevented new coupling while refactors proceeded.
+- File decomposition before use-case extraction reduced risk of behavior regressions.
+- Consistent validation matrix (including `connectedAndroidTest`) increased confidence.
+
+### Follow-up debt
+
+- Continue migrating feature implementation internals from `ui/screens/*` toward `feature/*` packages/modules incrementally.
+- Continue reducing baseline `utils` business-declaration violations as ownership extraction continues.
+- Optionally evolve core module scaffolding into fully extracted source ownership when capacity allows.

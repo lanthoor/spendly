@@ -5,6 +5,8 @@ Thanks for your interest in contributing.
 ## Before You Start
 
 - Read the public documentation: https://lanthoor.dev/spendly
+- Read architecture boundaries: `docs/architecture/package-boundaries.md`
+- Read ownership map: `docs/architecture/ownership-map.md`
 - Open an issue for significant changes before sending a pull request.
 - Keep pull requests focused and easy to review.
 
@@ -33,6 +35,10 @@ Optional commands:
 - Use a Conventional Commit formatted PR title as well (for example: `feat: ...`, `fix: ...`, `chore(architecture): ...`).
 - Include tests for behavior changes when possible.
 - Update user-facing docs when behavior changes.
+- For architecture-impacting PRs, ensure:
+  - boundary direction stays valid
+  - ownership placement stays explicit (`core/*`, `feature/*`)
+  - validation matrix includes architecture checks and relevant tests
 - PR description should explain:
   - why the change is needed
   - what changed
