@@ -1,7 +1,7 @@
 What's new
 
-- release preparation pipeline (#28)
-- bump version to 0.9.3
-- bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.7.3 to 1.10.0 (#22)
-- minimize README and add AGPL + contributing guide (#29)
-- bump android-actions/setup-android from 4.0.0 to 4.0.1 (#30)
+- phase 5 package first isolation (#39)
+- phase 6 optional modularization (#40)
+- phase 7 hardening and cleanup (#41)
+- reconcile architecture migration plan status (#42)
+- add local agent skills manifests (#43)

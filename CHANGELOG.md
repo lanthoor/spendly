@@ -4,6 +4,24 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.5] - 2026-04-14
+
+### Changed
+- fix: cleanup and supply chain resilience (#31)
+- docs: refactoring plan (#32)
+- chore(architecture): phase 0 baseline and guardrails (#34)
+- chore(architecture): phase 1 decompose utils ownership (#35)
+- chore(architecture): phase 2 shared contracts decoupling (#36)
+- chore(architecture): phase 3 file decomposition (#37)
+- chore(architecture): phase 4 use case introduction (#38)
+- chore(architecture): phase 5 package first isolation (#39)
+- chore(architecture): phase 6 optional modularization (#40)
+- chore(architecture): phase 7 hardening and cleanup (#41)
+- docs: reconcile architecture migration plan status (#42)
+- chore: add local agent skills manifests (#43)
+
+---
+
 ## [0.9.4] - 2026-04-05
 
 ### Changed
@@ -95,6 +113,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.5]: https://github.com/lanthoor/spendly/releases/tag/v0.9.5
 [0.9.4]: https://github.com/lanthoor/spendly/releases/tag/v0.9.4
 [0.9.3]: https://github.com/lanthoor/spendly/releases/tag/v0.9.3
 [0.9.2-beta]: https://github.com/lanthoor/spendly/releases/tag/v0.9.2-beta
