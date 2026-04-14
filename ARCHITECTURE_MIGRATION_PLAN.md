@@ -15,10 +15,10 @@ Use this as the quick "how far are we" dashboard. Update `% Complete` regularly 
 | 2 | Shared Contracts Decoupling | 15 | 100% | 15.0% | Completed | Merged: shared contracts extracted and cross-feature internals decoupled |
 | 3 | File Decomposition | 20 | 100% | 20.0% | Completed | Top offender decomposition completed with all validations green |
 | 4 | Use Case Introduction | 15 | 100% | 15.0% | Completed | Use cases extracted for dashboard, analytics, and budgets with full validations green |
-| 5 | Package-First Isolation | 10 | 100% | 10.0% | In Review | PR #39 opened with feature API entrypoints and package map guidance |
-| 6 | Optional Modularization | 10 | 100% | 10.0% | In Review | PR #40 opened with core modularization scaffolding and validations |
+| 5 | Package-First Isolation | 10 | 100% | 10.0% | Completed | Merged: PR #39 with feature API entrypoints and package map guidance |
+| 6 | Optional Modularization | 10 | 100% | 10.0% | Completed | Merged: PR #40 with core modularization scaffolding and validations |
 | 7 | Hardening and Cleanup | 5 | 100% | 5.0% | Completed | Final docs/ownership hardening completed with full validations green |
-| **Overall Progress** | **Whole Migration** | **100** | **100%** | **100.0%** | **Completed** | **All migration phases implemented with phase PRs opened** |
+| **Overall Progress** | **Whole Migration** | **100** | **100%** | **100.0%** | **Completed** | **All migration phases implemented and merged** |
 
 ### How to calculate progress
 
@@ -214,7 +214,7 @@ Evidence: PR #34
 ### Definition of Done Checklist
 
 - [ ] A dedicated Phase 0 branch is created from latest `main` using `arch/phase-0-...`.
-- [ ] A dedicated Phase 0 PR is opened with only Phase 0 scope.
+- [x] A dedicated Phase 0 PR is opened with only Phase 0 scope.
 - [ ] Baseline execution logs for `./gradlew test` and `./gradlew lint` are captured and attached to the phase PR.
 - [ ] `docs/architecture/package-boundaries.md` exists and documents allowed/forbidden dependencies with at least one example per rule.
 - [ ] Boundary checks are wired into CI and visible as a distinct required check.
@@ -222,7 +222,7 @@ Evidence: PR #34
 - [ ] PR template includes architecture checklist items (boundary impact, ownership impact, test impact).
 - [ ] No app behavior changes are introduced in this phase (verified by smoke test of core flows).
 - [ ] Team agreement recorded (comment or approval) on the initial rule set before Phase 1 starts.
-- [ ] Phase 0 PR is merged before Phase 1 PR is opened.
+- [x] Phase 0 PR is merged before Phase 1 PR is opened.
 
 ---
 
@@ -258,7 +258,7 @@ Evidence: PR #35
 ### Definition of Done Checklist
 
 - [ ] A dedicated Phase 1 branch is created from latest `main` using `arch/phase-1-...`.
-- [ ] A dedicated Phase 1 PR is opened with only Phase 1 scope.
+- [x] A dedicated Phase 1 PR is opened with only Phase 1 scope.
 - [ ] `utils/Enums.kt` is either removed or reduced to strictly generic helpers with no business/domain ownership ambiguity.
 - [ ] Preference, financial, and time-period value types are moved to explicit ownership locations (`core/model` or equivalent).
 - [ ] UI-only display extensions are moved to `core/ui` or feature UI packages.
@@ -267,7 +267,7 @@ Evidence: PR #35
 - [ ] All call sites compile without importing removed paths; IDE/code search confirms no lingering old imports.
 - [ ] Unit tests covering moved value types/extensions pass without behavior regression.
 - [ ] Architecture checks still pass with stricter ownership rules enabled.
-- [ ] Phase 1 PR is merged before Phase 2 PR is opened.
+- [x] Phase 1 PR is merged before Phase 2 PR is opened.
 
 ---
 
@@ -299,7 +299,7 @@ Evidence: PR #36
 ### Definition of Done Checklist
 
 - [ ] A dedicated Phase 2 branch is created from latest `main` using `arch/phase-2-...`.
-- [ ] A dedicated Phase 2 PR is opened with only Phase 2 scope.
+- [x] A dedicated Phase 2 PR is opened with only Phase 2 scope.
 - [ ] Cross-feature shared types are inventory-listed and each has a documented owner (`core/model` or `feature:<x>:api`).
 - [ ] Direct imports from `feature:Y` internals to `feature:X` are replaced with shared/API contracts.
 - [ ] New `api` packages (if introduced) expose only required public contracts; internal implementation types remain non-exported.
@@ -307,7 +307,7 @@ Evidence: PR #36
 - [ ] Updated imports are validated with full project compile and test run.
 - [ ] Existing behavior in affected screens is smoke-tested (navigation, rendering, basic interactions).
 - [ ] Dependency graph snapshot is captured to show reduced cross-feature coupling.
-- [ ] Phase 2 PR is merged before Phase 3 PR is opened.
+- [x] Phase 2 PR is merged before Phase 3 PR is opened.
 
 ---
 
@@ -365,7 +365,7 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 ### Definition of Done Checklist
 
 - [ ] A dedicated Phase 3 branch is created from latest `main` using `arch/phase-3-...`.
-- [ ] A dedicated Phase 3 PR is opened with only Phase 3 scope.
+- [x] A dedicated Phase 3 PR is opened with only Phase 3 scope.
 - [ ] Top offender files selected for this phase are listed with before/after line counts.
 - [ ] Each split file has a clear single responsibility (orchestrator, mapper, validator, serializer, section UI, etc.).
 - [ ] Repository decomposition preserves transactional/atomic behavior where required.
@@ -374,7 +374,7 @@ Evidence: `arch/phase-3-file-decomposition` (commits: `3472e74`, `cf44ab0`, `6bf
 - [ ] New collaborators have unit tests (or existing tests are updated) to preserve logic parity.
 - [ ] Manual regression smoke test passes for all touched feature flows.
 - [ ] No new file exceeds agreed size threshold unless rationale is documented in code review.
-- [ ] Phase 3 PR is merged before Phase 4 PR is opened.
+- [x] Phase 3 PR is merged before Phase 4 PR is opened.
 
 ---
 
@@ -431,13 +431,13 @@ Evidence: `arch/phase-4-use-cases` (commits: `7cb3e79`, `fa8c595`, `823e4a6`, `1
 - [x] Coverage trend shows increased logic coverage in use-case tests relative to ViewModel tests.
 - [x] Performance remains acceptable (no obvious regressions from added abstraction layers).
 - [x] Architecture checks confirm no invalid dependency direction introduced by use case extraction.
-- [ ] Phase 4 PR is merged before Phase 5 PR is opened.
+- [x] Phase 4 PR is merged before Phase 5 PR is opened.
 
 ---
 
 ## Phase 5 - Package-First Feature Isolation (Still Single Module)
 
-Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c11e`)
+Evidence: PR #39
 
 **Risk:** Medium  
 **Purpose:** Achieve target package shape before Gradle module extraction.
@@ -486,13 +486,13 @@ Evidence: `arch/phase-5-package-isolation` (commits: `8c94a5c`, `4b29b9b`, `424c
 - [x] Import statements and package declarations are normalized and consistent.
 - [x] Developer docs are updated with the new package map and contribution guidance.
 - [x] Team can implement a small sample change in one feature without touching unrelated feature packages.
-- [ ] Phase 5 PR is merged before Phase 6 PR is opened.
+- [x] Phase 5 PR is merged before Phase 6 PR is opened.
 
 ---
 
 ## Phase 6 - Optional Gradle Modularization
 
-Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`, `3f1fb3a`)
+Evidence: PR #40
 
 **Risk:** Medium-High  
 **Purpose:** Enforce stronger boundaries and improve build performance.
@@ -541,13 +541,13 @@ Evidence: `arch/phase-6-optional-modularization` (commits: `3310034`, `55bcf7a`,
 - [x] Build time baseline is compared before/after modularization and documented.
 - [x] Full test suite and lint checks pass in modularized state.
 - [x] Release/debug app startup and critical flows work after modularization.
-- [ ] Phase 6 PR is merged before Phase 7 PR is opened.
+- [x] Phase 6 PR is merged before Phase 7 PR is opened.
 
 ---
 
 ## Phase 7 - Hardening and Cleanup
 
-Evidence: `arch/phase-7-hardening-cleanup` (commits: `511681c`, `4894767`)
+Evidence: PR #41
 
 **Risk:** Low  
 **Purpose:** Remove migration artifacts and lock in architecture quality.
@@ -594,7 +594,7 @@ Evidence: `arch/phase-7-hardening-cleanup` (commits: `511681c`, `4894767`)
 - [x] Final dependency graph report is generated and attached for traceability.
 - [x] Final migration retrospective captures lessons learned and follow-up debt (if any).
 - [x] A validation release candidate build is produced successfully from the migrated structure.
-- [ ] Phase 7 PR is merged and linked from this document as final migration evidence.
+- [x] Phase 7 PR is merged and linked from this document as final migration evidence.
 
 ---
 
