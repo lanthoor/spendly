@@ -7,6 +7,7 @@ import dev.lanthoor.spendly.data.exportimport.ExpenseExport
 import dev.lanthoor.spendly.data.exportimport.IncomeExport
 import dev.lanthoor.spendly.data.exportimport.ReceiptExport
 import dev.lanthoor.spendly.data.exportimport.RecurringTransactionExport
+import dev.lanthoor.spendly.data.exportimport.TransactionAiEnrichmentExport
 import dev.lanthoor.spendly.data.local.entities.AccountEntity
 import dev.lanthoor.spendly.data.local.entities.BudgetEntity
 import dev.lanthoor.spendly.data.local.entities.CategoryEntity
@@ -14,11 +15,13 @@ import dev.lanthoor.spendly.data.local.entities.ExpenseEntity
 import dev.lanthoor.spendly.data.local.entities.IncomeEntity
 import dev.lanthoor.spendly.data.local.entities.ReceiptEntity
 import dev.lanthoor.spendly.data.local.entities.RecurringTransactionEntity
+import dev.lanthoor.spendly.data.local.entities.TransactionAiEnrichmentEntity
 
 data class IdMappings(
     val categories: MutableMap<Long, Long> = mutableMapOf(),
     val accounts: MutableMap<Long, Long> = mutableMapOf(),
-    val expenses: MutableMap<Long, Long> = mutableMapOf()
+    val expenses: MutableMap<Long, Long> = mutableMapOf(),
+    val income: MutableMap<Long, Long> = mutableMapOf()
 )
 
 fun CategoryEntity.toExport() = CategoryExport(
@@ -130,6 +133,60 @@ fun IncomeExport.toEntity(mappings: IdMappings) = IncomeEntity(
     smsConfidence = smsConfidence,
     smsTimestamp = smsTimestamp
 )
+
+fun TransactionAiEnrichmentEntity.toExport() = TransactionAiEnrichmentExport(
+    id = id,
+    transactionType = transactionType,
+    transactionId = transactionId,
+    status = status,
+    displayDescription = displayDescription,
+    counterpartyName = counterpartyName,
+    counterpartyRole = counterpartyRole,
+    counterpartyType = counterpartyType,
+    identifierType = identifierType,
+    identifierValue = identifierValue,
+    paymentRail = paymentRail,
+    confidence = confidence,
+    reason = reason,
+    modelName = modelName,
+    promptVersion = promptVersion,
+    enrichedAt = enrichedAt,
+    createdAt = createdAt,
+    modifiedAt = modifiedAt
+)
+
+fun TransactionAiEnrichmentExport.toEntity(mappings: IdMappings): TransactionAiEnrichmentEntity {
+    val mappedTransactionId = when (transactionType) {
+        "EXPENSE" -> mappings.expenses[transactionId]
+            ?: throw IllegalStateException("Missing expense mapping for AI enrichment txId: $transactionId")
+
+        "INCOME" -> mappings.income[transactionId]
+            ?: throw IllegalStateException("Missing income mapping for AI enrichment txId: $transactionId")
+
+        else -> throw IllegalStateException("Unsupported transaction type in AI enrichment: $transactionType")
+    }
+
+    return TransactionAiEnrichmentEntity(
+    id = 0,
+    transactionType = transactionType,
+    transactionId = mappedTransactionId,
+    status = status,
+    displayDescription = displayDescription,
+    counterpartyName = counterpartyName,
+    counterpartyRole = counterpartyRole,
+    counterpartyType = counterpartyType,
+    identifierType = identifierType,
+    identifierValue = identifierValue,
+    paymentRail = paymentRail,
+    confidence = confidence,
+    reason = reason,
+    modelName = modelName,
+    promptVersion = promptVersion,
+    enrichedAt = enrichedAt,
+    createdAt = createdAt,
+    modifiedAt = modifiedAt
+)
+}
 
 fun ReceiptEntity.toExport(base64Data: String) = ReceiptExport(
     id = id,

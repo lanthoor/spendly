@@ -40,6 +40,9 @@ interface IncomeDao {
     @Query("SELECT * FROM income WHERE id = :incomeId")
     fun getIncomeById(incomeId: Long): Flow<IncomeEntity?>
 
+    @Query("SELECT * FROM income WHERE id IN (:ids)")
+    suspend fun getIncomeByIds(ids: List<Long>): List<IncomeEntity>
+
     /**
      * Get income within a date range.
      */

@@ -14,6 +14,7 @@ import dev.lanthoor.spendly.data.repository.InitializationRepositoryImpl
 import dev.lanthoor.spendly.data.repository.PreferencesRepositoryImpl
 import dev.lanthoor.spendly.data.repository.ReceiptRepositoryImpl
 import dev.lanthoor.spendly.data.repository.RecurringTransactionRepositoryImpl
+import dev.lanthoor.spendly.data.repository.TransactionAiEnrichmentRepositoryImpl
 import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.BudgetRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
@@ -24,6 +25,7 @@ import dev.lanthoor.spendly.domain.repository.InitializationRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.domain.repository.ReceiptRepository
 import dev.lanthoor.spendly.domain.repository.RecurringTransactionRepository
+import dev.lanthoor.spendly.domain.repository.TransactionAiEnrichmentRepository
 import javax.inject.Singleton
 
 /**
@@ -123,4 +125,10 @@ abstract class RepositoryModule {
     abstract fun bindExportImportRepository(
         impl: ExportImportRepositoryImpl
     ): ExportImportRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTransactionAiEnrichmentRepository(
+        impl: TransactionAiEnrichmentRepositoryImpl
+    ): TransactionAiEnrichmentRepository
 }

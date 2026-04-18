@@ -123,6 +123,11 @@ class ExpenseRepositoryImpl @Inject constructor(
             .map { expenseFrom(it) }
     }
 
+    override suspend fun getExpensesByIds(ids: List<Long>): List<Expense> {
+        if (ids.isEmpty()) return emptyList()
+        return expenseDao.getExpensesByIds(ids).map { expenseFrom(it) }
+    }
+
     private fun expenseFrom(entity: ExpenseEntity, receipts: List<Receipt> = emptyList()): Expense {
         return Expense(
             id = entity.id,

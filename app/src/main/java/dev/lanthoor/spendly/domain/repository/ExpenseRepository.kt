@@ -108,4 +108,6 @@ interface ExpenseRepository {
      * Retrieves SMS-linked expenses with sms timestamp at or after the given threshold.
      */
     suspend fun getSmsLinkedExpensesSince(minSmsTimestamp: Long): List<Expense>
+
+    suspend fun getExpensesByIds(ids: List<Long>): List<Expense>
 }

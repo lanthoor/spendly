@@ -149,6 +149,7 @@ dependencies {
 
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.mlkit.genai.prompt)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

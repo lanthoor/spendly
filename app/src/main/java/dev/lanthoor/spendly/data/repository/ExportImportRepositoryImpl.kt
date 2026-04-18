@@ -23,6 +23,8 @@ import dev.lanthoor.spendly.data.local.dao.ExpenseDao
 import dev.lanthoor.spendly.data.local.dao.IncomeDao
 import dev.lanthoor.spendly.data.local.dao.ReceiptDao
 import dev.lanthoor.spendly.data.local.dao.RecurringTransactionDao
+import dev.lanthoor.spendly.data.local.dao.TransactionAiEnrichmentDao
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
 import dev.lanthoor.spendly.domain.repository.ExportImportRepository
 import dev.lanthoor.spendly.domain.repository.ExportProgress
 import dev.lanthoor.spendly.domain.repository.ExportResult
@@ -56,6 +58,8 @@ class ExportImportRepositoryImpl @Inject constructor(
     private val receiptDao: ReceiptDao,
     private val budgetDao: BudgetDao,
     private val recurringTransactionDao: RecurringTransactionDao,
+    private val transactionAiEnrichmentDao: TransactionAiEnrichmentDao,
+    private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase,
     private val database: SpendlyDatabase,
     @param:ApplicationContext private val context: Context
 ) : ExportImportRepository {
@@ -73,6 +77,7 @@ class ExportImportRepositoryImpl @Inject constructor(
         receiptDao = receiptDao,
         budgetDao = budgetDao,
         recurringTransactionDao = recurringTransactionDao,
+        transactionAiEnrichmentDao = transactionAiEnrichmentDao,
         context = context
     )
 
@@ -96,6 +101,7 @@ class ExportImportRepositoryImpl @Inject constructor(
             val receipts = receiptDao.getAllSnapshot()
             val budgets = budgetDao.getAllSnapshot()
             val recurring = recurringTransactionDao.getAllSnapshot()
+            val aiEnrichments = transactionAiEnrichmentDao.getAllSnapshot()
 
             // Phase 2: Process receipts with Base64 encoding (10-70%)
             val receiptExports = mutableListOf<ReceiptExport>()
@@ -129,6 +135,7 @@ class ExportImportRepositoryImpl @Inject constructor(
                 "accounts" to accounts.size,
                 "expenses" to expenses.size,
                 "income" to income.size,
+                "aiEnrichments" to aiEnrichments.size,
                 "receipts" to receipts.size,
                 "budgets" to budgets.size,
                 "recurringTransactions" to recurring.size
@@ -136,7 +143,7 @@ class ExportImportRepositoryImpl @Inject constructor(
 
             val export = SpendlyExport(
                 metadata = ExportMetadata(
-                    exportVersion = 1,
+                    exportVersion = 2,
                     appVersion = BuildConfig.VERSION_NAME,
                     databaseVersion = database.openHelper.readableDatabase.version,
                     exportDate = System.currentTimeMillis(),
@@ -147,6 +154,7 @@ class ExportImportRepositoryImpl @Inject constructor(
                 accounts = accounts.map { it.toExport() },
                 expenses = expenses.map { it.toExport() },
                 income = income.map { it.toExport() },
+                aiEnrichments = aiEnrichments.map { it.toExport() },
                 receipts = receiptExports,
                 budgets = budgets.map { it.toExport() },
                 recurringTransactions = recurring.map { it.toExport() }
@@ -192,7 +200,8 @@ class ExportImportRepositoryImpl @Inject constructor(
 
     override suspend fun importAllData(
         jsonContent: String,
-        onProgress: (ImportProgress) -> Unit
+        onProgress: (ImportProgress) -> Unit,
+        onAfterImport: (suspend () -> Unit)?
     ): ImportResult = withContext(Dispatchers.IO) {
         try {
             // Phase 1: Parse JSON (5%)
@@ -250,12 +259,20 @@ class ExportImportRepositoryImpl @Inject constructor(
                 onProgress(ImportProgress.ImportingRecurring())
                 importOperations.importRecurringTransactions(export.recurringTransactions, idMappings)
 
+                importOperations.importAiEnrichments(export.aiEnrichments, idMappings)
+
                 // Phase 10: Finalize (98%)
                 ensureActive()
                 onProgress(ImportProgress.Finalizing())
             }
 
             val recordCounts = export.metadata.recordCounts
+
+            if (export.aiEnrichments.isEmpty()) {
+                enrichSmsTransactionsUseCase.markImportedPendingIfMissing()
+            }
+            onAfterImport?.invoke()
+
             val result = ImportResult.Success(recordCounts)
             onProgress(ImportProgress.Success(recordCounts))
 

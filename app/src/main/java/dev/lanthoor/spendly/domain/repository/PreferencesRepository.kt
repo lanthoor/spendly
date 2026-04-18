@@ -2,6 +2,8 @@ package dev.lanthoor.spendly.domain.repository
 
 import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
+import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
+import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
 import dev.lanthoor.spendly.core.model.preferences.LockTimeout
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import dev.lanthoor.spendly.core.model.preferences.YearType
@@ -93,4 +95,19 @@ interface PreferencesRepository {
      * @param period The time period to set
      */
     suspend fun setAnalyticsTimePeriod(period: TimePeriod)
+
+    fun getAiEnrichmentSettings(): Flow<AiEnrichmentSettings>
+
+    suspend fun setAiEnrichmentEnabled(enabled: Boolean)
+
+    suspend fun setAiModelAvailability(
+        availability: AiModelAvailability,
+        checkedAt: Long,
+        baseModelName: String?,
+        lastErrorCode: String?
+    )
+
+    suspend fun setAiEnrichmentBatchSize(batchSize: Int)
+
+    suspend fun setAiPromptVersion(promptVersion: Int)
 }

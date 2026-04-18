@@ -8,16 +8,23 @@ import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
+import dev.lanthoor.spendly.domain.model.TransactionAiEnrichment
 import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
+import dev.lanthoor.spendly.domain.repository.TransactionAiEnrichmentRepository
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsResult
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -28,7 +35,9 @@ class TransactionListViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
     private val incomeRepository: IncomeRepository,
     private val categoryRepository: CategoryRepository,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val enrichmentRepository: TransactionAiEnrichmentRepository,
+    private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : ViewModel() {
 
     // Filter states
@@ -41,6 +50,11 @@ class TransactionListViewModel @Inject constructor(
     val endDate: StateFlow<Long?> = _endDate.asStateFlow()
     val selectedType: StateFlow<TransactionType> = _selectedType.asStateFlow()
     val selectedCategories: StateFlow<Set<Long>> = _selectedCategories.asStateFlow()
+    private val _isEnrichmentRunning = MutableStateFlow(false)
+    val isEnrichmentRunning: StateFlow<Boolean> = _isEnrichmentRunning.asStateFlow()
+
+    private val _enrichmentResultEvents = MutableSharedFlow<EnrichSmsTransactionsResult>()
+    val enrichmentResultEvents = _enrichmentResultEvents.asSharedFlow()
 
     /**
      * Combined state with all transactions and filtering
@@ -50,9 +64,10 @@ class TransactionListViewModel @Inject constructor(
             expenseRepository.getAllExpenses(),
             incomeRepository.getAllIncome(),
             categoryRepository.getAllCategories(),
-            accountRepository.getAllAccounts()
-        ) { expenses, incomes, categories, accounts ->
-            arrayOf(expenses, incomes, categories, accounts)
+            accountRepository.getAllAccounts(),
+            enrichmentRepository.observeAll()
+        ) { expenses, incomes, categories, accounts, enrichments ->
+            arrayOf(expenses, incomes, categories, accounts, enrichments)
         },
         combine(
             _startDate,
@@ -74,6 +89,9 @@ class TransactionListViewModel @Inject constructor(
 
         @Suppress("UNCHECKED_CAST")
         val accounts = dataArray[3] as List<Account>
+
+        @Suppress("UNCHECKED_CAST")
+        val enrichments = dataArray[4] as List<TransactionAiEnrichment>
 
         val startDate = filterArray[0] as Long?
         val endDate = filterArray[1] as Long?
@@ -126,6 +144,7 @@ class TransactionListViewModel @Inject constructor(
             allTransactions = allTransactions,
             allCategories = categories,
             allAccounts = accounts,
+            enrichmentByKey = enrichments.associateBy { "${it.transactionType.name}:${it.transactionId}" },
             hasTransactions = expenses.isNotEmpty() || incomes.isNotEmpty()
         )
     }
@@ -218,6 +237,33 @@ class TransactionListViewModel @Inject constructor(
     fun refresh() {
         // No-op: Room Flows provide automatic real-time updates
     }
+
+    fun enrichTransactions(transactions: List<RecentTransaction>) {
+        if (_isEnrichmentRunning.value) return
+
+        viewModelScope.launch {
+            _isEnrichmentRunning.value = true
+            try {
+                val expenseIds = transactions.mapNotNull { transaction ->
+                    when (transaction) {
+                        is RecentTransaction.ExpenseTransaction -> transaction.expense.id
+                        is RecentTransaction.IncomeTransaction -> null
+                    }
+                }
+                val incomeIds = transactions.mapNotNull { transaction ->
+                    when (transaction) {
+                        is RecentTransaction.ExpenseTransaction -> null
+                        is RecentTransaction.IncomeTransaction -> transaction.income.id
+                    }
+                }
+
+                val result = enrichSmsTransactionsUseCase.runForTransactionIds(expenseIds, incomeIds)
+                _enrichmentResultEvents.emit(result)
+            } finally {
+                _isEnrichmentRunning.value = false
+            }
+        }
+    }
 }
 
 /**
@@ -230,6 +276,7 @@ sealed interface TransactionListUiState {
         val allTransactions: List<RecentTransaction>,
         val allCategories: List<Category>,
         val allAccounts: List<Account>,
+        val enrichmentByKey: Map<String, TransactionAiEnrichment>,
         val hasTransactions: Boolean
     ) : TransactionListUiState
 

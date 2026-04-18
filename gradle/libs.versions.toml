@@ -27,6 +27,7 @@ play-publisher = "4.0.0"
 biometric = "1.4.0-alpha06"
 kotlinxSerialization = "1.10.0"
 guava = "33.5.0-android"
+mlkitGenAiPrompt = "1.0.0-beta2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,6 +91,7 @@ androidx-biometric = { group = "androidx.biometric", name = "biometric", version
 # Kotlinx Serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+mlkit-genai-prompt = { group = "com.google.mlkit", name = "genai-prompt", version.ref = "mlkitGenAiPrompt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

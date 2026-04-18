@@ -40,6 +40,9 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses WHERE id = :expenseId")
     fun getExpenseById(expenseId: Long): Flow<ExpenseEntity?>
 
+    @Query("SELECT * FROM expenses WHERE id IN (:ids)")
+    suspend fun getExpensesByIds(ids: List<Long>): List<ExpenseEntity>
+
     /**
      * Get expenses within a date range.
      *

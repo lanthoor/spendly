@@ -30,6 +30,7 @@ import dev.lanthoor.spendly.utils.SmsFingerprintPreload
 import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.core.model.finance.TransactionType
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -50,7 +51,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
     private val incomeRepository: IncomeRepository,
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -179,7 +181,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                             smsConfidence = parsed.confidence,
                             smsTimestamp = date
                         )
-                        expenseRepository.insertExpense(expense)
+                        val expenseId = expenseRepository.insertExpense(expense)
+                        enrichSmsTransactionsUseCase.markPending(TransactionType.EXPENSE, expenseId)
                     }
 
                     TransactionType.INCOME -> {
@@ -200,7 +203,8 @@ class HistoricalSmsScanWorker @AssistedInject constructor(
                             smsConfidence = parsed.confidence,
                             smsTimestamp = date
                         )
-                        incomeRepository.insertIncome(income)
+                        val incomeId = incomeRepository.insertIncome(income)
+                        enrichSmsTransactionsUseCase.markPending(TransactionType.INCOME, incomeId)
                     }
                 }
 

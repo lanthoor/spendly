@@ -121,6 +121,8 @@ File size: %2$s</string>
     <string name="msg_recurring_delete_failed">Failed to delete recurring transaction</string>
 
     <string name="label_filter">Filter</string>
+    <string name="cd_ai_enrich_transactions">AI enrich transactions</string>
+    <string name="msg_ai_enrichment_no_eligible_rows">No SMS transactions need enrichment</string>
 
     <!-- AddExpense strings -->
     <string name="label_saving_expense">Saving expense...</string>

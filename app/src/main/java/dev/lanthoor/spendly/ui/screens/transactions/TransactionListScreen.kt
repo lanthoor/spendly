@@ -16,11 +16,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -60,6 +64,8 @@ fun TransactionListScreen(
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
     val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
     val selectedCategories by viewModel.selectedCategories.collectAsStateWithLifecycle()
+    val isEnrichmentRunning by viewModel.isEnrichmentRunning.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     // Modal sheet states
     var showEditExpenseSheet by remember { mutableStateOf(false) }
@@ -70,6 +76,18 @@ fun TransactionListScreen(
 
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.enrichmentResultEvents.collect { result ->
+            val message = if (result.attempted == 0) {
+                context.getString(R.string.msg_ai_enrichment_no_eligible_rows)
+            } else {
+                "${result.enriched} enriched, ${result.failed} failed, ${result.skipped} skipped"
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     // Check if any filters are applied
     val hasActiveFilters = startDate != null || endDate != null ||
@@ -81,6 +99,17 @@ fun TransactionListScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.screen_transactions_title)) },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            val state = transactionListState
+                            if (state is TransactionListUiState.Success) {
+                                viewModel.enrichTransactions(state.transactions)
+                            }
+                        },
+                        enabled = !isEnrichmentRunning
+                    ) {
+                        Text("✨")
+                    }
                     IconButton(onClick = { showFilterSheet = true }) {
                         BadgedBox(
                             badge = {
@@ -98,6 +127,9 @@ fun TransactionListScreen(
                 },
                 scrollBehavior = scrollBehavior
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
@@ -159,6 +191,7 @@ fun TransactionListScreen(
                                 transaction = transaction,
                                 categories = state.allCategories,
                                 accounts = state.allAccounts,
+                                enrichmentByKey = state.enrichmentByKey,
                                 onClick = {
                                     when (transaction) {
                                         is RecentTransaction.ExpenseTransaction -> {

@@ -12,12 +12,18 @@ class ExportImportValidator {
             errors.add("Unsupported currency: ${export.metadata.currency}")
         }
 
-        if (export.metadata.exportVersion > 1) {
+        if (export.metadata.exportVersion > 2) {
             errors.add("Export version ${export.metadata.exportVersion} not supported")
         }
 
         if (export.categories.size != export.metadata.recordCounts["categories"]) {
             errors.add("Category count mismatch")
+        }
+
+        export.metadata.recordCounts["aiEnrichments"]?.let { expected ->
+            if (export.aiEnrichments.size != expected) {
+                errors.add("AI enrichment count mismatch")
+            }
         }
 
         val categoryIds = export.categories.map { it.id }.toSet()
@@ -42,6 +48,30 @@ class ExportImportValidator {
             }
             income.linkedExpenseId?.let {
                 if (it !in expenseIds) errors.add("Income ${income.id} references missing expense $it")
+            }
+        }
+
+        val allowedStatuses = setOf("PENDING", "ENRICHED", "FAILED")
+        val incomeIds = export.income.map { it.id }.toSet()
+        export.aiEnrichments.forEach { enrichment ->
+            if (enrichment.transactionType !in setOf("EXPENSE", "INCOME")) {
+                errors.add("AI enrichment ${enrichment.id} has invalid transaction type ${enrichment.transactionType}")
+            }
+            if (enrichment.status !in allowedStatuses) {
+                errors.add("AI enrichment ${enrichment.id} has invalid status ${enrichment.status}")
+            }
+            when (enrichment.transactionType) {
+                "EXPENSE" -> {
+                    if (enrichment.transactionId !in expenseIds) {
+                        errors.add("AI enrichment ${enrichment.id} references missing expense ${enrichment.transactionId}")
+                    }
+                }
+
+                "INCOME" -> {
+                    if (enrichment.transactionId !in incomeIds) {
+                        errors.add("AI enrichment ${enrichment.id} references missing income ${enrichment.transactionId}")
+                    }
+                }
             }
         }
 

@@ -98,6 +98,11 @@ class IncomeRepositoryImpl @Inject constructor(
             .map { incomeFrom(it) }
     }
 
+    override suspend fun getIncomeByIds(ids: List<Long>): List<Income> {
+        if (ids.isEmpty()) return emptyList()
+        return incomeDao.getIncomeByIds(ids).map { incomeFrom(it) }
+    }
+
     private fun incomeFrom(entity: IncomeEntity): Income {
         return Income(
             id = entity.id,
