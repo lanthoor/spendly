@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.analytics.usecase
+package dev.lanthoor.spendly.domain.usecase.analytics
 
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import dev.lanthoor.spendly.core.model.preferences.getDateRange
@@ -6,16 +6,12 @@ import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
 import dev.lanthoor.spendly.domain.model.LineChartEntry
-import dev.lanthoor.spendly.ui.screens.analytics.AnalyticsPeriodRangeCalculator
-import dev.lanthoor.spendly.ui.screens.analytics.AnalyticsPeriodType
-import dev.lanthoor.spendly.ui.screens.analytics.AnalyticsTrendCalculator
-import javax.inject.Inject
 
 data class AnalyticsStateInput(
     val expenses: List<Expense>,
     val incomes: List<Income>,
     val categories: List<Category>,
-    val periodType: AnalyticsPeriodType
+    val period: AnalyticsPeriod
 )
 
 data class AnalyticsStateResult(
@@ -37,9 +33,9 @@ data class AnalyticsStateResult(
     val netWorthTrendData: List<LineChartEntry>
 )
 
-class BuildAnalyticsStateUseCase @Inject constructor() {
+class BuildAnalyticsStateUseCase {
     fun execute(input: AnalyticsStateInput): AnalyticsStateResult {
-        val period = getTimePeriod(input.periodType)
+        val period = getTimePeriod(input.period)
         val (startDate, endDate) = period.getDateRange()
 
         val filteredExpenses = input.expenses.filter { it.date in startDate..endDate }
@@ -83,9 +79,9 @@ class BuildAnalyticsStateUseCase @Inject constructor() {
         )
     }
 
-    private fun getTimePeriod(periodType: AnalyticsPeriodType): TimePeriod = when (periodType) {
-        AnalyticsPeriodType.FINANCIAL_YEAR -> TimePeriod.ThisFinancialYear
-        AnalyticsPeriodType.CALENDAR_YEAR -> TimePeriod.ThisYear
+    private fun getTimePeriod(period: AnalyticsPeriod): TimePeriod = when (period) {
+        AnalyticsPeriod.FINANCIAL_YEAR -> TimePeriod.ThisFinancialYear
+        AnalyticsPeriod.CALENDAR_YEAR -> TimePeriod.ThisYear
     }
 
     private fun calculatePercentageChange(previous: Long, current: Long): Float {

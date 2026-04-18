@@ -1,12 +1,10 @@
-package dev.lanthoor.spendly.ui.screens.budgets.usecase
+package dev.lanthoor.spendly.domain.usecase.budgets
 
 import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
-import dev.lanthoor.spendly.ui.screens.budgets.api.BudgetListUiState
 import java.util.Calendar
-import javax.inject.Inject
 
 data class BudgetListStateInput(
     val allBudgets: List<Budget>,
@@ -16,8 +14,15 @@ data class BudgetListStateInput(
     val currentYear: Int
 )
 
-class BuildBudgetListStateUseCase @Inject constructor() {
-    fun execute(input: BudgetListStateInput): BudgetListUiState.Success {
+data class BudgetListStateResult(
+    val budgets: List<BudgetWithProgress>,
+    val selectedMonth: Int,
+    val selectedYear: Int,
+    val hasOverallBudget: Boolean
+)
+
+class BuildBudgetListStateUseCase {
+    fun execute(input: BudgetListStateInput): BudgetListStateResult {
         val latestBudgets = input.allBudgets
             .groupBy { it.categoryId }
             .mapValues { (_, budgets) ->
@@ -52,7 +57,7 @@ class BuildBudgetListStateUseCase @Inject constructor() {
             )
         }.sortedByDescending { it.progress }
 
-        return BudgetListUiState.Success(
+        return BudgetListStateResult(
             budgets = budgetsWithProgress,
             selectedMonth = input.currentMonth,
             selectedYear = input.currentYear,

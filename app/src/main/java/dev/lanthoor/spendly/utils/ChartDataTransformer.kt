@@ -1,6 +1,5 @@
 package dev.lanthoor.spendly.utils
 
-import androidx.compose.ui.graphics.Color
 import dev.lanthoor.spendly.data.local.dao.CategoryExpenseSummary
 import dev.lanthoor.spendly.data.local.dao.DailyExpenseSummary
 import dev.lanthoor.spendly.data.local.dao.DailyIncomeSummary
@@ -12,7 +11,6 @@ import dev.lanthoor.spendly.domain.model.CategoryAnalysis
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.LineChartEntry
 import dev.lanthoor.spendly.domain.model.PieChartEntry
-import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -29,13 +27,11 @@ object ChartDataTransformer {
      *
      * @param expenses List of expenses to aggregate
      * @param categories All available categories for lookup
-     * @param isDark Whether dark theme is active (for color adjustment)
      * @return List of pie chart entries sorted by amount (descending)
      */
     fun expensesToPieChartData(
         expenses: List<Expense>,
-        categories: List<Category>,
-        isDark: Boolean
+        categories: List<Category>
     ): List<PieChartEntry> {
         if (expenses.isEmpty()) return emptyList()
 
@@ -57,7 +53,7 @@ object ChartDataTransformer {
                 categoryIcon = category.icon,
                 amount = amount,
                 percentage = percentage,
-                color = Color(category.color).adjustForTheme(isDark),
+                colorArgb = category.color.toLong(),
                 transactionCount = expenseList.size
             )
         }.sortedByDescending { it.amount }
@@ -70,14 +66,12 @@ object ChartDataTransformer {
      * @param summaries Pre-aggregated category summaries from DAO
      * @param categories All available categories for lookup
      * @param transactionCounts Map of category ID to transaction count
-     * @param isDark Whether dark theme is active
      * @return List of pie chart entries
      */
     fun categoryExpenseSummariesToPieChartData(
         summaries: List<CategoryExpenseSummary>,
         categories: List<Category>,
-        transactionCounts: Map<Long, Int>,
-        isDark: Boolean
+        transactionCounts: Map<Long, Int>
     ): List<PieChartEntry> {
         if (summaries.isEmpty()) return emptyList()
 
@@ -95,7 +89,7 @@ object ChartDataTransformer {
                 categoryIcon = category.icon,
                 amount = summary.total,
                 percentage = percentage,
-                color = Color(category.color).adjustForTheme(isDark),
+                colorArgb = category.color.toLong(),
                 transactionCount = transactionCounts[categoryId] ?: 0
             )
         }.sortedByDescending { it.amount }

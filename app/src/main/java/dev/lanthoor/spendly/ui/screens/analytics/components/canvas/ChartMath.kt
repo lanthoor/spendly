@@ -1,7 +1,6 @@
 package dev.lanthoor.spendly.ui.screens.analytics.components.canvas
 
 import androidx.compose.ui.geometry.Offset
-import dev.lanthoor.spendly.domain.model.PieSliceArc
 import kotlin.math.atan2
 import kotlin.math.pow
 import kotlin.math.sqrt

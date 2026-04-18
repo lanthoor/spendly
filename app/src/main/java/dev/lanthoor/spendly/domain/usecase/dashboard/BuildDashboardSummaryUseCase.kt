@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.dashboard.usecase
+package dev.lanthoor.spendly.domain.usecase.dashboard
 
 import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
@@ -7,12 +7,7 @@ import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
-import dev.lanthoor.spendly.ui.screens.dashboard.CategorySpending
-import dev.lanthoor.spendly.ui.screens.dashboard.DashboardCalculators
-import dev.lanthoor.spendly.ui.screens.dashboard.DashboardDateUtils
-import dev.lanthoor.spendly.ui.screens.dashboard.FinancialSummary
 import java.util.Calendar
-import javax.inject.Inject
 
 data class DashboardSummaryInput(
     val expenses: List<Expense>,
@@ -24,15 +19,39 @@ data class DashboardSummaryInput(
     val yearType: YearType
 )
 
+data class DashboardFinancialSummary(
+    val selectedMonth: Int,
+    val selectedYear: Int,
+    val monthExpenses: Long,
+    val monthIncome: Long,
+    val monthNetBalance: Long,
+    val monthExpenseChange: Float,
+    val monthIncomeChange: Float,
+    val monthBalanceChange: Float,
+    val ytdExpenses: Long,
+    val ytdIncome: Long,
+    val ytdNetBalance: Long,
+    val ytdExpenseChange: Float,
+    val ytdIncomeChange: Float,
+    val ytdBalanceChange: Float,
+    val yearType: YearType
+)
+
+data class DashboardCategorySpending(
+    val category: Category,
+    val totalAmount: Long,
+    val transactionCount: Int
+)
+
 data class DashboardSummaryResult(
-    val financialSummary: FinancialSummary,
+    val financialSummary: DashboardFinancialSummary,
     val recentTransactions: List<RecentTransaction>,
-    val topCategories: List<CategorySpending>,
+    val topCategories: List<DashboardCategorySpending>,
     val budgets: List<BudgetWithProgress>,
     val hasTransactions: Boolean
 )
 
-class BuildDashboardSummaryUseCase @Inject constructor() {
+class BuildDashboardSummaryUseCase {
     fun execute(input: DashboardSummaryInput): DashboardSummaryResult {
         val monthStart = DashboardDateUtils.getMonthStartMillis(input.selectedYear, input.selectedMonth)
         val monthEnd = DashboardDateUtils.getMonthEndMillis(input.selectedYear, input.selectedMonth)
@@ -100,7 +119,7 @@ class BuildDashboardSummaryUseCase @Inject constructor() {
             DashboardCalculators.calculatePercentageChange(prevYtdNetBalance, ytdNetBalance)
 
         return DashboardSummaryResult(
-            financialSummary = FinancialSummary(
+            financialSummary = DashboardFinancialSummary(
                 selectedMonth = input.selectedMonth,
                 selectedYear = input.selectedYear,
                 monthExpenses = monthExpenseTotal,

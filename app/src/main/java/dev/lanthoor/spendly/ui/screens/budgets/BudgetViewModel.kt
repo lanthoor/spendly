@@ -3,9 +3,9 @@ package dev.lanthoor.spendly.ui.screens.budgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.domain.usecase.budgets.BudgetListStateInput
+import dev.lanthoor.spendly.domain.usecase.budgets.BuildBudgetListStateUseCase
 import dev.lanthoor.spendly.ui.screens.budgets.api.BudgetListUiState
-import dev.lanthoor.spendly.ui.screens.budgets.usecase.BudgetListStateInput
-import dev.lanthoor.spendly.ui.screens.budgets.usecase.BuildBudgetListStateUseCase
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.repository.BudgetRepository
@@ -76,7 +76,7 @@ class BudgetViewModel @Inject constructor(
                     expenseRepository.getAllExpenses(),
                     categoryRepository.getAllCategories()
                 ) { allBudgets, expenses, categories ->
-                    buildBudgetListStateUseCase.execute(
+                    val result = buildBudgetListStateUseCase.execute(
                         BudgetListStateInput(
                             allBudgets = allBudgets,
                             expenses = expenses,
@@ -84,6 +84,13 @@ class BudgetViewModel @Inject constructor(
                             currentMonth = currentMonth,
                             currentYear = currentYear
                         )
+                    )
+
+                    BudgetListUiState.Success(
+                        budgets = result.budgets,
+                        selectedMonth = result.selectedMonth,
+                        selectedYear = result.selectedYear,
+                        hasOverallBudget = result.hasOverallBudget
                     )
                 }.collect { state ->
                     _uiState.value = state

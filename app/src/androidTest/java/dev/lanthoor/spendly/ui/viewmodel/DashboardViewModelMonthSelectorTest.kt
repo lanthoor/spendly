@@ -15,9 +15,9 @@ import dev.lanthoor.spendly.data.repository.CategoryRepositoryImpl
 import dev.lanthoor.spendly.data.repository.ExpenseRepositoryImpl
 import dev.lanthoor.spendly.data.repository.IncomeRepositoryImpl
 import dev.lanthoor.spendly.data.repository.PreferencesRepositoryImpl
+import dev.lanthoor.spendly.domain.usecase.dashboard.BuildDashboardSummaryUseCase
 import dev.lanthoor.spendly.ui.screens.dashboard.DashboardUiState
 import dev.lanthoor.spendly.ui.screens.dashboard.DashboardViewModel
-import dev.lanthoor.spendly.ui.screens.dashboard.usecase.BuildDashboardSummaryUseCase
 import dev.lanthoor.spendly.utils.TestDataBuilders
 import dev.lanthoor.spendly.core.model.preferences.YearType
 import dev.lanthoor.spendly.utils.createTestDatabase

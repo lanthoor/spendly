@@ -1,7 +1,6 @@
 package dev.lanthoor.spendly.ui.screens.analytics.components.canvas
 
 import androidx.compose.ui.geometry.Offset
-import dev.lanthoor.spendly.domain.model.PieSliceArc
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

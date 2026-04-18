@@ -3,6 +3,8 @@ package dev.lanthoor.spendly.ui.screens.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.domain.usecase.dashboard.BuildDashboardSummaryUseCase
+import dev.lanthoor.spendly.domain.usecase.dashboard.DashboardSummaryInput
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Budget
 import dev.lanthoor.spendly.domain.model.Category
@@ -14,8 +16,6 @@ import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.ui.screens.dashboard.usecase.BuildDashboardSummaryUseCase
-import dev.lanthoor.spendly.ui.screens.dashboard.usecase.DashboardSummaryInput
 import dev.lanthoor.spendly.core.model.preferences.YearType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -111,9 +111,31 @@ class DashboardViewModel @Inject constructor(
         )
 
         DashboardUiState.Success(
-            financialSummary = summaryResult.financialSummary,
+            financialSummary = FinancialSummary(
+                selectedMonth = summaryResult.financialSummary.selectedMonth,
+                selectedYear = summaryResult.financialSummary.selectedYear,
+                monthExpenses = summaryResult.financialSummary.monthExpenses,
+                monthIncome = summaryResult.financialSummary.monthIncome,
+                monthNetBalance = summaryResult.financialSummary.monthNetBalance,
+                monthExpenseChange = summaryResult.financialSummary.monthExpenseChange,
+                monthIncomeChange = summaryResult.financialSummary.monthIncomeChange,
+                monthBalanceChange = summaryResult.financialSummary.monthBalanceChange,
+                ytdExpenses = summaryResult.financialSummary.ytdExpenses,
+                ytdIncome = summaryResult.financialSummary.ytdIncome,
+                ytdNetBalance = summaryResult.financialSummary.ytdNetBalance,
+                ytdExpenseChange = summaryResult.financialSummary.ytdExpenseChange,
+                ytdIncomeChange = summaryResult.financialSummary.ytdIncomeChange,
+                ytdBalanceChange = summaryResult.financialSummary.ytdBalanceChange,
+                yearType = summaryResult.financialSummary.yearType
+            ),
             recentTransactions = summaryResult.recentTransactions,
-            topCategories = summaryResult.topCategories,
+            topCategories = summaryResult.topCategories.map {
+                CategorySpending(
+                    category = it.category,
+                    totalAmount = it.totalAmount,
+                    transactionCount = it.transactionCount
+                )
+            },
             budgets = summaryResult.budgets,
             allCategories = categories,
             allAccounts = accounts,

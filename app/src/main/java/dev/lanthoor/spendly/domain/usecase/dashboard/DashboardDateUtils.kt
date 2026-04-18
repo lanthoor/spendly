@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.dashboard
+package dev.lanthoor.spendly.domain.usecase.dashboard
 
 import java.util.Calendar
 

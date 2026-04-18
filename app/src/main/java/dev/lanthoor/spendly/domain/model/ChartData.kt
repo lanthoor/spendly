@@ -1,7 +1,5 @@
 package dev.lanthoor.spendly.domain.model
 
-import androidx.compose.ui.graphics.Color
-
 /**
  * Data class for pie chart entries representing category spending breakdown.
  *
@@ -10,7 +8,7 @@ import androidx.compose.ui.graphics.Color
  * @property categoryIcon Material Icon name (e.g., "restaurant")
  * @property amount Total amount spent in paise (Long to avoid precision loss)
  * @property percentage Percentage of total spending (0.0 to 100.0)
- * @property color Category color (from database, should be adjusted for theme)
+ * @property colorArgb Category color as ARGB Long token
  * @property transactionCount Number of transactions in this category
  */
 data class PieChartEntry(
@@ -19,7 +17,7 @@ data class PieChartEntry(
     val categoryIcon: String,
     val amount: Long,
     val percentage: Float,
-    val color: Color,
+    val colorArgb: Long,
     val transactionCount: Int
 )
 

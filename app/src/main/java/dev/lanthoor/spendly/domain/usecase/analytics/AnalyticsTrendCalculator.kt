@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.analytics
+package dev.lanthoor.spendly.domain.usecase.analytics
 
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
