@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.model.ai
 
 import dev.lanthoor.spendly.core.model.finance.TransactionType
 

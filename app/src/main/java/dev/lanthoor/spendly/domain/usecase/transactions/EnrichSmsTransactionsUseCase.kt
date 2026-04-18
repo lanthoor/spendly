@@ -2,20 +2,18 @@ package dev.lanthoor.spendly.domain.usecase.transactions
 
 import android.util.Log
 import dev.lanthoor.spendly.domain.model.TransactionAiEnrichmentUpdate
+import dev.lanthoor.spendly.domain.model.ai.AiPromptBatchResponse
+import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
+import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
 import dev.lanthoor.spendly.domain.repository.TransactionAiEnrichmentRepository
 import dev.lanthoor.spendly.core.model.finance.AiEnrichmentStatus
 import dev.lanthoor.spendly.core.model.finance.TransactionType
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
 import dev.lanthoor.spendly.core.model.preferences.AiPromptVersion
-import dev.lanthoor.spendly.utils.ai.AiEnrichmentParser
-import dev.lanthoor.spendly.utils.ai.AiEnrichmentPromptBuilder
-import dev.lanthoor.spendly.utils.ai.AiPromptBatchResponse
-import dev.lanthoor.spendly.utils.ai.TransactionAiModelGateway
-import dev.lanthoor.spendly.utils.ai.TransactionEnrichmentCandidate
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json

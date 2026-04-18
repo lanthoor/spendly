@@ -1,6 +1,7 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.usecase.transactions
 
 import dev.lanthoor.spendly.core.model.finance.TransactionType
+import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
 import org.junit.Assert.assertTrue
 import org.junit.Test
 

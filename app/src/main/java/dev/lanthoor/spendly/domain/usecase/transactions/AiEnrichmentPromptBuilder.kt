@@ -1,5 +1,8 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.usecase.transactions
 
+import dev.lanthoor.spendly.domain.model.ai.AiPromptBatchRequest
+import dev.lanthoor.spendly.domain.model.ai.AiPromptTransactionInput
+import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

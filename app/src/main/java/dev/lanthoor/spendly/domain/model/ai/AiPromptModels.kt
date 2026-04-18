@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.model.ai
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

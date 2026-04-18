@@ -1,10 +1,12 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.usecase.transactions
 
 import dev.lanthoor.spendly.core.model.finance.AiEnrichmentStatus
 import dev.lanthoor.spendly.core.model.finance.CounterpartyIdentifierType
 import dev.lanthoor.spendly.core.model.finance.CounterpartyRole
 import dev.lanthoor.spendly.core.model.finance.PaymentRail
 import dev.lanthoor.spendly.core.model.finance.TransactionType
+import dev.lanthoor.spendly.domain.model.ai.AiPromptTransactionResult
+import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

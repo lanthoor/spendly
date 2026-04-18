@@ -2,6 +2,9 @@ package dev.lanthoor.spendly.utils.ai
 
 import android.util.Log
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
+import dev.lanthoor.spendly.domain.model.ai.AiGenerationResult
+import dev.lanthoor.spendly.domain.model.ai.AiModelAvailabilityResult
+import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
 import javax.inject.Inject
 import javax.inject.Singleton
 

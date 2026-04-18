@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
 import dev.lanthoor.spendly.utils.ai.MlKitPromptTransactionAiModelGateway
-import dev.lanthoor.spendly.utils.ai.TransactionAiModelGateway
 import javax.inject.Singleton
 
 @Module

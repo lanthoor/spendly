@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.utils.ai
+package dev.lanthoor.spendly.domain.model.ai
 
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 
@@ -12,9 +12,3 @@ data class AiGenerationResult(
     val responseText: String,
     val modelName: String?
 )
-
-interface TransactionAiModelGateway {
-    suspend fun checkAvailability(): AiModelAvailabilityResult
-
-    suspend fun generate(prompt: String): AiGenerationResult
-}

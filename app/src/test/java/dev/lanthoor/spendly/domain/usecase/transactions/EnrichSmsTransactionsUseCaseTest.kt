@@ -8,13 +8,13 @@ import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
 import dev.lanthoor.spendly.domain.model.TransactionAiEnrichment
 import dev.lanthoor.spendly.domain.model.TransactionAiEnrichmentUpdate
+import dev.lanthoor.spendly.domain.model.ai.AiGenerationResult
+import dev.lanthoor.spendly.domain.model.ai.AiModelAvailabilityResult
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
+import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
 import dev.lanthoor.spendly.domain.repository.TransactionAiEnrichmentRepository
-import dev.lanthoor.spendly.utils.ai.AiGenerationResult
-import dev.lanthoor.spendly.utils.ai.AiModelAvailabilityResult
-import dev.lanthoor.spendly.utils.ai.TransactionAiModelGateway
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
