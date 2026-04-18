@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.dashboard
+package dev.lanthoor.spendly.domain.usecase.dashboard
 
 import dev.lanthoor.spendly.core.model.finance.BudgetWithProgress
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
@@ -37,7 +37,7 @@ object DashboardCalculators {
     fun getTopCategories(
         expenses: List<Expense>,
         categories: List<Category>
-    ): List<CategorySpending> {
+    ): List<DashboardCategorySpending> {
         val categoryMap = categories.associateBy { it.id }
 
         return expenses
@@ -45,7 +45,7 @@ object DashboardCalculators {
             .mapNotNull { (categoryId, groupedExpenses) ->
                 categoryId?.let { id ->
                     categoryMap[id]?.let { category ->
-                        CategorySpending(
+                        DashboardCategorySpending(
                             category = category,
                             totalAmount = groupedExpenses.sumOf { it.amount },
                             transactionCount = groupedExpenses.size

@@ -1,4 +1,4 @@
-package dev.lanthoor.spendly.ui.screens.analytics
+package dev.lanthoor.spendly.domain.usecase.analytics
 
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import dev.lanthoor.spendly.core.model.preferences.getDateRange

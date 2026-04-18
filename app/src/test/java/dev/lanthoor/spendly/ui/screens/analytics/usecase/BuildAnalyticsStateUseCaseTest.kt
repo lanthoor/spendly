@@ -4,7 +4,9 @@ import dev.lanthoor.spendly.core.model.finance.IncomeSource
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
-import dev.lanthoor.spendly.ui.screens.analytics.AnalyticsPeriodType
+import dev.lanthoor.spendly.domain.usecase.analytics.AnalyticsPeriod
+import dev.lanthoor.spendly.domain.usecase.analytics.AnalyticsStateInput
+import dev.lanthoor.spendly.domain.usecase.analytics.BuildAnalyticsStateUseCase
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -36,7 +38,7 @@ class BuildAnalyticsStateUseCaseTest {
                 categories = listOf(
                     Category(1, "Food", "restaurant", 0, false, 1)
                 ),
-                periodType = AnalyticsPeriodType.CALENDAR_YEAR
+                period = AnalyticsPeriod.CALENDAR_YEAR
             )
         )
 
@@ -60,7 +62,7 @@ class BuildAnalyticsStateUseCaseTest {
                 expenses = listOf(expense(1_000_00L, inCurrentYear)),
                 incomes = emptyList(),
                 categories = emptyList(),
-                periodType = AnalyticsPeriodType.CALENDAR_YEAR
+                period = AnalyticsPeriod.CALENDAR_YEAR
             )
         )
 

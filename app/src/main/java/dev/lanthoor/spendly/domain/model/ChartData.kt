@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
  * @property categoryIcon Material Icon name (e.g., "restaurant")
  * @property amount Total amount spent in paise (Long to avoid precision loss)
  * @property percentage Percentage of total spending (0.0 to 100.0)
- * @property color Category color (from database, should be adjusted for theme)
+ * @property color Category color (from database, adjusted for theme)
  * @property transactionCount Number of transactions in this category
  */
 data class PieChartEntry(

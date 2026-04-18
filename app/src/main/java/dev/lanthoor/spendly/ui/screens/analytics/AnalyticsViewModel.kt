@@ -3,6 +3,9 @@ package dev.lanthoor.spendly.ui.screens.analytics
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.domain.usecase.analytics.AnalyticsPeriod
+import dev.lanthoor.spendly.domain.usecase.analytics.AnalyticsStateInput
+import dev.lanthoor.spendly.domain.usecase.analytics.BuildAnalyticsStateUseCase
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.Income
@@ -11,8 +14,6 @@ import dev.lanthoor.spendly.domain.model.PieChartEntry
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
-import dev.lanthoor.spendly.ui.screens.analytics.usecase.AnalyticsStateInput
-import dev.lanthoor.spendly.ui.screens.analytics.usecase.BuildAnalyticsStateUseCase
 import dev.lanthoor.spendly.utils.ChartDataTransformer
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +61,7 @@ class AnalyticsViewModel @Inject constructor(
                     expenses = expenses,
                     incomes = incomes,
                     categories = categories,
-                    periodType = periodType
+                    period = periodType.toDomainPeriod()
                 )
             )
 
@@ -96,6 +97,11 @@ class AnalyticsViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = AnalyticsUiState.Loading
     )
+
+    private fun AnalyticsPeriodType.toDomainPeriod(): AnalyticsPeriod = when (this) {
+        AnalyticsPeriodType.FINANCIAL_YEAR -> AnalyticsPeriod.FINANCIAL_YEAR
+        AnalyticsPeriodType.CALENDAR_YEAR -> AnalyticsPeriod.CALENDAR_YEAR
+    }
 
 }
 

@@ -29,7 +29,6 @@ object ChartDataTransformer {
      *
      * @param expenses List of expenses to aggregate
      * @param categories All available categories for lookup
-     * @param isDark Whether dark theme is active (for color adjustment)
      * @return List of pie chart entries sorted by amount (descending)
      */
     fun expensesToPieChartData(
@@ -70,7 +69,6 @@ object ChartDataTransformer {
      * @param summaries Pre-aggregated category summaries from DAO
      * @param categories All available categories for lookup
      * @param transactionCounts Map of category ID to transaction count
-     * @param isDark Whether dark theme is active
      * @return List of pie chart entries
      */
     fun categoryExpenseSummariesToPieChartData(

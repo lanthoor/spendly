@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.domain.model.PieChartEntry
-import dev.lanthoor.spendly.domain.model.PieSliceArc
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.screens.analytics.components.canvas.ChartGestureHandler.chartTapGesture
 import dev.lanthoor.spendly.utils.CurrencyUtils

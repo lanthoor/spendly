@@ -50,7 +50,7 @@ object ChartGestureHandler {
         centerY: Float,
         innerRadius: Float,
         outerRadius: Float,
-        sliceArcs: List<dev.lanthoor.spendly.domain.model.PieSliceArc>,
+        sliceArcs: List<PieSliceArc>,
         onSliceSelected: (Int?) -> Unit
     ): Modifier {
         return this.pointerInput(key) {
