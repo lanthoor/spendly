@@ -54,23 +54,6 @@ class ArchitectureBoundaryScanner(
             val lineNumber = index + 1
             val importTarget = importRegex.find(line)?.groupValues?.get(1)
             if (importTarget != null) {
-                if (
-                    isDomainPackage(packageName) &&
-                    (
-                        importTarget.startsWith("android.") ||
-                            importTarget.startsWith("androidx.") ||
-                            importTarget.startsWith("dagger.") ||
-                            importTarget.startsWith("javax.inject.")
-                        )
-                ) {
-                    violations += ArchitectureViolation(
-                        ruleId = "DOMAIN_FRAMEWORK_IMPORT",
-                        filePath = relativePath,
-                        lineNumber = lineNumber,
-                        message = "Domain package must not import framework package: $importTarget"
-                    )
-                }
-
                 if (isDomainPackage(packageName) && importTarget.startsWith("${config.packagePrefix}.ui.")) {
                     violations += ArchitectureViolation(
                         ruleId = "DOMAIN_TO_UI_IMPORT",

@@ -27,7 +27,7 @@ class CustomPieChartTest {
             categoryIcon = "ph:fork-knife",
             amount = 10000L, // ₹100
             percentage = 50f,
-            colorArgb = Color.Red.value.toLong(),
+            color = Color.Red,
             transactionCount = 10
         ),
         PieChartEntry(
@@ -36,7 +36,7 @@ class CustomPieChartTest {
             categoryIcon = "ph:car",
             amount = 6000L, // ₹60
             percentage = 30f,
-            colorArgb = Color.Blue.value.toLong(),
+            color = Color.Blue,
             transactionCount = 5
         ),
         PieChartEntry(
@@ -45,7 +45,7 @@ class CustomPieChartTest {
             categoryIcon = "ph:film-slate",
             amount = 4000L, // ₹40
             percentage = 20f,
-            colorArgb = Color.Green.value.toLong(),
+            color = Color.Green,
             transactionCount = 3
         )
     )
@@ -88,7 +88,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:circle",
                 amount = 10000L,
                 percentage = 100f,
-                colorArgb = Color.Red.value.toLong(),
+                color = Color.Red,
                 transactionCount = 1
             )
         )
@@ -114,7 +114,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:circle",
                 amount = 1000L * index,
                 percentage = 10f,
-                colorArgb = Color(0xFF000000 + index * 0x111111).value.toLong(),
+                color = Color(0xFF000000 + index * 0x111111),
                 transactionCount = index
             )
         }
@@ -185,7 +185,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:circle",
                 amount = 99900L,
                 percentage = 99.9f,
-                colorArgb = Color.Red.value.toLong(),
+                color = Color.Red,
                 transactionCount = 100
             ),
             PieChartEntry(
@@ -194,7 +194,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:circle",
                 amount = 100L,
                 percentage = 0.1f,
-                colorArgb = Color.Blue.value.toLong(),
+                color = Color.Blue,
                 transactionCount = 1
             )
         )
@@ -220,7 +220,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:fork-knife",
                 amount = 10000L,
                 percentage = 100f,
-                colorArgb = Color.Red.value.toLong(),
+                color = Color.Red,
                 transactionCount = 10
             ),
             PieChartEntry(
@@ -229,7 +229,7 @@ class CustomPieChartTest {
                 categoryIcon = "ph:circle",
                 amount = 0L,
                 percentage = 0f,
-                colorArgb = Color.Blue.value.toLong(),
+                color = Color.Blue,
                 transactionCount = 0
             )
         )

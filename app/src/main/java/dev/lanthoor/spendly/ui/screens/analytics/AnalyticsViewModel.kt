@@ -151,11 +151,10 @@ sealed interface AnalyticsUiState {
          * Called from UI layer when theme is known.
          */
         fun getPieChartData(isDark: Boolean): List<PieChartEntry> {
-            @Suppress("UNUSED_PARAMETER")
-            val ignored = isDark
             return ChartDataTransformer.expensesToPieChartData(
                 expenses = filteredExpenses,
-                categories = categories
+                categories = categories,
+                isDark = isDark
             )
         }
     }

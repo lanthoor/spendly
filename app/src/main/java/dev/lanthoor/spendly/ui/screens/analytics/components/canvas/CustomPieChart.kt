@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -34,8 +33,6 @@ import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.domain.model.PieChartEntry
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.screens.analytics.components.canvas.ChartGestureHandler.chartTapGesture
-import dev.lanthoor.spendly.ui.theme.isDark
-import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.utils.CurrencyUtils
 
 /**
@@ -149,7 +146,6 @@ fun CustomPieChart(
         contentAlignment = Alignment.Center
     ) {
         // Canvas for pie chart with integrated gesture handling
-        val isDark = MaterialTheme.colorScheme.isDark
         Canvas(
             modifier = Modifier
                 .size(280.dp)
@@ -216,7 +212,7 @@ fun CustomPieChart(
 
                 // Draw arc as donut segment
                 drawArc(
-                    color = Color(entry.colorArgb).adjustForTheme(isDark),
+                    color = entry.color,
                     startAngle = currentAngle - 90f, // -90 to start at 12 o'clock
                     sweepAngle = sweepAngle,
                     useCenter = false,
@@ -250,7 +246,7 @@ fun CustomPieChart(
                     imageVector = IconMapper.getIcon(selectedSlice.categoryIcon),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
-                    tint = Color(selectedSlice.colorArgb).adjustForTheme(isDark)
+                    tint = selectedSlice.color
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

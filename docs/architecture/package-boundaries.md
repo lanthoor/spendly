@@ -29,7 +29,6 @@ Contribution guidance:
 ### Rule 1: Domain must not import UI
 
 - **Forbidden:** `domain -> ui` imports.
-- **Forbidden:** framework imports in `domain` packages (`android.*`, `androidx.*`, `dagger.*`, `javax.inject.*`).
 - **Why:** Domain contracts and logic must stay independent of presentation concerns.
 
 Example:

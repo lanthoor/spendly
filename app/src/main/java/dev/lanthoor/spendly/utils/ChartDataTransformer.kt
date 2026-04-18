@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.utils
 
+import androidx.compose.ui.graphics.Color
 import dev.lanthoor.spendly.data.local.dao.CategoryExpenseSummary
 import dev.lanthoor.spendly.data.local.dao.DailyExpenseSummary
 import dev.lanthoor.spendly.data.local.dao.DailyIncomeSummary
@@ -11,6 +12,7 @@ import dev.lanthoor.spendly.domain.model.CategoryAnalysis
 import dev.lanthoor.spendly.domain.model.Expense
 import dev.lanthoor.spendly.domain.model.LineChartEntry
 import dev.lanthoor.spendly.domain.model.PieChartEntry
+import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -31,7 +33,8 @@ object ChartDataTransformer {
      */
     fun expensesToPieChartData(
         expenses: List<Expense>,
-        categories: List<Category>
+        categories: List<Category>,
+        isDark: Boolean
     ): List<PieChartEntry> {
         if (expenses.isEmpty()) return emptyList()
 
@@ -53,7 +56,7 @@ object ChartDataTransformer {
                 categoryIcon = category.icon,
                 amount = amount,
                 percentage = percentage,
-                colorArgb = category.color.toLong(),
+                color = Color(category.color).adjustForTheme(isDark),
                 transactionCount = expenseList.size
             )
         }.sortedByDescending { it.amount }
@@ -71,7 +74,8 @@ object ChartDataTransformer {
     fun categoryExpenseSummariesToPieChartData(
         summaries: List<CategoryExpenseSummary>,
         categories: List<Category>,
-        transactionCounts: Map<Long, Int>
+        transactionCounts: Map<Long, Int>,
+        isDark: Boolean
     ): List<PieChartEntry> {
         if (summaries.isEmpty()) return emptyList()
 
@@ -89,7 +93,7 @@ object ChartDataTransformer {
                 categoryIcon = category.icon,
                 amount = summary.total,
                 percentage = percentage,
-                colorArgb = category.color.toLong(),
+                color = Color(category.color).adjustForTheme(isDark),
                 transactionCount = transactionCounts[categoryId] ?: 0
             )
         }.sortedByDescending { it.amount }
