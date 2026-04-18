@@ -4,6 +4,7 @@ import android.util.Log
 import dev.lanthoor.spendly.domain.model.TransactionAiEnrichmentUpdate
 import dev.lanthoor.spendly.domain.model.ai.AiPromptBatchResponse
 import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
+import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
@@ -14,6 +15,7 @@ import dev.lanthoor.spendly.core.model.finance.TransactionType
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
 import dev.lanthoor.spendly.core.model.preferences.AiPromptVersion
+import java.util.Locale
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -27,6 +29,7 @@ data class EnrichSmsTransactionsResult(
 )
 
 class EnrichSmsTransactionsUseCase @Inject constructor(
+    private val categoryRepository: CategoryRepository,
     private val expenseRepository: ExpenseRepository,
     private val incomeRepository: IncomeRepository,
     private val preferencesRepository: PreferencesRepository,
@@ -40,6 +43,16 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
 
     private val json = Json {
         ignoreUnknownKeys = true
+    }
+
+    suspend fun refreshModelAvailability() {
+        val availabilityResult = aiGateway.checkAvailability()
+        preferencesRepository.setAiModelAvailability(
+            availability = availabilityResult.availability,
+            checkedAt = System.currentTimeMillis(),
+            baseModelName = availabilityResult.baseModelName,
+            lastErrorCode = availabilityResult.errorCode
+        )
     }
 
     suspend fun runForTransactionIds(
@@ -73,6 +86,9 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
             return EnrichSmsTransactionsResult(0, 0, 0, candidates.size)
         }
 
+        val categoryLookup = buildCategoryLookup()
+        val allowedCategories = categoryLookup.keys.sorted()
+
         var attempted = 0
         var enriched = 0
         var failed = 0
@@ -80,22 +96,35 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         val batches = splitIntoBatches(pendingCandidates, settings.batchSize)
         batches.forEachIndexed { index, batch ->
             val batchId = "${System.currentTimeMillis()}-$index"
-            val prompt = AiEnrichmentPromptBuilder.buildPrompt(batchId, batch)
+            val prompt = AiEnrichmentPromptBuilder.buildPrompt(batchId, batch, allowedCategories)
             attempted += batch.size
 
             val updates = try {
                 val generation = aiGateway.generate(prompt)
                 val parsed = parseResponse(generation.responseText)
                 val now = System.currentTimeMillis()
+                preferencesRepository.setAiModelAvailability(
+                    availability = availabilityResult.availability,
+                    checkedAt = now,
+                    baseModelName = generation.modelName ?: availabilityResult.baseModelName,
+                    lastErrorCode = null
+                )
                 buildUpdatesFromResponse(
                     candidates = batch,
                     response = parsed,
+                    categoryLookup = categoryLookup,
                     promptVersion = settings.promptVersion,
                     modelName = generation.modelName ?: availabilityResult.baseModelName,
                     enrichedAt = now
                 )
             } catch (e: Exception) {
                 safeLogWarn("Batch enrichment failed", e)
+                preferencesRepository.setAiModelAvailability(
+                    availability = availabilityResult.availability,
+                    checkedAt = System.currentTimeMillis(),
+                    baseModelName = availabilityResult.baseModelName,
+                    lastErrorCode = classifyAiErrorCode(e)
+                )
                 batch.map {
                     AiEnrichmentParser.failedUpdate(
                         candidate = it,
@@ -107,6 +136,7 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
             }
 
             enrichmentRepository.applyUpdates(updates)
+            applyCategoryUpdates(batch, updates)
             enriched += updates.count { it.status == AiEnrichmentStatus.ENRICHED }
             failed += updates.count { it.status == AiEnrichmentStatus.FAILED }
         }
@@ -268,6 +298,7 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
     private fun buildUpdatesFromResponse(
         candidates: List<TransactionEnrichmentCandidate>,
         response: AiPromptBatchResponse,
+        categoryLookup: Map<String, Long>,
         promptVersion: Int,
         modelName: String?,
         enrichedAt: Long
@@ -287,12 +318,54 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
                 AiEnrichmentParser.toUpdate(
                     candidate = candidate,
                     result = result,
+                    resolvedCategoryId = resolveCategoryId(result.categoryName, categoryLookup),
                     promptVersion = promptVersion,
                     modelName = modelName,
                     enrichedAt = enrichedAt
                 )
             }
         }
+    }
+
+    private suspend fun applyCategoryUpdates(
+        candidates: List<TransactionEnrichmentCandidate>,
+        updates: List<TransactionAiEnrichmentUpdate>
+    ) {
+        val byTxKey = updates.associateBy { "${it.transactionType.name}:${it.transactionId}" }
+
+        candidates.forEach { candidate ->
+            val update = byTxKey[candidate.txKey] ?: return@forEach
+            val categoryId = update.categoryId ?: return@forEach
+
+            when (candidate.transactionType) {
+                TransactionType.EXPENSE -> {
+                    val expense = expenseRepository.getExpensesByIds(listOf(candidate.transactionId)).firstOrNull()
+                        ?: return@forEach
+                    if (expense.categoryId != categoryId) {
+                        expenseRepository.updateExpense(expense.copy(categoryId = categoryId))
+                    }
+                }
+
+                TransactionType.INCOME -> {
+                    val income = incomeRepository.getIncomeByIds(listOf(candidate.transactionId)).firstOrNull()
+                        ?: return@forEach
+                    if (income.categoryId != categoryId) {
+                        incomeRepository.updateIncome(income.copy(categoryId = categoryId))
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun buildCategoryLookup(): Map<String, Long> {
+        return categoryRepository.getAllCategories().first()
+            .associate { it.name.lowercase(Locale.ROOT) to it.id }
+    }
+
+    private fun resolveCategoryId(categoryName: String?, categoryLookup: Map<String, Long>): Long? {
+        val key = categoryName?.trim()?.lowercase(Locale.ROOT).orEmpty()
+        if (key.isBlank()) return null
+        return categoryLookup[key]
     }
 
     private fun extractSenderFromSmsBody(smsBody: String): String {
@@ -307,5 +380,23 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
 
     private fun safeLogWarn(message: String, throwable: Throwable) {
         runCatching { Log.w(TAG, message, throwable) }
+    }
+
+    private fun classifyAiErrorCode(throwable: Throwable): String {
+        val details = buildList {
+            var current: Throwable? = throwable
+            while (current != null) {
+                add(current.javaClass.simpleName)
+                current.message?.let { add(it) }
+                current = current.cause
+            }
+        }.joinToString(" ").uppercase(Locale.ROOT)
+
+        return when {
+            "QUOTA" in details -> "QUOTA_EXCEEDED"
+            "RATE" in details || "TOO_MANY_REQUESTS" in details || "RESOURCE_EXHAUSTED" in details -> "RATE_LIMIT_EXCEEDED"
+            "BACKGROUND_USE_BLOCKED" in details -> "BACKGROUND_USE_BLOCKED"
+            else -> throwable.javaClass.simpleName
+        }
     }
 }

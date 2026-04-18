@@ -8,6 +8,7 @@ import dev.lanthoor.spendly.core.model.finance.TransactionType
 import dev.lanthoor.spendly.domain.model.ai.AiPromptTransactionResult
 import dev.lanthoor.spendly.domain.model.ai.TransactionEnrichmentCandidate
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class AiEnrichmentParserTest {
@@ -36,9 +37,17 @@ class AiEnrichmentParserTest {
             reason = "ok"
         )
 
-        val update = AiEnrichmentParser.toUpdate(candidate, result, 1, "nano", 1000L)
+        val update = AiEnrichmentParser.toUpdate(
+            candidate = candidate,
+            result = result,
+            resolvedCategoryId = 12L,
+            promptVersion = 1,
+            modelName = "nano",
+            enrichedAt = 1000L
+        )
 
         assertEquals(AiEnrichmentStatus.ENRICHED, update.status)
+        assertEquals(12L, update.categoryId)
         assertEquals("AI Desc", update.displayDescription)
         assertEquals(CounterpartyRole.MERCHANT, update.counterpartyRole)
         assertEquals(CounterpartyIdentifierType.VPA, update.identifierType)
@@ -71,9 +80,17 @@ class AiEnrichmentParserTest {
             reason = null
         )
 
-        val update = AiEnrichmentParser.toUpdate(candidate, result, 1, null, 1000L)
+        val update = AiEnrichmentParser.toUpdate(
+            candidate = candidate,
+            result = result,
+            resolvedCategoryId = null,
+            promptVersion = 1,
+            modelName = null,
+            enrichedAt = 1000L
+        )
 
         assertEquals(AiEnrichmentStatus.FAILED, update.status)
+        assertNull(update.categoryId)
         assertEquals("Regex Income", update.displayDescription)
         assertEquals(CounterpartyRole.UNKNOWN, update.counterpartyRole)
         assertEquals(CounterpartyIdentifierType.NONE, update.identifierType)

@@ -9,6 +9,8 @@ data class AiPromptBatchRequest(
     val schemaVersion: Int,
     @SerialName("batch_id")
     val batchId: String,
+    @SerialName("allowed_categories")
+    val allowedCategories: List<String>,
     val transactions: List<AiPromptTransactionInput>
 )
 
@@ -56,6 +58,8 @@ data class AiPromptTransactionResult(
     val identifierValue: String? = null,
     @SerialName("payment_rail")
     val paymentRail: String,
+    @SerialName("category_name")
+    val categoryName: String? = null,
     val confidence: Float? = null,
     val reason: String? = null
 )

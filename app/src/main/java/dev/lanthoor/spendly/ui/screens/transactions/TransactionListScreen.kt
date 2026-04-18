@@ -40,8 +40,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Funnel
+import com.adamglin.phosphoricons.regular.MagicWand
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
+import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.ui.components.EditExpenseBottomSheet
 import dev.lanthoor.spendly.ui.components.EditIncomeBottomSheet
 import dev.lanthoor.spendly.ui.components.EmptyState
@@ -65,6 +67,7 @@ fun TransactionListScreen(
     val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
     val selectedCategories by viewModel.selectedCategories.collectAsStateWithLifecycle()
     val isEnrichmentRunning by viewModel.isEnrichmentRunning.collectAsStateWithLifecycle()
+    val aiSettings by viewModel.aiSettings.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     // Modal sheet states
@@ -93,22 +96,31 @@ fun TransactionListScreen(
     val hasActiveFilters = startDate != null || endDate != null ||
             selectedType != TransactionType.ALL ||
             selectedCategories.isNotEmpty()
+    val isAiAvailable = aiSettings.availability == AiModelAvailability.AVAILABLE
+    val aiRateLimited = aiSettings.lastErrorCode == "QUOTA_EXCEEDED" ||
+            aiSettings.lastErrorCode == "RATE_LIMIT_EXCEEDED"
+    val canRunAiEnrichment = !isEnrichmentRunning && !aiRateLimited
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.screen_transactions_title)) },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            val state = transactionListState
-                            if (state is TransactionListUiState.Success) {
-                                viewModel.enrichTransactions(state.transactions)
-                            }
-                        },
-                        enabled = !isEnrichmentRunning
-                    ) {
-                        Text("✨")
+                    if (isAiAvailable) {
+                        IconButton(
+                            onClick = {
+                                val state = transactionListState
+                                if (state is TransactionListUiState.Success) {
+                                    viewModel.enrichTransactions(state.transactions)
+                                }
+                            },
+                            enabled = canRunAiEnrichment
+                        ) {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.MagicWand,
+                                contentDescription = stringResource(R.string.cd_ai_enrich_transactions)
+                            )
+                        }
                     }
                     IconButton(onClick = { showFilterSheet = true }) {
                         BadgedBox(

@@ -13,6 +13,7 @@ object AiEnrichmentParser {
     fun toUpdate(
         candidate: TransactionEnrichmentCandidate,
         result: AiPromptTransactionResult,
+        resolvedCategoryId: Long?,
         promptVersion: Int,
         modelName: String?,
         enrichedAt: Long
@@ -20,6 +21,7 @@ object AiEnrichmentParser {
         return TransactionAiEnrichmentUpdate(
             transactionType = candidate.transactionType,
             transactionId = candidate.transactionId,
+            categoryId = resolvedCategoryId,
             status = parseStatus(result.status),
             displayDescription = sanitize(result.displayDescription, candidate.regexDescription),
             counterpartyName = sanitizeNullable(result.counterpartyName),
@@ -46,6 +48,7 @@ object AiEnrichmentParser {
         return TransactionAiEnrichmentUpdate(
             transactionType = candidate.transactionType,
             transactionId = candidate.transactionId,
+            categoryId = null,
             status = AiEnrichmentStatus.FAILED,
             displayDescription = candidate.regexDescription,
             counterpartyName = null,

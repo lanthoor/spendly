@@ -29,11 +29,16 @@ class AiEnrichmentPromptBuilderTest {
             )
         )
 
-        val prompt = AiEnrichmentPromptBuilder.buildPrompt("b1", candidates)
+        val prompt = AiEnrichmentPromptBuilder.buildPrompt(
+            batchId = "b1",
+            candidates = candidates,
+            allowedCategories = listOf("Food", "Salary", "Others")
+        )
 
         assertTrue(prompt.contains("\"schema_version\":1"))
         assertTrue(prompt.contains("EXPENSE:10"))
         assertTrue(prompt.contains("INCOME:11"))
         assertTrue(prompt.contains("\"transactions\""))
+        assertTrue(prompt.contains("\"allowed_categories\""))
     }
 }

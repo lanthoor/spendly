@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
+import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
+import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
+import dev.lanthoor.spendly.core.model.preferences.AiPromptVersion
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
 import dev.lanthoor.spendly.domain.model.Expense
@@ -13,6 +16,7 @@ import dev.lanthoor.spendly.domain.repository.AccountRepository
 import dev.lanthoor.spendly.domain.repository.CategoryRepository
 import dev.lanthoor.spendly.domain.repository.ExpenseRepository
 import dev.lanthoor.spendly.domain.repository.IncomeRepository
+import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.domain.repository.TransactionAiEnrichmentRepository
 import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsResult
 import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
@@ -36,6 +40,7 @@ class TransactionListViewModel @Inject constructor(
     private val incomeRepository: IncomeRepository,
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
+    private val preferencesRepository: PreferencesRepository,
     private val enrichmentRepository: TransactionAiEnrichmentRepository,
     private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : ViewModel() {
@@ -55,6 +60,27 @@ class TransactionListViewModel @Inject constructor(
 
     private val _enrichmentResultEvents = MutableSharedFlow<EnrichSmsTransactionsResult>()
     val enrichmentResultEvents = _enrichmentResultEvents.asSharedFlow()
+
+    val aiSettings: StateFlow<AiEnrichmentSettings> = preferencesRepository.getAiEnrichmentSettings()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = AiEnrichmentSettings(
+                enabled = true,
+                availability = AiModelAvailability.UNKNOWN,
+                baseModelName = null,
+                lastAvailabilityCheckAt = null,
+                lastErrorCode = null,
+                promptVersion = AiPromptVersion.CURRENT,
+                batchSize = 20
+            )
+        )
+
+    init {
+        viewModelScope.launch {
+            runCatching { enrichSmsTransactionsUseCase.refreshModelAvailability() }
+        }
+    }
 
     /**
      * Combined state with all transactions and filtering
@@ -241,6 +267,10 @@ class TransactionListViewModel @Inject constructor(
     fun enrichTransactions(transactions: List<RecentTransaction>) {
         if (_isEnrichmentRunning.value) return
 
+        val settings = aiSettings.value
+        if (settings.availability != AiModelAvailability.AVAILABLE) return
+        if (isQuotaOrRateLimited(settings.lastErrorCode)) return
+
         viewModelScope.launch {
             _isEnrichmentRunning.value = true
             try {
@@ -263,6 +293,11 @@ class TransactionListViewModel @Inject constructor(
                 _isEnrichmentRunning.value = false
             }
         }
+    }
+
+    private fun isQuotaOrRateLimited(errorCode: String?): Boolean {
+        val code = errorCode ?: return false
+        return code == "QUOTA_EXCEEDED" || code == "RATE_LIMIT_EXCEEDED"
     }
 }
 

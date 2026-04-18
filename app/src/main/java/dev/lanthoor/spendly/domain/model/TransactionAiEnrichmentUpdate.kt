@@ -10,6 +10,7 @@ import dev.lanthoor.spendly.core.model.finance.TransactionType
 data class TransactionAiEnrichmentUpdate(
     val transactionType: TransactionType,
     val transactionId: Long,
+    val categoryId: Long?,
     val status: AiEnrichmentStatus,
     val displayDescription: String?,
     val counterpartyName: String?,

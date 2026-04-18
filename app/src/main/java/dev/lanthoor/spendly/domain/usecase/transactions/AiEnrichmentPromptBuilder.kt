@@ -14,10 +14,15 @@ object AiEnrichmentPromptBuilder {
         encodeDefaults = true
     }
 
-    fun buildPrompt(batchId: String, candidates: List<TransactionEnrichmentCandidate>): String {
+    fun buildPrompt(
+        batchId: String,
+        candidates: List<TransactionEnrichmentCandidate>,
+        allowedCategories: List<String>
+    ): String {
         val payload = AiPromptBatchRequest(
             schemaVersion = SCHEMA_VERSION,
             batchId = batchId,
+            allowedCategories = allowedCategories,
             transactions = candidates.map {
                 AiPromptTransactionInput(
                     txKey = it.txKey,
@@ -44,6 +49,8 @@ Rules:
 - INCOME usually means counterparty is sender/remitter.
 - Set payment_rail from SMS clues: UPI, IMPS, NEFT, RTGS, CARD, SI, ATM, UNKNOWN.
 - Fill identifier fields only when explicit in SMS.
+- Pick category_name only from allowed_categories.
+- If no safe match exists, set category_name to null.
 
 Output schema:
 {
@@ -59,6 +66,7 @@ Output schema:
       "identifier_type": "VPA|ACCOUNT_LAST4|CARD_LAST4|UPI_REF|UTR|NONE",
       "identifier_value": "<string|null>",
       "payment_rail": "UPI|IMPS|NEFT|RTGS|CARD|SI|ATM|UNKNOWN",
+      "category_name": "<string|null>",
       "confidence": <0..1|null>,
       "reason": "<string|null>"
     }
