@@ -121,6 +121,8 @@
     <string name="msg_recurring_delete_failed">आवर्ती लेनदेन हटाने में विफल</string>
 
     <string name="label_filter">फ़िल्टर</string>
+    <string name="cd_ai_enrich_transactions">AI से लेनदेन समृद्ध करें</string>
+    <string name="msg_ai_enrichment_no_eligible_rows">किसी SMS लेनदेन को समृद्ध करने की आवश्यकता नहीं है</string>
 
     <!-- AddExpense strings -->
     <string name="label_saving_expense">खर्च सहेज रहे हैं...</string>

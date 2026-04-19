@@ -121,6 +121,8 @@
     <string name="msg_recurring_delete_failed">ആവർത്തിക്കുന്ന ഇടപാട് ഇല്ലാതാക്കുന്നതിൽ പരാജയപ്പെട്ടു</string>
 
     <string name="label_filter">ഫിൽട്ടർ</string>
+    <string name="cd_ai_enrich_transactions">AI ഉപയോഗിച്ച് ഇടപാടുകൾ സമ്പന്നമാക്കുക</string>
+    <string name="msg_ai_enrichment_no_eligible_rows">സമ്പന്നമാക്കേണ്ട SMS ഇടപാടുകൾ ഒന്നുമില്ല</string>
 
     <!-- AddExpense strings -->
     <string name="label_saving_expense">ചെലവ് സംരക്ഷിക്കുന്നു...</string>

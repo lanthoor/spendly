@@ -32,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -68,7 +67,7 @@ fun TransactionListScreen(
     val selectedCategories by viewModel.selectedCategories.collectAsStateWithLifecycle()
     val isEnrichmentRunning by viewModel.isEnrichmentRunning.collectAsStateWithLifecycle()
     val aiSettings by viewModel.aiSettings.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val noEligibleRowsMessage = stringResource(R.string.msg_ai_enrichment_no_eligible_rows)
 
     // Modal sheet states
     var showEditExpenseSheet by remember { mutableStateOf(false) }
@@ -84,7 +83,7 @@ fun TransactionListScreen(
     LaunchedEffect(Unit) {
         viewModel.enrichmentResultEvents.collect { result ->
             val message = if (result.attempted == 0) {
-                context.getString(R.string.msg_ai_enrichment_no_eligible_rows)
+                noEligibleRowsMessage
             } else {
                 "${result.enriched} enriched, ${result.failed} failed, ${result.skipped} skipped"
             }
