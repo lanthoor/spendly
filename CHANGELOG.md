@@ -4,6 +4,17 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.6] - 2026-04-25
+
+### Changed
+- chore(architecture): decouple domain usecases from UI layer (#44)
+- feat(transactions): add AI SMS enrichment flow (#45)
+- chore(deps): bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.10.0 to 1.11.0 (#47)
+- chore(deps): bump actions/create-github-app-token from 2.2.1 to 3.1.1 (#46)
+- chore(deps): bump softprops/action-gh-release from 2.5.0 to 3.0.0 (#48)
+
+---
+
 ## [0.9.5] - 2026-04-14
 
 ### Changed
@@ -113,6 +124,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.6]: https://github.com/lanthoor/spendly/releases/tag/v0.9.6
 [0.9.5]: https://github.com/lanthoor/spendly/releases/tag/v0.9.5
 [0.9.4]: https://github.com/lanthoor/spendly/releases/tag/v0.9.4
 [0.9.3]: https://github.com/lanthoor/spendly/releases/tag/v0.9.3

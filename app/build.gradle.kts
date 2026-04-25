@@ -20,8 +20,8 @@ configure<ApplicationExtension> {
         minSdk = 31
         targetSdk = 36
         ndkVersion = "30.0.14904198"
-        versionCode = 95
-        versionName = "0.9.5"
+        versionCode = 96
+        versionName = "0.9.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

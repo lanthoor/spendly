@@ -1,7 +1,7 @@
 What's new
 
-- phase 5 package first isolation (#39)
-- phase 6 optional modularization (#40)
-- phase 7 hardening and cleanup (#41)
-- reconcile architecture migration plan status (#42)
-- add local agent skills manifests (#43)
+- decouple domain usecases from UI layer (#44)
+- add AI SMS enrichment flow (#45)
+- bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.10.0 to 1.11.0 (#47)
+- bump actions/create-github-app-token from 2.2.1 to 3.1.1 (#46)
+- bump softprops/action-gh-release from 2.5.0 to 3.0.0 (#48)
