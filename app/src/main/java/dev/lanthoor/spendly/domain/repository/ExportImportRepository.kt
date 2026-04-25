@@ -27,7 +27,8 @@ interface ExportImportRepository {
      */
     suspend fun importAllData(
         jsonContent: String,
-        onProgress: (ImportProgress) -> Unit
+        onProgress: (ImportProgress) -> Unit,
+        onAfterImport: (suspend () -> Unit)? = null
     ): ImportResult
 
     /**

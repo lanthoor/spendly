@@ -22,9 +22,12 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.ChatText
 import dev.lanthoor.spendly.R
+import dev.lanthoor.spendly.core.model.finance.AiEnrichmentStatus
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
+import dev.lanthoor.spendly.core.model.finance.TransactionType
 import dev.lanthoor.spendly.domain.model.Account
 import dev.lanthoor.spendly.domain.model.Category
+import dev.lanthoor.spendly.domain.model.TransactionAiEnrichment
 import dev.lanthoor.spendly.ui.components.IconMapper
 import dev.lanthoor.spendly.ui.theme.adjustForTheme
 import dev.lanthoor.spendly.ui.theme.expenseColor
@@ -40,6 +43,7 @@ fun TransactionListItem(
     transaction: RecentTransaction,
     categories: List<Category>,
     accounts: List<Account>,
+    enrichmentByKey: Map<String, TransactionAiEnrichment>,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,6 +54,12 @@ fun TransactionListItem(
     when (transaction) {
         is RecentTransaction.ExpenseTransaction -> {
             val expense = transaction.expense
+            val enrichment = enrichmentByKey["${TransactionType.EXPENSE.name}:${expense.id}"]
+            val displayDescription = if (enrichment?.status == AiEnrichmentStatus.ENRICHED) {
+                enrichment.displayDescription ?: expense.description
+            } else {
+                expense.description
+            }
             val category = expense.categoryId?.let { categoryMap[it] }
             val account = accountMap[expense.accountId]
             val formattedDate = dateFormatter.format(Date(expense.date))
@@ -79,7 +89,7 @@ fun TransactionListItem(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = expense.description,
+                            text = displayDescription,
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -112,6 +122,12 @@ fun TransactionListItem(
 
         is RecentTransaction.IncomeTransaction -> {
             val income = transaction.income
+            val enrichment = enrichmentByKey["${TransactionType.INCOME.name}:${income.id}"]
+            val displayDescription = if (enrichment?.status == AiEnrichmentStatus.ENRICHED) {
+                enrichment.displayDescription ?: income.description
+            } else {
+                income.description
+            }
             val category = income.categoryId?.let { categoryMap[it] }
             val account = accountMap[income.accountId]
             val formattedDate = dateFormatter.format(Date(income.date))
@@ -141,7 +157,7 @@ fun TransactionListItem(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = income.description,
+                            text = displayDescription,
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,

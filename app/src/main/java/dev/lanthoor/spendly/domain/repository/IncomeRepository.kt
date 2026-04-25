@@ -112,4 +112,6 @@ interface IncomeRepository {
      * Retrieves SMS-linked income with sms timestamp at or after the given threshold.
      */
     suspend fun getSmsLinkedIncomeSince(minSmsTimestamp: Long): List<Income>
+
+    suspend fun getIncomeByIds(ids: List<Long>): List<Income>
 }

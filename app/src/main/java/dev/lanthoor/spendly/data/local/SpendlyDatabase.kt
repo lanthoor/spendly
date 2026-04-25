@@ -11,6 +11,7 @@ import dev.lanthoor.spendly.data.local.dao.ExpenseDao
 import dev.lanthoor.spendly.data.local.dao.IncomeDao
 import dev.lanthoor.spendly.data.local.dao.ReceiptDao
 import dev.lanthoor.spendly.data.local.dao.RecurringTransactionDao
+import dev.lanthoor.spendly.data.local.dao.TransactionAiEnrichmentDao
 import dev.lanthoor.spendly.data.local.entities.AccountEntity
 import dev.lanthoor.spendly.data.local.entities.BudgetEntity
 import dev.lanthoor.spendly.data.local.entities.CategoryEntity
@@ -18,6 +19,7 @@ import dev.lanthoor.spendly.data.local.entities.ExpenseEntity
 import dev.lanthoor.spendly.data.local.entities.IncomeEntity
 import dev.lanthoor.spendly.data.local.entities.ReceiptEntity
 import dev.lanthoor.spendly.data.local.entities.RecurringTransactionEntity
+import dev.lanthoor.spendly.data.local.entities.TransactionAiEnrichmentEntity
 
 /**
  * Room database for Spendly expense tracker.
@@ -65,9 +67,10 @@ import dev.lanthoor.spendly.data.local.entities.RecurringTransactionEntity
         IncomeEntity::class,
         BudgetEntity::class,
         RecurringTransactionEntity::class,
-        AccountEntity::class
+        AccountEntity::class,
+        TransactionAiEnrichmentEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 abstract class SpendlyDatabase : RoomDatabase() {
@@ -80,6 +83,7 @@ abstract class SpendlyDatabase : RoomDatabase() {
     abstract fun budgetDao(): BudgetDao
     abstract fun recurringTransactionDao(): RecurringTransactionDao
     abstract fun accountDao(): AccountDao
+    abstract fun transactionAiEnrichmentDao(): TransactionAiEnrichmentDao
 
     companion object {
         const val DATABASE_NAME = "spendly_database"
@@ -285,6 +289,54 @@ abstract class SpendlyDatabase : RoomDatabase() {
                 )
                 db.execSQL(
                     "CREATE INDEX IF NOT EXISTS index_income_sms_timestamp ON income(sms_timestamp)"
+                )
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS transaction_ai_enrichment (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        transaction_type TEXT NOT NULL,
+                        transaction_id INTEGER NOT NULL,
+                        status TEXT NOT NULL,
+                        display_description TEXT,
+                        counterparty_name TEXT,
+                        counterparty_role TEXT NOT NULL,
+                        counterparty_type TEXT NOT NULL,
+                        identifier_type TEXT NOT NULL,
+                        identifier_value TEXT,
+                        payment_rail TEXT NOT NULL,
+                        confidence REAL,
+                        reason TEXT,
+                        model_name TEXT,
+                        prompt_version INTEGER NOT NULL,
+                        enriched_at INTEGER,
+                        created_at INTEGER NOT NULL,
+                        modified_at INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+
+                db.execSQL(
+                    """
+                    CREATE UNIQUE INDEX IF NOT EXISTS index_transaction_ai_enrichment_transaction_type_transaction_id
+                    ON transaction_ai_enrichment(transaction_type, transaction_id)
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE INDEX IF NOT EXISTS index_transaction_ai_enrichment_status
+                    ON transaction_ai_enrichment(status)
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE INDEX IF NOT EXISTS index_transaction_ai_enrichment_modified_at
+                    ON transaction_ai_enrichment(modified_at)
+                    """.trimIndent()
                 )
             }
         }

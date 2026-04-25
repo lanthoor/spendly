@@ -23,6 +23,7 @@ import dev.lanthoor.spendly.utils.SmsCategoryMatcher
 import dev.lanthoor.spendly.utils.SmsNotificationService
 import dev.lanthoor.spendly.utils.SmsParser
 import dev.lanthoor.spendly.core.model.finance.TransactionType
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -35,7 +36,8 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
     private val smsNotificationService: SmsNotificationService,
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -132,6 +134,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                         smsTimestamp = timestamp
                     )
                     val expenseId = expenseRepository.insertExpense(expense)
+                    enrichSmsTransactionsUseCase.markPending(TransactionType.EXPENSE, expenseId)
 
                     // Send notification
                     smsNotificationService.showTransactionCreatedNotification(
@@ -159,6 +162,7 @@ class SmsTransactionCreationWorker @AssistedInject constructor(
                         smsTimestamp = timestamp
                     )
                     val incomeId = incomeRepository.insertIncome(income)
+                    enrichSmsTransactionsUseCase.markPending(TransactionType.INCOME, incomeId)
 
                     // Send notification
                     smsNotificationService.showTransactionCreatedNotification(

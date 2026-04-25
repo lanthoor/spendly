@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.ui.screens.transactions
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +40,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Funnel
+import com.adamglin.phosphoricons.regular.MagicWand
 import dev.lanthoor.spendly.R
 import dev.lanthoor.spendly.core.model.finance.RecentTransaction
+import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.ui.components.EditExpenseBottomSheet
 import dev.lanthoor.spendly.ui.components.EditIncomeBottomSheet
 import dev.lanthoor.spendly.ui.components.EmptyState
@@ -55,11 +61,15 @@ fun TransactionListScreen(
     onNavigateBack: (() -> Unit)? = null,
     viewModel: TransactionListViewModel = hiltViewModel()
 ) {
+    val logTag = "TransactionListScreen"
     val transactionListState by viewModel.transactionListState.collectAsStateWithLifecycle()
     val startDate by viewModel.startDate.collectAsStateWithLifecycle()
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
     val selectedType by viewModel.selectedType.collectAsStateWithLifecycle()
     val selectedCategories by viewModel.selectedCategories.collectAsStateWithLifecycle()
+    val isEnrichmentRunning by viewModel.isEnrichmentRunning.collectAsStateWithLifecycle()
+    val aiSettings by viewModel.aiSettings.collectAsStateWithLifecycle()
+    val noEligibleRowsMessage = stringResource(R.string.msg_ai_enrichment_no_eligible_rows)
 
     // Modal sheet states
     var showEditExpenseSheet by remember { mutableStateOf(false) }
@@ -70,17 +80,92 @@ fun TransactionListScreen(
 
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.enrichmentResultEvents.collect { result ->
+            val message = if (result.attempted == 0) {
+                noEligibleRowsMessage
+            } else {
+                "${result.enriched} enriched, ${result.failed} failed, ${result.skipped} skipped"
+            }
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
     // Check if any filters are applied
     val hasActiveFilters = startDate != null || endDate != null ||
             selectedType != TransactionType.ALL ||
             selectedCategories.isNotEmpty()
+    val isAiAvailable = aiSettings.availability == AiModelAvailability.AVAILABLE
+    val aiRateLimited = aiSettings.lastErrorCode == "QUOTA_EXCEEDED" ||
+            aiSettings.lastErrorCode == "RATE_LIMIT_EXCEEDED"
+    val canRunAiEnrichment = isAiAvailable && !isEnrichmentRunning && !aiRateLimited
+
+    val aiDisabledReason = when {
+        aiSettings.availability == AiModelAvailability.DOWNLOADABLE -> {
+            stringResource(R.string.msg_ai_enrichment_model_downloadable)
+        }
+
+        aiSettings.availability == AiModelAvailability.DOWNLOADING -> {
+            stringResource(R.string.msg_ai_enrichment_model_downloading)
+        }
+
+        aiRateLimited -> {
+            stringResource(R.string.msg_ai_enrichment_rate_limited)
+        }
+
+        aiSettings.availability == AiModelAvailability.UNAVAILABLE ||
+                aiSettings.availability == AiModelAvailability.UNKNOWN -> {
+            stringResource(R.string.msg_ai_enrichment_unavailable)
+        }
+
+        else -> null
+    }
+
+    LaunchedEffect(aiSettings, isEnrichmentRunning) {
+        Log.d(
+            logTag,
+            "aiButton state: availability=${aiSettings.availability}, " +
+                    "lastError=${aiSettings.lastErrorCode}, isAiAvailable=$isAiAvailable, " +
+                    "rateLimited=$aiRateLimited, isEnrichmentRunning=$isEnrichmentRunning, " +
+                    "canRun=$canRunAiEnrichment, baseModel=${aiSettings.baseModelName}, " +
+                    "checkedAt=${aiSettings.lastAvailabilityCheckAt}"
+        )
+    }
+
+    LaunchedEffect(aiDisabledReason) {
+        if (!canRunAiEnrichment && !aiDisabledReason.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(aiDisabledReason)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.screen_transactions_title)) },
                 actions = {
+                    LaunchedEffect(canRunAiEnrichment) {
+                        Log.d(logTag, "aiButton visible=true enabled=$canRunAiEnrichment")
+                    }
+                    IconButton(
+                        onClick = {
+                            Log.d(logTag, "aiButton clicked")
+                            val state = transactionListState
+                            if (state is TransactionListUiState.Success) {
+                                Log.d(logTag, "aiButton click state=Success txCount=${state.transactions.size}")
+                                viewModel.enrichTransactions(state.transactions)
+                            } else {
+                                Log.d(logTag, "aiButton click ignored state=${state.javaClass.simpleName}")
+                            }
+                        },
+                        enabled = canRunAiEnrichment
+                    ) {
+                        Icon(
+                            imageVector = PhosphorIcons.Regular.MagicWand,
+                            contentDescription = stringResource(R.string.cd_ai_enrich_transactions)
+                        )
+                    }
                     IconButton(onClick = { showFilterSheet = true }) {
                         BadgedBox(
                             badge = {
@@ -98,6 +183,9 @@ fun TransactionListScreen(
                 },
                 scrollBehavior = scrollBehavior
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
@@ -159,6 +247,7 @@ fun TransactionListScreen(
                                 transaction = transaction,
                                 categories = state.allCategories,
                                 accounts = state.allAccounts,
+                                enrichmentByKey = state.enrichmentByKey,
                                 onClick = {
                                     when (transaction) {
                                         is RecentTransaction.ExpenseTransaction -> {

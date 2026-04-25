@@ -3,6 +3,7 @@ package dev.lanthoor.spendly.ui.screens.datamanagement
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.lanthoor.spendly.domain.usecase.transactions.EnrichSmsTransactionsUseCase
 import dev.lanthoor.spendly.domain.repository.ExportImportRepository
 import dev.lanthoor.spendly.domain.repository.ExportProgress
 import dev.lanthoor.spendly.domain.repository.ImportProgress
@@ -22,7 +23,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class DataManagementViewModel @Inject constructor(
-    private val repository: ExportImportRepository
+    private val repository: ExportImportRepository,
+    private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : ViewModel() {
 
     private val _exportProgress = MutableStateFlow<ExportProgress>(ExportProgress.Idle)
@@ -80,9 +82,16 @@ class DataManagementViewModel @Inject constructor(
         importJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 _importProgress.value = ImportProgress.Idle
-                repository.importAllData(jsonContent) { progress ->
-                    _importProgress.value = progress
-                }
+                repository.importAllData(
+                    jsonContent = jsonContent,
+                    onProgress = { progress ->
+                        _importProgress.value = progress
+                    },
+                    onAfterImport = {
+                        enrichSmsTransactionsUseCase.markImportedPendingIfMissing()
+                        enrichSmsTransactionsUseCase.runForAllSmsTransactions()
+                    }
+                )
             } catch (e: CancellationException) {
                 _importProgress.value = ImportProgress.Cancelled
                 throw e // Re-throw to allow coroutine cancellation to propagate

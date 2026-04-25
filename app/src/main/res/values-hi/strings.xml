@@ -121,6 +121,12 @@
     <string name="msg_recurring_delete_failed">आवर्ती लेनदेन हटाने में विफल</string>
 
     <string name="label_filter">फ़िल्टर</string>
+    <string name="cd_ai_enrich_transactions">AI से लेनदेन समृद्ध करें</string>
+    <string name="msg_ai_enrichment_no_eligible_rows">किसी SMS लेनदेन को समृद्ध करने की आवश्यकता नहीं है</string>
+    <string name="msg_ai_enrichment_model_downloadable">AI मॉडल डाउनलोड के लिए उपलब्ध है</string>
+    <string name="msg_ai_enrichment_model_downloading">AI मॉडल डाउनलोड हो रहा है</string>
+    <string name="msg_ai_enrichment_rate_limited">AI समृद्धि पर अस्थायी रेट लिमिट लागू है</string>
+    <string name="msg_ai_enrichment_unavailable">इस डिवाइस पर AI समृद्धि उपलब्ध नहीं है</string>
 
     <!-- AddExpense strings -->
     <string name="label_saving_expense">खर्च सहेज रहे हैं...</string>

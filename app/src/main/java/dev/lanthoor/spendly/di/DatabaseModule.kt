@@ -17,6 +17,7 @@ import dev.lanthoor.spendly.data.local.dao.ExpenseDao
 import dev.lanthoor.spendly.data.local.dao.IncomeDao
 import dev.lanthoor.spendly.data.local.dao.ReceiptDao
 import dev.lanthoor.spendly.data.local.dao.RecurringTransactionDao
+import dev.lanthoor.spendly.data.local.dao.TransactionAiEnrichmentDao
 import javax.inject.Singleton
 
 /**
@@ -52,7 +53,8 @@ object DatabaseModule {
             .addMigrations(
                 SpendlyDatabase.MIGRATION_1_2,
                 SpendlyDatabase.MIGRATION_2_3,
-                SpendlyDatabase.MIGRATION_3_4
+                SpendlyDatabase.MIGRATION_3_4,
+                SpendlyDatabase.MIGRATION_4_5
             )
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onOpen(db: SupportSQLiteDatabase) {
@@ -114,4 +116,8 @@ object DatabaseModule {
     @Provides
     fun provideAccountDao(database: SpendlyDatabase): AccountDao =
         database.accountDao()
+
+    @Provides
+    fun provideTransactionAiEnrichmentDao(database: SpendlyDatabase): TransactionAiEnrichmentDao =
+        database.transactionAiEnrichmentDao()
 }

@@ -16,6 +16,7 @@ import dev.lanthoor.spendly.data.local.dao.ExpenseDao
 import dev.lanthoor.spendly.data.local.dao.IncomeDao
 import dev.lanthoor.spendly.data.local.dao.ReceiptDao
 import dev.lanthoor.spendly.data.local.dao.RecurringTransactionDao
+import dev.lanthoor.spendly.data.local.dao.TransactionAiEnrichmentDao
 import dev.lanthoor.spendly.domain.repository.ImportProgress
 import dev.lanthoor.spendly.utils.FileUtils
 import kotlinx.coroutines.coroutineScope
@@ -32,6 +33,7 @@ class ExportImportImportOperations(
     private val receiptDao: ReceiptDao,
     private val budgetDao: BudgetDao,
     private val recurringTransactionDao: RecurringTransactionDao,
+    private val transactionAiEnrichmentDao: TransactionAiEnrichmentDao,
     private val context: Context
 ) {
 
@@ -41,6 +43,7 @@ class ExportImportImportOperations(
         incomeDao.deleteAll()
         budgetDao.deleteAll()
         recurringTransactionDao.deleteAll()
+        transactionAiEnrichmentDao.deleteAll()
 
         categoryDao.deleteCustomCategories()
         accountDao.deleteCustomAccounts()
@@ -143,7 +146,8 @@ class ExportImportImportOperations(
             ensureActive()
             onProgress(ImportProgress.ImportingIncome(index + 1, income.size))
 
-            incomeDao.insert(incomeExport.toEntity(mappings))
+            val newId = incomeDao.insert(incomeExport.toEntity(mappings))
+            mappings.income[incomeExport.id] = newId
         }
     }
 
@@ -164,6 +168,20 @@ class ExportImportImportOperations(
         recurring.forEach { recurringExport ->
             ensureActive()
             recurringTransactionDao.insert(recurringExport.toEntity(mappings))
+        }
+    }
+
+    suspend fun importAiEnrichments(
+        aiEnrichments: List<dev.lanthoor.spendly.data.exportimport.TransactionAiEnrichmentExport>,
+        mappings: IdMappings
+    ) = coroutineScope {
+        aiEnrichments.forEach { enrichmentExport ->
+            ensureActive()
+            try {
+                transactionAiEnrichmentDao.insert(enrichmentExport.toEntity(mappings))
+            } catch (e: Exception) {
+                Log.w(IMPORT_TAG, "Skipping invalid AI enrichment ${enrichmentExport.id}", e)
+            }
         }
     }
 }

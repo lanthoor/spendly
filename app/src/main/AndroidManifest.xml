@@ -85,6 +85,14 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <meta-data
+            android:name="com.google.mlkit.genai.DEPENDENCIES"
+            android:value="genai" />
+
+        <meta-data
+            android:name="com.google.android.gms.metadata.GENAI_AICORE_PROMPTING"
+            android:value="true" />
     </application>
 
 </manifest>

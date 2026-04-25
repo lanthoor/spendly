@@ -8,6 +8,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
 import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
+import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
+import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
+import dev.lanthoor.spendly.core.model.preferences.AiPromptVersion
 import dev.lanthoor.spendly.core.model.preferences.LockTimeout
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import dev.lanthoor.spendly.core.model.preferences.YearType
@@ -29,6 +32,16 @@ class PreferencesRepositoryImpl @Inject constructor(
         private val APP_LOCK_ENABLED_KEY = booleanPreferencesKey("app_lock_enabled")
         private val LOCK_TIMEOUT_KEY = stringPreferencesKey("lock_timeout")
         private val ANALYTICS_TIME_PERIOD_KEY = stringPreferencesKey("analytics_time_period")
+        private val AI_ENRICHMENT_ENABLED_KEY = booleanPreferencesKey("ai_enrichment_enabled")
+        private val AI_MODEL_AVAILABILITY_KEY = stringPreferencesKey("ai_model_availability")
+        private val AI_MODEL_BASE_NAME_KEY = stringPreferencesKey("ai_model_base_name")
+        private val AI_MODEL_LAST_CHECKED_AT_KEY = stringPreferencesKey("ai_model_last_checked_at")
+        private val AI_MODEL_LAST_ERROR_KEY = stringPreferencesKey("ai_model_last_error")
+        private val AI_PROMPT_VERSION_KEY = stringPreferencesKey("ai_prompt_version")
+        private val AI_BATCH_SIZE_KEY = stringPreferencesKey("ai_batch_size")
+
+        private const val DEFAULT_AI_PROMPT_VERSION = AiPromptVersion.CURRENT
+        private const val DEFAULT_AI_BATCH_SIZE = 20
     }
 
     override fun getTheme(): Flow<AppTheme> {
@@ -117,6 +130,69 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun setAnalyticsTimePeriod(period: TimePeriod) {
         dataStore.edit { preferences ->
             preferences[ANALYTICS_TIME_PERIOD_KEY] = period.toString()
+        }
+    }
+
+    override fun getAiEnrichmentSettings(): Flow<AiEnrichmentSettings> {
+        return dataStore.data.map { preferences ->
+            val availabilityRaw = preferences[AI_MODEL_AVAILABILITY_KEY] ?: AiModelAvailability.UNKNOWN.name
+            val availability = AiModelAvailability.entries.firstOrNull { it.name == availabilityRaw }
+                ?: AiModelAvailability.UNKNOWN
+            val promptVersion = preferences[AI_PROMPT_VERSION_KEY]?.toIntOrNull() ?: DEFAULT_AI_PROMPT_VERSION
+            val batchSize = preferences[AI_BATCH_SIZE_KEY]?.toIntOrNull()
+                ?.coerceIn(1, 100)
+                ?: DEFAULT_AI_BATCH_SIZE
+            val checkedAt = preferences[AI_MODEL_LAST_CHECKED_AT_KEY]?.toLongOrNull()
+
+            AiEnrichmentSettings(
+                enabled = preferences[AI_ENRICHMENT_ENABLED_KEY] ?: true,
+                availability = availability,
+                baseModelName = preferences[AI_MODEL_BASE_NAME_KEY],
+                lastAvailabilityCheckAt = checkedAt,
+                lastErrorCode = preferences[AI_MODEL_LAST_ERROR_KEY],
+                promptVersion = promptVersion,
+                batchSize = batchSize
+            )
+        }
+    }
+
+    override suspend fun setAiEnrichmentEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[AI_ENRICHMENT_ENABLED_KEY] = enabled
+        }
+    }
+
+    override suspend fun setAiModelAvailability(
+        availability: AiModelAvailability,
+        checkedAt: Long,
+        baseModelName: String?,
+        lastErrorCode: String?
+    ) {
+        dataStore.edit { preferences ->
+            preferences[AI_MODEL_AVAILABILITY_KEY] = availability.name
+            preferences[AI_MODEL_LAST_CHECKED_AT_KEY] = checkedAt.toString()
+            if (baseModelName.isNullOrBlank()) {
+                preferences.remove(AI_MODEL_BASE_NAME_KEY)
+            } else {
+                preferences[AI_MODEL_BASE_NAME_KEY] = baseModelName
+            }
+            if (lastErrorCode.isNullOrBlank()) {
+                preferences.remove(AI_MODEL_LAST_ERROR_KEY)
+            } else {
+                preferences[AI_MODEL_LAST_ERROR_KEY] = lastErrorCode
+            }
+        }
+    }
+
+    override suspend fun setAiEnrichmentBatchSize(batchSize: Int) {
+        dataStore.edit { preferences ->
+            preferences[AI_BATCH_SIZE_KEY] = batchSize.coerceIn(1, 100).toString()
+        }
+    }
+
+    override suspend fun setAiPromptVersion(promptVersion: Int) {
+        dataStore.edit { preferences ->
+            preferences[AI_PROMPT_VERSION_KEY] = promptVersion.toString()
         }
     }
 }

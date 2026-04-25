@@ -15,6 +15,7 @@ data class SpendlyExport(
     val accounts: List<AccountExport>,
     val expenses: List<ExpenseExport>,
     val income: List<IncomeExport>,
+    val aiEnrichments: List<TransactionAiEnrichmentExport> = emptyList(),
     val receipts: List<ReceiptExport>,
     val budgets: List<BudgetExport>,
     val recurringTransactions: List<RecurringTransactionExport>
@@ -25,7 +26,7 @@ data class SpendlyExport(
  */
 @Serializable
 data class ExportMetadata(
-    val exportVersion: Int = 1,
+    val exportVersion: Int = 2,
     val appVersion: String,
     val databaseVersion: Int,
     val exportDate: Long,
@@ -101,6 +102,28 @@ data class IncomeExport(
     val smsBody: String?,
     val smsConfidence: Float?,
     val smsTimestamp: Long?
+)
+
+@Serializable
+data class TransactionAiEnrichmentExport(
+    val id: Long,
+    val transactionType: String,
+    val transactionId: Long,
+    val status: String,
+    val displayDescription: String?,
+    val counterpartyName: String?,
+    val counterpartyRole: String,
+    val counterpartyType: String,
+    val identifierType: String,
+    val identifierValue: String?,
+    val paymentRail: String,
+    val confidence: Float?,
+    val reason: String?,
+    val modelName: String?,
+    val promptVersion: Int,
+    val enrichedAt: Long?,
+    val createdAt: Long,
+    val modifiedAt: Long
 )
 
 /**
