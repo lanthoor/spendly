@@ -123,6 +123,10 @@ File size: %2$s</string>
     <string name="label_filter">Filter</string>
     <string name="cd_ai_enrich_transactions">AI enrich transactions</string>
     <string name="msg_ai_enrichment_no_eligible_rows">No SMS transactions need enrichment</string>
+    <string name="msg_ai_enrichment_model_downloadable">AI model available to download</string>
+    <string name="msg_ai_enrichment_model_downloading">AI model download in progress</string>
+    <string name="msg_ai_enrichment_rate_limited">AI enrichment temporarily rate limited</string>
+    <string name="msg_ai_enrichment_unavailable">AI enrichment is not available on this device</string>
 
     <!-- AddExpense strings -->
     <string name="label_saving_expense">Saving expense...</string>

@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.ui.screens.transactions
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,6 +45,9 @@ class TransactionListViewModel @Inject constructor(
     private val enrichmentRepository: TransactionAiEnrichmentRepository,
     private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "TransactionListVM"
+    }
 
     // Filter states
     private val _startDate = MutableStateFlow<Long?>(null)
@@ -78,7 +82,23 @@ class TransactionListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            aiSettings.collect { settings ->
+                Log.d(
+                    TAG,
+                    "aiSettings changed: enabled=${settings.enabled}, " +
+                            "availability=${settings.availability}, baseModel=${settings.baseModelName}, " +
+                            "lastError=${settings.lastErrorCode}, checkedAt=${settings.lastAvailabilityCheckAt}, " +
+                            "batchSize=${settings.batchSize}, promptVersion=${settings.promptVersion}"
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            Log.d(TAG, "init: refreshing model availability")
             runCatching { enrichSmsTransactionsUseCase.refreshModelAvailability() }
+                .onFailure { e ->
+                    Log.w(TAG, "init: refreshModelAvailability failed", e)
+                }
         }
     }
 
@@ -265,11 +285,25 @@ class TransactionListViewModel @Inject constructor(
     }
 
     fun enrichTransactions(transactions: List<RecentTransaction>) {
-        if (_isEnrichmentRunning.value) return
+        if (_isEnrichmentRunning.value) {
+            Log.d(TAG, "enrichTransactions: skipped, already running")
+            return
+        }
 
         val settings = aiSettings.value
-        if (settings.availability != AiModelAvailability.AVAILABLE) return
-        if (isQuotaOrRateLimited(settings.lastErrorCode)) return
+        Log.d(
+            TAG,
+            "enrichTransactions: requested with visibleTransactions=${transactions.size}, " +
+                    "availability=${settings.availability}, lastError=${settings.lastErrorCode}"
+        )
+        if (settings.availability != AiModelAvailability.AVAILABLE) {
+            Log.d(TAG, "enrichTransactions: blocked, model not available")
+            return
+        }
+        if (isQuotaOrRateLimited(settings.lastErrorCode)) {
+            Log.d(TAG, "enrichTransactions: blocked, quota/rate limited")
+            return
+        }
 
         viewModelScope.launch {
             _isEnrichmentRunning.value = true
@@ -288,9 +322,15 @@ class TransactionListViewModel @Inject constructor(
                 }
 
                 val result = enrichSmsTransactionsUseCase.runForTransactionIds(expenseIds, incomeIds)
+                Log.d(
+                    TAG,
+                    "enrichTransactions: completed attempted=${result.attempted}, " +
+                            "enriched=${result.enriched}, failed=${result.failed}, skipped=${result.skipped}"
+                )
                 _enrichmentResultEvents.emit(result)
             } finally {
                 _isEnrichmentRunning.value = false
+                Log.d(TAG, "enrichTransactions: finished")
             }
         }
     }

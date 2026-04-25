@@ -1,10 +1,15 @@
 package dev.lanthoor.spendly.utils.ai
 
 import android.util.Log
+import com.google.mlkit.genai.common.DownloadStatus
+import com.google.mlkit.genai.common.FeatureStatus
+import com.google.mlkit.genai.common.GenAiException
+import com.google.mlkit.genai.prompt.Generation
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.domain.model.ai.AiGenerationResult
 import dev.lanthoor.spendly.domain.model.ai.AiModelAvailabilityResult
 import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,45 +21,48 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
 
     override suspend fun checkAvailability(): AiModelAvailabilityResult {
         return try {
-            val generationClass = Class.forName("com.google.mlkit.genai.prompt.Generation")
-            val generationInstance = generationClass.getField("INSTANCE").get(null)
-            val getClientMethod = generationClass.getMethod("getClient")
-            val clientAny = getClientMethod.invoke(generationInstance)
-                ?: throw IllegalStateException("ML Kit client unavailable")
-            val client: Any = clientAny
+            Log.d(TAG, "checkAvailability: begin")
+            val client = Generation.getClient()
+            Log.d(TAG, "checkAvailability: client class=${client.javaClass.name}")
 
-            val checkStatusMethod = client.javaClass.methods.firstOrNull {
-                it.name == "checkStatus" && it.parameterCount == 0
-            }
-            val getBaseModelNameMethod = client.javaClass.methods.firstOrNull {
-                it.name == "getBaseModelName" && it.parameterCount == 0
-            }
-
-            val rawStatus = checkStatusMethod?.invoke(client)
-            val baseModelName = getBaseModelNameMethod?.invoke(client) as? String
-
-            val statusInt = when (rawStatus) {
-                is Number -> rawStatus.toInt()
-                else -> null
-            }
-
-            val availability = when (statusInt) {
-                0 -> AiModelAvailability.UNAVAILABLE
-                1 -> AiModelAvailability.DOWNLOADABLE
-                2 -> AiModelAvailability.DOWNLOADING
-                3 -> AiModelAvailability.AVAILABLE
+            val status = client.checkStatus()
+            val baseModelName = runCatching { client.getBaseModelName() }.getOrNull()
+            val initialAvailability = when (status) {
+                FeatureStatus.UNAVAILABLE -> AiModelAvailability.UNAVAILABLE
+                FeatureStatus.DOWNLOADABLE -> AiModelAvailability.DOWNLOADABLE
+                FeatureStatus.DOWNLOADING -> AiModelAvailability.DOWNLOADING
+                FeatureStatus.AVAILABLE -> AiModelAvailability.AVAILABLE
                 else -> AiModelAvailability.UNKNOWN
             }
 
+            val resolvedAvailability = if (initialAvailability == AiModelAvailability.DOWNLOADABLE) {
+                startModelDownload(client)
+            } else {
+                initialAvailability
+            }
+
+            Log.d(
+                TAG,
+                "checkAvailability: mapped status=$status to availability=$resolvedAvailability baseModel=$baseModelName"
+            )
+
             AiModelAvailabilityResult(
-                availability = availability,
+                availability = resolvedAvailability,
                 baseModelName = baseModelName,
                 errorCode = null
+            )
+        } catch (e: GenAiException) {
+            Log.w(TAG, "checkAvailability failed with GenAiException", e)
+            val mappedError = mapGenAiErrorCode(e.errorCode)
+            AiModelAvailabilityResult(
+                availability = availabilityFromError(mappedError),
+                baseModelName = null,
+                errorCode = mappedError
             )
         } catch (e: Exception) {
             Log.w(TAG, "checkAvailability failed", e)
             AiModelAvailabilityResult(
-                availability = AiModelAvailability.UNAVAILABLE,
+                availability = AiModelAvailability.UNKNOWN,
                 baseModelName = null,
                 errorCode = e.javaClass.simpleName
             )
@@ -63,58 +71,76 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
 
     override suspend fun generate(prompt: String): AiGenerationResult {
         try {
-            val generationClass = Class.forName("com.google.mlkit.genai.prompt.Generation")
-            val generationInstance = generationClass.getField("INSTANCE").get(null)
-            val getClientMethod = generationClass.getMethod("getClient")
-            val clientAny = getClientMethod.invoke(generationInstance)
-                ?: throw IllegalStateException("ML Kit client unavailable")
-            val client: Any = clientAny
+            Log.d(TAG, "generate: begin promptLength=${prompt.length}")
+            val client = Generation.getClient()
+            Log.d(TAG, "generate: client class=${client.javaClass.name}")
 
-            val response = client.javaClass.getMethod("generateContent", String::class.java)
-                .invoke(client, prompt)
+            val response = client.generateContent(prompt)
+            Log.d(TAG, "generate: response candidates=${response.candidates.size}")
 
             val text = extractResponseText(response)
-            val modelName = tryGetBaseModelName(client)
+            val modelName = runCatching { client.getBaseModelName() }.getOrNull()
+            Log.d(
+                TAG,
+                "generate: completed modelName=$modelName responseTextLength=${text.length}"
+            )
             return AiGenerationResult(responseText = text, modelName = modelName)
+        } catch (e: GenAiException) {
+            Log.w(TAG, "generate failed with GenAiException", e)
+            val mapped = mapGenAiErrorCode(e.errorCode)
+            throw IllegalStateException("ML Kit generation failed: $mapped", e)
         } catch (e: Exception) {
+            Log.w(TAG, "generate failed", e)
             throw IllegalStateException("ML Kit generation failed: ${e.message}", e)
         }
     }
 
-    private fun tryGetBaseModelName(client: Any): String? {
-        return try {
-            client.javaClass.methods.firstOrNull {
-                it.name == "getBaseModelName" && it.parameterCount == 0
-            }?.invoke(client) as? String
-        } catch (_: Exception) {
-            null
+    private fun extractResponseText(response: com.google.mlkit.genai.prompt.GenerateContentResponse): String {
+        return response.candidates.firstOrNull()?.text.orEmpty()
+    }
+
+    private suspend fun startModelDownload(client: com.google.mlkit.genai.prompt.GenerativeModel): AiModelAvailability {
+        Log.d(TAG, "checkAvailability: status DOWNLOADABLE, starting model download")
+        val downloadStatus = client.download().first()
+        Log.d(TAG, "checkAvailability: first download status=$downloadStatus")
+
+        return when (downloadStatus) {
+            is DownloadStatus.DownloadStarted -> AiModelAvailability.DOWNLOADING
+            is DownloadStatus.DownloadProgress -> AiModelAvailability.DOWNLOADING
+            is DownloadStatus.DownloadCompleted -> AiModelAvailability.AVAILABLE
+            is DownloadStatus.DownloadFailed -> {
+                Log.w(
+                    TAG,
+                    "checkAvailability: download failed errorCode=${downloadStatus.e.errorCode}",
+                    downloadStatus.e
+                )
+                availabilityFromError(mapGenAiErrorCode(downloadStatus.e.errorCode))
+            }
         }
     }
 
-    private fun extractResponseText(response: Any?): String {
-        if (response == null) return ""
+    private fun availabilityFromError(errorCode: String): AiModelAvailability {
+        return when (errorCode) {
+            "NOT_AVAILABLE",
+            "NEEDS_SYSTEM_UPDATE",
+            "AICORE_INCOMPATIBLE",
+            "FEATURE_NOT_FOUND",
+            "UNSUPPORTED_DEVICE" -> AiModelAvailability.UNAVAILABLE
 
-        val responseClass = response.javaClass
-        val textField = responseClass.methods.firstOrNull {
-            it.name == "getText" && it.parameterCount == 0
+            else -> AiModelAvailability.UNKNOWN
         }
-        if (textField != null) {
-            val value = textField.invoke(response) as? String
-            if (!value.isNullOrBlank()) return value
-        }
+    }
 
-        val candidatesMethod = responseClass.methods.firstOrNull {
-            it.name == "getCandidates" && it.parameterCount == 0
+    private fun mapGenAiErrorCode(errorCode: Int): String {
+        return when (errorCode) {
+            GenAiException.ErrorCode.PER_APP_BATTERY_USE_QUOTA_EXCEEDED -> "QUOTA_EXCEEDED"
+            GenAiException.ErrorCode.BUSY -> "RATE_LIMIT_EXCEEDED"
+            GenAiException.ErrorCode.BACKGROUND_USE_BLOCKED -> "BACKGROUND_USE_BLOCKED"
+            GenAiException.ErrorCode.NOT_AVAILABLE -> "NOT_AVAILABLE"
+            GenAiException.ErrorCode.NEEDS_SYSTEM_UPDATE -> "NEEDS_SYSTEM_UPDATE"
+            GenAiException.ErrorCode.AICORE_INCOMPATIBLE -> "AICORE_INCOMPATIBLE"
+            606 -> "FEATURE_NOT_FOUND"
+            else -> "GENAI_ERROR_$errorCode"
         }
-        val candidates = candidatesMethod?.invoke(response)
-        val firstCandidate = (candidates as? List<*>)?.firstOrNull()
-        if (firstCandidate != null) {
-            val candidateText = firstCandidate.javaClass.methods.firstOrNull {
-                it.name == "getText" && it.parameterCount == 0
-            }?.invoke(firstCandidate) as? String
-            if (!candidateText.isNullOrBlank()) return candidateText
-        }
-
-        return response.toString()
     }
 }

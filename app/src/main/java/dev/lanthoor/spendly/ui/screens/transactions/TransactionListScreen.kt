@@ -1,5 +1,6 @@
 package dev.lanthoor.spendly.ui.screens.transactions
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,7 @@ fun TransactionListScreen(
     onNavigateBack: (() -> Unit)? = null,
     viewModel: TransactionListViewModel = hiltViewModel()
 ) {
+    val logTag = "TransactionListScreen"
     val transactionListState by viewModel.transactionListState.collectAsStateWithLifecycle()
     val startDate by viewModel.startDate.collectAsStateWithLifecycle()
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
@@ -98,28 +100,71 @@ fun TransactionListScreen(
     val isAiAvailable = aiSettings.availability == AiModelAvailability.AVAILABLE
     val aiRateLimited = aiSettings.lastErrorCode == "QUOTA_EXCEEDED" ||
             aiSettings.lastErrorCode == "RATE_LIMIT_EXCEEDED"
-    val canRunAiEnrichment = !isEnrichmentRunning && !aiRateLimited
+    val canRunAiEnrichment = isAiAvailable && !isEnrichmentRunning && !aiRateLimited
+
+    val aiDisabledReason = when {
+        aiSettings.availability == AiModelAvailability.DOWNLOADABLE -> {
+            stringResource(R.string.msg_ai_enrichment_model_downloadable)
+        }
+
+        aiSettings.availability == AiModelAvailability.DOWNLOADING -> {
+            stringResource(R.string.msg_ai_enrichment_model_downloading)
+        }
+
+        aiRateLimited -> {
+            stringResource(R.string.msg_ai_enrichment_rate_limited)
+        }
+
+        aiSettings.availability == AiModelAvailability.UNAVAILABLE ||
+                aiSettings.availability == AiModelAvailability.UNKNOWN -> {
+            stringResource(R.string.msg_ai_enrichment_unavailable)
+        }
+
+        else -> null
+    }
+
+    LaunchedEffect(aiSettings, isEnrichmentRunning) {
+        Log.d(
+            logTag,
+            "aiButton state: availability=${aiSettings.availability}, " +
+                    "lastError=${aiSettings.lastErrorCode}, isAiAvailable=$isAiAvailable, " +
+                    "rateLimited=$aiRateLimited, isEnrichmentRunning=$isEnrichmentRunning, " +
+                    "canRun=$canRunAiEnrichment, baseModel=${aiSettings.baseModelName}, " +
+                    "checkedAt=${aiSettings.lastAvailabilityCheckAt}"
+        )
+    }
+
+    LaunchedEffect(aiDisabledReason) {
+        if (!canRunAiEnrichment && !aiDisabledReason.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(aiDisabledReason)
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.screen_transactions_title)) },
                 actions = {
-                    if (isAiAvailable) {
-                        IconButton(
-                            onClick = {
-                                val state = transactionListState
-                                if (state is TransactionListUiState.Success) {
-                                    viewModel.enrichTransactions(state.transactions)
-                                }
-                            },
-                            enabled = canRunAiEnrichment
-                        ) {
-                            Icon(
-                                imageVector = PhosphorIcons.Regular.MagicWand,
-                                contentDescription = stringResource(R.string.cd_ai_enrich_transactions)
-                            )
-                        }
+                    LaunchedEffect(canRunAiEnrichment) {
+                        Log.d(logTag, "aiButton visible=true enabled=$canRunAiEnrichment")
+                    }
+                    IconButton(
+                        onClick = {
+                            Log.d(logTag, "aiButton clicked")
+                            val state = transactionListState
+                            if (state is TransactionListUiState.Success) {
+                                Log.d(logTag, "aiButton click state=Success txCount=${state.transactions.size}")
+                                viewModel.enrichTransactions(state.transactions)
+                            } else {
+                                Log.d(logTag, "aiButton click ignored state=${state.javaClass.simpleName}")
+                            }
+                        },
+                        enabled = canRunAiEnrichment
+                    ) {
+                        Icon(
+                            imageVector = PhosphorIcons.Regular.MagicWand,
+                            contentDescription = stringResource(R.string.cd_ai_enrich_transactions)
+                        )
                     }
                     IconButton(onClick = { showFilterSheet = true }) {
                         BadgedBox(
