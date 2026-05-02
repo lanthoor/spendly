@@ -46,13 +46,7 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
     }
 
     suspend fun refreshModelAvailability() {
-        safeLogDebug("refreshModelAvailability: checking")
         val availabilityResult = aiGateway.checkAvailability()
-        safeLogDebug(
-            TAG,
-            "refreshModelAvailability: availability=${availabilityResult.availability}, " +
-                    "baseModel=${availabilityResult.baseModelName}, error=${availabilityResult.errorCode}"
-        )
         preferencesRepository.setAiModelAvailability(
             availability = availabilityResult.availability,
             checkedAt = System.currentTimeMillis(),
@@ -66,22 +60,11 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         incomeIds: List<Long>
     ): EnrichSmsTransactionsResult {
         val settings = normalizeSettings(preferencesRepository.getAiEnrichmentSettings().first())
-        safeLogDebug(
-            TAG,
-            "runForTransactionIds: request expenseIds=${expenseIds.size}, incomeIds=${incomeIds.size}, " +
-                    "enabled=${settings.enabled}, batchSize=${settings.batchSize}, promptVersion=${settings.promptVersion}"
-        )
         if (!settings.enabled) {
-            safeLogDebug("runForTransactionIds: skipped, AI disabled in settings")
             return EnrichSmsTransactionsResult(0, 0, 0, expenseIds.size + incomeIds.size)
         }
 
         val availabilityResult = aiGateway.checkAvailability()
-        safeLogDebug(
-            TAG,
-            "runForTransactionIds: checkAvailability availability=${availabilityResult.availability}, " +
-                    "baseModel=${availabilityResult.baseModelName}, error=${availabilityResult.errorCode}"
-        )
         preferencesRepository.setAiModelAvailability(
             availability = availabilityResult.availability,
             checkedAt = System.currentTimeMillis(),
@@ -90,55 +73,36 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         )
 
         if (availabilityResult.availability != AiModelAvailability.AVAILABLE) {
-            safeLogDebug(
-                TAG,
-                "runForTransactionIds: skipped, availability=${availabilityResult.availability}"
-            )
             return EnrichSmsTransactionsResult(0, 0, 0, expenseIds.size + incomeIds.size)
         }
 
         val candidates = loadCandidates(expenseIds, incomeIds)
-        safeLogDebug("runForTransactionIds: loaded candidates=${candidates.size}")
         if (candidates.isEmpty()) {
-            safeLogDebug("runForTransactionIds: skipped, no SMS-linked candidates")
             return EnrichSmsTransactionsResult(0, 0, 0, 0)
         }
 
         val pendingCandidates = filterPendingCandidates(candidates, settings)
-        safeLogDebug("runForTransactionIds: pending candidates=${pendingCandidates.size}")
         if (pendingCandidates.isEmpty()) {
-            safeLogDebug("runForTransactionIds: skipped, nothing pending")
             return EnrichSmsTransactionsResult(0, 0, 0, candidates.size)
         }
 
         val categoryLookup = buildCategoryLookup()
         val allowedCategories = categoryLookup.keys.sorted()
-        safeLogDebug("runForTransactionIds: allowedCategories=${allowedCategories.size}")
 
         var attempted = 0
         var enriched = 0
         var failed = 0
 
         val batches = splitIntoBatches(pendingCandidates, settings.batchSize)
-        safeLogDebug("runForTransactionIds: batches=${batches.size}")
         batches.forEachIndexed { index, batch ->
             val batchId = "${System.currentTimeMillis()}-$index"
             val prompt = AiEnrichmentPromptBuilder.buildPrompt(batchId, batch, allowedCategories)
             attempted += batch.size
-            safeLogDebug(
-                TAG,
-                "runForTransactionIds: batch[$index] id=$batchId size=${batch.size} promptLength=${prompt.length}"
-            )
 
             val updates = try {
                 val generation = aiGateway.generate(prompt)
                 val parsed = parseResponse(generation.responseText)
                 val now = System.currentTimeMillis()
-                safeLogDebug(
-                    TAG,
-                    "runForTransactionIds: batch[$index] generation ok model=${generation.modelName}, " +
-                            "responseLength=${generation.responseText.length}, parsedResults=${parsed.results.size}"
-                )
                 preferencesRepository.setAiModelAvailability(
                     availability = availabilityResult.availability,
                     checkedAt = now,
@@ -176,18 +140,7 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
             applyCategoryUpdates(batch, updates)
             enriched += updates.count { it.status == AiEnrichmentStatus.ENRICHED }
             failed += updates.count { it.status == AiEnrichmentStatus.FAILED }
-            safeLogDebug(
-                TAG,
-                "runForTransactionIds: batch[$index] updates=${updates.size}, " +
-                        "enrichedSoFar=$enriched, failedSoFar=$failed"
-            )
         }
-
-        safeLogDebug(
-            TAG,
-            "runForTransactionIds: done attempted=$attempted enriched=$enriched failed=$failed " +
-                    "skipped=${candidates.size - pendingCandidates.size}"
-        )
         return EnrichSmsTransactionsResult(
             attempted = attempted,
             enriched = enriched,
@@ -427,14 +380,6 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
 
     private fun safeLogWarn(message: String, throwable: Throwable) {
         runCatching { Log.w(TAG, message, throwable) }
-    }
-
-    private fun safeLogDebug(message: String) {
-        runCatching { Log.d(TAG, message) }
-    }
-
-    private fun safeLogDebug(tag: String, message: String) {
-        runCatching { Log.d(tag, message) }
     }
 
     private fun classifyAiErrorCode(throwable: Throwable): String {

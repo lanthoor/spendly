@@ -1,6 +1,4 @@
 package dev.lanthoor.spendly.ui.screens.transactions
-
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,7 +59,6 @@ fun TransactionListScreen(
     onNavigateBack: (() -> Unit)? = null,
     viewModel: TransactionListViewModel = hiltViewModel()
 ) {
-    val logTag = "TransactionListScreen"
     val transactionListState by viewModel.transactionListState.collectAsStateWithLifecycle()
     val startDate by viewModel.startDate.collectAsStateWithLifecycle()
     val endDate by viewModel.endDate.collectAsStateWithLifecycle()
@@ -123,17 +120,6 @@ fun TransactionListScreen(
         else -> null
     }
 
-    LaunchedEffect(aiSettings, isEnrichmentRunning) {
-        Log.d(
-            logTag,
-            "aiButton state: availability=${aiSettings.availability}, " +
-                    "lastError=${aiSettings.lastErrorCode}, isAiAvailable=$isAiAvailable, " +
-                    "rateLimited=$aiRateLimited, isEnrichmentRunning=$isEnrichmentRunning, " +
-                    "canRun=$canRunAiEnrichment, baseModel=${aiSettings.baseModelName}, " +
-                    "checkedAt=${aiSettings.lastAvailabilityCheckAt}"
-        )
-    }
-
     LaunchedEffect(aiDisabledReason) {
         if (!canRunAiEnrichment && !aiDisabledReason.isNullOrBlank()) {
             snackbarHostState.showSnackbar(aiDisabledReason)
@@ -145,18 +131,11 @@ fun TransactionListScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.screen_transactions_title)) },
                 actions = {
-                    LaunchedEffect(canRunAiEnrichment) {
-                        Log.d(logTag, "aiButton visible=true enabled=$canRunAiEnrichment")
-                    }
                     IconButton(
                         onClick = {
-                            Log.d(logTag, "aiButton clicked")
                             val state = transactionListState
                             if (state is TransactionListUiState.Success) {
-                                Log.d(logTag, "aiButton click state=Success txCount=${state.transactions.size}")
                                 viewModel.enrichTransactions(state.transactions)
-                            } else {
-                                Log.d(logTag, "aiButton click ignored state=${state.javaClass.simpleName}")
                             }
                         },
                         enabled = canRunAiEnrichment

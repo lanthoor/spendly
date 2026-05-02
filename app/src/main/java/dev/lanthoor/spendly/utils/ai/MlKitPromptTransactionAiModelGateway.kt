@@ -9,7 +9,13 @@ import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.domain.model.ai.AiGenerationResult
 import dev.lanthoor.spendly.domain.model.ai.AiModelAvailabilityResult
 import dev.lanthoor.spendly.domain.repository.TransactionAiModelGateway
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,11 +25,14 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
         private const val TAG = "MlKitAiGateway"
     }
 
+    private val gatewayScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val downloadMutex = Mutex()
+    @Volatile
+    private var isDownloadInProgress: Boolean = false
+
     override suspend fun checkAvailability(): AiModelAvailabilityResult {
         return try {
-            Log.d(TAG, "checkAvailability: begin")
             val client = Generation.getClient()
-            Log.d(TAG, "checkAvailability: client class=${client.javaClass.name}")
 
             val status = client.checkStatus()
             val baseModelName = runCatching { client.getBaseModelName() }.getOrNull()
@@ -36,15 +45,11 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
             }
 
             val resolvedAvailability = if (initialAvailability == AiModelAvailability.DOWNLOADABLE) {
-                startModelDownload(client)
+                startModelDownloadIfNeeded(client)
+                AiModelAvailability.DOWNLOADING
             } else {
                 initialAvailability
             }
-
-            Log.d(
-                TAG,
-                "checkAvailability: mapped status=$status to availability=$resolvedAvailability baseModel=$baseModelName"
-            )
 
             AiModelAvailabilityResult(
                 availability = resolvedAvailability,
@@ -71,19 +76,12 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
 
     override suspend fun generate(prompt: String): AiGenerationResult {
         try {
-            Log.d(TAG, "generate: begin promptLength=${prompt.length}")
             val client = Generation.getClient()
-            Log.d(TAG, "generate: client class=${client.javaClass.name}")
 
             val response = client.generateContent(prompt)
-            Log.d(TAG, "generate: response candidates=${response.candidates.size}")
 
             val text = extractResponseText(response)
             val modelName = runCatching { client.getBaseModelName() }.getOrNull()
-            Log.d(
-                TAG,
-                "generate: completed modelName=$modelName responseTextLength=${text.length}"
-            )
             return AiGenerationResult(responseText = text, modelName = modelName)
         } catch (e: GenAiException) {
             Log.w(TAG, "generate failed with GenAiException", e)
@@ -99,22 +97,45 @@ class MlKitPromptTransactionAiModelGateway @Inject constructor() : TransactionAi
         return response.candidates.firstOrNull()?.text.orEmpty()
     }
 
-    private suspend fun startModelDownload(client: com.google.mlkit.genai.prompt.GenerativeModel): AiModelAvailability {
-        Log.d(TAG, "checkAvailability: status DOWNLOADABLE, starting model download")
-        val downloadStatus = client.download().first()
-        Log.d(TAG, "checkAvailability: first download status=$downloadStatus")
+    private fun startModelDownloadIfNeeded(client: com.google.mlkit.genai.prompt.GenerativeModel) {
+        if (isDownloadInProgress) return
 
-        return when (downloadStatus) {
-            is DownloadStatus.DownloadStarted -> AiModelAvailability.DOWNLOADING
-            is DownloadStatus.DownloadProgress -> AiModelAvailability.DOWNLOADING
-            is DownloadStatus.DownloadCompleted -> AiModelAvailability.AVAILABLE
-            is DownloadStatus.DownloadFailed -> {
-                Log.w(
-                    TAG,
-                    "checkAvailability: download failed errorCode=${downloadStatus.e.errorCode}",
-                    downloadStatus.e
-                )
-                availabilityFromError(mapGenAiErrorCode(downloadStatus.e.errorCode))
+        gatewayScope.launch {
+            downloadMutex.withLock {
+                if (isDownloadInProgress) return@withLock
+
+                isDownloadInProgress = true
+                Log.i(TAG, "Starting on-device model download")
+                try {
+                    client.download().collect { downloadStatus ->
+                        when (downloadStatus) {
+                            is DownloadStatus.DownloadStarted -> {
+                                Log.i(TAG, "Model download started")
+                            }
+
+                            is DownloadStatus.DownloadProgress -> Unit
+
+                            is DownloadStatus.DownloadCompleted -> {
+                                Log.i(TAG, "Model download completed")
+                            }
+
+                            is DownloadStatus.DownloadFailed -> {
+                                val mapped = mapGenAiErrorCode(downloadStatus.e.errorCode)
+                                Log.w(
+                                    TAG,
+                                    "Model download failed: $mapped",
+                                    downloadStatus.e
+                                )
+                            }
+                        }
+                    }
+                } catch (e: GenAiException) {
+                    Log.w(TAG, "Model download failed with GenAiException", e)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Model download failed", e)
+                } finally {
+                    isDownloadInProgress = false
+                }
             }
         }
     }
