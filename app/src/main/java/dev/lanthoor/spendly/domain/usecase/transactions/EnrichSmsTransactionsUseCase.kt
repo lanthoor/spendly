@@ -34,16 +34,14 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
     private val incomeRepository: IncomeRepository,
     private val preferencesRepository: PreferencesRepository,
     private val enrichmentRepository: TransactionAiEnrichmentRepository,
-    private val aiGateway: TransactionAiModelGateway
+    private val aiGateway: TransactionAiModelGateway,
+    private val aiEnrichmentEngine: AiEnrichmentEngine
 ) {
     companion object {
         private const val TAG = "EnrichSmsTxUseCase"
         private const val MAX_SMS_CHAR_BUDGET = 8000
     }
 
-    private val json = Json {
-        ignoreUnknownKeys = true
-    }
 
     suspend fun refreshModelAvailability() {
         safeLogDebug("refreshModelAvailability: checking")
@@ -119,7 +117,7 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         var enriched = 0
         var failed = 0
 
-        val batches = splitIntoBatches(pendingCandidates, settings.batchSize)
+        val batches = aiEnrichmentEngine.splitIntoBatches(pendingCandidates, settings.batchSize)
         safeLogDebug("runForTransactionIds: batches=${batches.size}")
         batches.forEachIndexed { index, batch ->
             val batchId = "${System.currentTimeMillis()}-$index"
@@ -130,30 +128,31 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
                 "runForTransactionIds: batch[$index] id=$batchId size=${batch.size} promptLength=${prompt.length}"
             )
 
-            val updates = try {
-                val generation = aiGateway.generate(prompt)
-                val parsed = parseResponse(generation.responseText)
-                val now = System.currentTimeMillis()
-                safeLogDebug(
-                    TAG,
-                    "runForTransactionIds: batch[$index] generation ok model=${generation.modelName}, " +
-                            "responseLength=${generation.responseText.length}, parsedResults=${parsed.results.size}"
-                )
-                preferencesRepository.setAiModelAvailability(
-                    availability = availabilityResult.availability,
-                    checkedAt = now,
-                    baseModelName = generation.modelName ?: availabilityResult.baseModelName,
-                    lastErrorCode = null
-                )
-                buildUpdatesFromResponse(
-                    candidates = batch,
-                    response = parsed,
-                    categoryLookup = categoryLookup,
-                    promptVersion = settings.promptVersion,
-                    modelName = generation.modelName ?: availabilityResult.baseModelName,
-                    enrichedAt = now
-                )
-            } catch (e: Exception) {
+                val updates = try {
+                    val generation = aiGateway.generate(prompt)
+                    val parsed = aiEnrichmentEngine.parseResponse(generation.responseText)
+                    val now = System.currentTimeMillis()
+                    safeLogDebug(
+                        TAG,
+                        "runForTransactionIds: batch[$index] generation ok model=${generation.modelName}, " +
+                                "responseLength=${generation.responseText.length}, parsedResults=${parsed.results.size}"
+                    )
+                    preferencesRepository.setAiModelAvailability(
+                        availability = availabilityResult.availability,
+                        checkedAt = now,
+                        baseModelName = generation.modelName ?: availabilityResult.baseModelName,
+                        lastErrorCode = null
+                    )
+                    aiEnrichmentEngine.buildUpdatesFromResponse(
+                        candidates = batch,
+                        response = parsed,
+                        categoryLookup = categoryLookup,
+                        promptVersion = settings.promptVersion,
+                        modelName = generation.modelName ?: availabilityResult.baseModelName,
+                        enrichedAt = now,
+                        categoryResolver = { name, lookup -> resolveCategoryId(name, lookup) }
+                    )
+                } catch (e: Exception) {
                 safeLogWarn("Batch enrichment failed", e)
                 safeLogWarn("runForTransactionIds: batch[$index] failed ${e.javaClass.simpleName}: ${e.message}", e)
                 preferencesRepository.setAiModelAvailability(
@@ -292,87 +291,41 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         return result
     }
 
-    private fun splitIntoBatches(
+    private suspend fun applyCategoryUpdates(
         candidates: List<TransactionEnrichmentCandidate>,
-        batchSize: Int
-    ): List<List<TransactionEnrichmentCandidate>> {
-        if (candidates.isEmpty()) return emptyList()
-        val configuredSize = batchSize.coerceAtLeast(1)
-        val batches = mutableListOf<List<TransactionEnrichmentCandidate>>()
-        var current = mutableListOf<TransactionEnrichmentCandidate>()
-        var currentCharCount = 0
+        updates: List<TransactionAiEnrichmentUpdate>
+    ) {
+        val byTxKey = updates.associateBy { "${it.transactionType.name}:${it.transactionId}" }
 
         candidates.forEach { candidate ->
-            val candidateChars = candidate.smsBody.length + candidate.regexDescription.length + candidate.smsSender.length
-            val exceedBatchSize = current.size >= configuredSize
-            val exceedCharBudget = current.isNotEmpty() && (currentCharCount + candidateChars) > MAX_SMS_CHAR_BUDGET
+            val update = byTxKey[candidate.txKey] ?: return@forEach
+            val categoryId = update.categoryId ?: return@forEach
 
-            if (exceedBatchSize || exceedCharBudget) {
-                batches += current.toList()
-                current = mutableListOf()
-                currentCharCount = 0
-            }
+            when (candidate.transactionType) {
+                TransactionType.EXPENSE -> {
+                    val expense = expenseRepository.getExpensesByIds(listOf(candidate.transactionId)).firstOrNull()
+                        ?: return@forEach
+                    if (expense.categoryId != categoryId) {
+                        expenseRepository.updateExpense(expense.copy(categoryId = categoryId))
+                    }
+                }
 
-            current += candidate
-            currentCharCount += candidateChars
-        }
-
-        if (current.isNotEmpty()) {
-            batches += current.toList()
-        }
-
-        return batches
-    }
-
-    private fun parseResponse(responseText: String): AiPromptBatchResponse {
-        return try {
-            json.decodeFromString(AiPromptBatchResponse.serializer(), responseText)
-        } catch (e: SerializationException) {
-            val extractedJson = extractJsonObject(responseText)
-            json.decodeFromString(AiPromptBatchResponse.serializer(), extractedJson)
-        }
-    }
-
-    private fun extractJsonObject(value: String): String {
-        val start = value.indexOf('{')
-        val end = value.lastIndexOf('}')
-        if (start >= 0 && end > start) {
-            return value.substring(start, end + 1)
-        }
-        throw SerializationException("No JSON object found in model response")
-    }
-
-    private fun buildUpdatesFromResponse(
-        candidates: List<TransactionEnrichmentCandidate>,
-        response: AiPromptBatchResponse,
-        categoryLookup: Map<String, Long>,
-        promptVersion: Int,
-        modelName: String?,
-        enrichedAt: Long
-    ): List<TransactionAiEnrichmentUpdate> {
-        val byTxKey = response.results.associateBy { it.txKey }
-
-        return candidates.map { candidate ->
-            val result = byTxKey[candidate.txKey]
-            if (result == null) {
-                AiEnrichmentParser.failedUpdate(
-                    candidate = candidate,
-                    promptVersion = promptVersion,
-                    reason = "missing-result",
-                    modelName = modelName
-                )
-            } else {
-                AiEnrichmentParser.toUpdate(
-                    candidate = candidate,
-                    result = result,
-                    resolvedCategoryId = resolveCategoryId(result.categoryName, categoryLookup),
-                    promptVersion = promptVersion,
-                    modelName = modelName,
-                    enrichedAt = enrichedAt
-                )
+                TransactionType.INCOME -> {
+                    val income = incomeRepository.getIncomeByIds(listOf(candidate.transactionId)).firstOrNull()
+                        ?: return@forEach
+                    if (income.categoryId != categoryId) {
+                        incomeRepository.updateIncome(income.copy(categoryId = categoryId))
+                    }
+                }
             }
         }
     }
+
+        }
+        return result
+    }
+
+    private suspend fun applyCategoryUpdates(
 
     private suspend fun applyCategoryUpdates(
         candidates: List<TransactionEnrichmentCandidate>,
