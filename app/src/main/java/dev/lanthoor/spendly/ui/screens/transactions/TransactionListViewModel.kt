@@ -102,6 +102,23 @@ class TransactionListViewModel @Inject constructor(
         }
     }
 
+    // Data carrier for combined repository flows
+    private data class TransactionData(
+        val expenses: List<Expense>,
+        val incomes: List<Income>,
+        val categories: List<Category>,
+        val accounts: List<Account>,
+        val enrichments: List<TransactionAiEnrichment>
+    )
+
+    // Data carrier for combined filter flows
+    private data class FilterData(
+        val startDate: Long?,
+        val endDate: Long?,
+        val selectedType: TransactionType,
+        val selectedCategories: Set<Long>
+    )
+
     /**
      * Combined state with all transactions and filtering
      */
@@ -113,7 +130,7 @@ class TransactionListViewModel @Inject constructor(
             accountRepository.getAllAccounts(),
             enrichmentRepository.observeAll()
         ) { expenses, incomes, categories, accounts, enrichments ->
-            arrayOf(expenses, incomes, categories, accounts, enrichments)
+            TransactionData(expenses, incomes, categories, accounts, enrichments)
         },
         combine(
             _startDate,
@@ -121,84 +138,60 @@ class TransactionListViewModel @Inject constructor(
             _selectedType,
             _selectedCategories
         ) { startDate, endDate, selectedType, selectedCategories ->
-            arrayOf(startDate, endDate, selectedType, selectedCategories)
+            FilterData(startDate, endDate, selectedType, selectedCategories)
         }
-    ) { dataArray, filterArray ->
-        @Suppress("UNCHECKED_CAST")
-        val expenses = dataArray[0] as List<Expense>
-
-        @Suppress("UNCHECKED_CAST")
-        val incomes = dataArray[1] as List<Income>
-
-        @Suppress("UNCHECKED_CAST")
-        val categories = dataArray[2] as List<Category>
-
-        @Suppress("UNCHECKED_CAST")
-        val accounts = dataArray[3] as List<Account>
-
-        @Suppress("UNCHECKED_CAST")
-        val enrichments = dataArray[4] as List<TransactionAiEnrichment>
-
-        val startDate = filterArray[0] as Long?
-        val endDate = filterArray[1] as Long?
-
-        @Suppress("UNCHECKED_CAST")
-        val selectedType = filterArray[2] as TransactionType
-
-        @Suppress("UNCHECKED_CAST")
-        val selectedCategories = filterArray[3] as Set<Long>
-
+    ) { data, filters ->
         // Apply date range filter
-        val filteredExpenses = expenses.filter { expense ->
+        val filteredExpenses = data.expenses.filter { expense ->
             val matchesDate = when {
-                startDate != null && endDate != null -> expense.date in startDate..endDate
-                startDate != null -> expense.date >= startDate
-                endDate != null -> expense.date <= endDate
+                filters.startDate != null && filters.endDate != null -> expense.date in filters.startDate..filters.endDate
+                filters.startDate != null -> expense.date >= filters.startDate
+                filters.endDate != null -> expense.date <= filters.endDate
                 else -> true
             }
-            val matchesCategory = selectedCategories.isEmpty() ||
-                    (expense.categoryId != null && expense.categoryId in selectedCategories)
+            val matchesCategory = filters.selectedCategories.isEmpty() ||
+                    (expense.categoryId != null && expense.categoryId in filters.selectedCategories)
             matchesDate && matchesCategory
         }
 
-        val filteredIncomes = incomes.filter { income ->
+        val filteredIncomes = data.incomes.filter { income ->
             val matchesDate = when {
-                startDate != null && endDate != null -> income.date in startDate..endDate
-                startDate != null -> income.date >= startDate
-                endDate != null -> income.date <= endDate
+                filters.startDate != null && filters.endDate != null -> income.date in filters.startDate..filters.endDate
+                filters.startDate != null -> income.date >= filters.startDate
+                filters.endDate != null -> income.date <= filters.endDate
                 else -> true
             }
-            val matchesCategory = selectedCategories.isEmpty() ||
-                    (income.categoryId != null && income.categoryId in selectedCategories)
+            val matchesCategory = filters.selectedCategories.isEmpty() ||
+                    (income.categoryId != null && income.categoryId in filters.selectedCategories)
             matchesDate && matchesCategory
         }
 
         // Apply type filter and build transaction list
         val filteredTransactions = buildTransactionList(
-            expenses = if (selectedType == TransactionType.INCOME) emptyList() else filteredExpenses,
-            incomes = if (selectedType == TransactionType.EXPENSE) emptyList() else filteredIncomes
+            expenses = if (filters.selectedType == TransactionType.INCOME) emptyList() else filteredExpenses,
+            incomes = if (filters.selectedType == TransactionType.EXPENSE) emptyList() else filteredIncomes
         )
 
         // Build unfiltered transaction list (for category filtering in bottom sheet)
         val allTransactions = buildTransactionList(
-            expenses = expenses,
-            incomes = incomes
+            expenses = data.expenses,
+            incomes = data.incomes
         )
 
         TransactionListUiState.Success(
             transactions = filteredTransactions,
             allTransactions = allTransactions,
-            allCategories = categories,
-            allAccounts = accounts,
-            enrichmentByKey = enrichments.associateBy { "${it.transactionType.name}:${it.transactionId}" },
-            hasTransactions = expenses.isNotEmpty() || incomes.isNotEmpty()
+            allCategories = data.categories,
+            allAccounts = data.accounts,
+            enrichmentByKey = data.enrichments.associateBy { "${it.transactionType.name}:${it.transactionId}" },
+            hasTransactions = data.expenses.isNotEmpty() || data.incomes.isNotEmpty()
         )
     }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TransactionListUiState.Loading
-        )
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = TransactionListUiState.Loading
+    )
 
     /**
      * Build list of all transactions in reverse chronological order
