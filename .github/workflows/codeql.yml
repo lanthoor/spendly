@@ -5,6 +5,8 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  merge_group:
+    types: [ checks_requested ]
   schedule:
     - cron: '40 15 * * 4'
 
@@ -57,7 +59,7 @@ jobs:
 
     - name: Cache Gradle packages
       if: matrix.language == 'java-kotlin'
-      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
           ~/.gradle/caches
@@ -67,7 +69,7 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+      uses: github/codeql-action/init@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
@@ -92,7 +94,7 @@ jobs:
         echo "KEYSTORE_FILE=$HOME/release.keystore" >> "$GITHUB_ENV"
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+      uses: github/codeql-action/analyze@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
       with:
         category: "/language:${{matrix.language}}"
       env:
