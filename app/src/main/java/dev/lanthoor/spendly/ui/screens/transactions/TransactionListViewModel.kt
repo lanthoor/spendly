@@ -122,7 +122,7 @@ class TransactionListViewModel @Inject constructor(
     /**
      * Combined state with all transactions and filtering
      */
-    val transactionListState: StateFlow<TransactionListUiState> = combine(
+    val transactionListState: StateFlow<<TransactionTransactionListUiState> = combine(
         combine(
             expenseRepository.getAllExpenses(),
             incomeRepository.getAllIncome(),
@@ -131,7 +131,7 @@ class TransactionListViewModel @Inject constructor(
             enrichmentRepository.observeAll()
         ) { expenses, incomes, categories, accounts, enrichments ->
             TransactionData(expenses, incomes, categories, accounts, enrichments)
-        },
+        }.distinctUntilChanged(),
         combine(
             _startDate,
             _endDate,
@@ -139,7 +139,7 @@ class TransactionListViewModel @Inject constructor(
             _selectedCategories
         ) { startDate, endDate, selectedType, selectedCategories ->
             FilterData(startDate, endDate, selectedType, selectedCategories)
-        }
+        }.distinctUntilChanged()
     ) { data, filters ->
         // Apply date range filter
         val filteredExpenses = data.expenses.filter { expense ->
