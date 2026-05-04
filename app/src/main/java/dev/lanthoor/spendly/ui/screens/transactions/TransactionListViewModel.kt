@@ -1,4 +1,5 @@
 package dev.lanthoor.spendly.ui.screens.transactions
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,13 +27,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for all transactions list screen with filtering capabilities.
- */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
     private val expenseRepository: ExpenseRepository,
@@ -43,7 +42,6 @@ class TransactionListViewModel @Inject constructor(
     private val enrichmentRepository: TransactionAiEnrichmentRepository,
     private val enrichSmsTransactionsUseCase: EnrichSmsTransactionsUseCase
 ) : ViewModel() {
-    // Filter states
     private val _startDate = MutableStateFlow<Long?>(null)
     private val _endDate = MutableStateFlow<Long?>(null)
     private val _selectedType = MutableStateFlow<TransactionType>(TransactionType.ALL)
@@ -80,7 +78,6 @@ class TransactionListViewModel @Inject constructor(
         }
     }
 
-    // Data carrier for combined repository flows
     private data class TransactionData(
         val expenses: List<Expense>,
         val incomes: List<Income>,
@@ -89,7 +86,6 @@ class TransactionListViewModel @Inject constructor(
         val enrichments: List<TransactionAiEnrichment>
     )
 
-    // Data carrier for combined filter flows
     private data class FilterData(
         val startDate: Long?,
         val endDate: Long?,
@@ -97,10 +93,7 @@ class TransactionListViewModel @Inject constructor(
         val selectedCategories: Set<Long>
     )
 
-    /**
-     * Combined state with all transactions and filtering
-     */
-    val transactionListState: StateFlow<<TransactionTransactionListUiState> = combine(
+    val transactionListState: StateFlow<TransactionListUiState> = combine(
         combine(
             expenseRepository.getAllExpenses(),
             incomeRepository.getAllIncome(),
@@ -119,7 +112,6 @@ class TransactionListViewModel @Inject constructor(
             FilterData(startDate, endDate, selectedType, selectedCategories)
         }.distinctUntilChanged()
     ) { data, filters ->
-        // Apply date range filter
         val filteredExpenses = data.expenses.filter { expense ->
             val matchesDate = when {
                 filters.startDate != null && filters.endDate != null -> expense.date in filters.startDate..filters.endDate
@@ -144,13 +136,11 @@ class TransactionListViewModel @Inject constructor(
             matchesDate && matchesCategory
         }
 
-        // Apply type filter and build transaction list
         val filteredTransactions = buildTransactionList(
             expenses = if (filters.selectedType == TransactionType.INCOME) emptyList() else filteredExpenses,
             incomes = if (filters.selectedType == TransactionType.EXPENSE) emptyList() else filteredIncomes
         )
 
-        // Build unfiltered transaction list (for category filtering in bottom sheet)
         val allTransactions = buildTransactionList(
             expenses = data.expenses,
             incomes = data.incomes
@@ -164,16 +154,12 @@ class TransactionListViewModel @Inject constructor(
             enrichmentByKey = data.enrichments.associateBy { "${it.transactionType.name}:${it.transactionId}" },
             hasTransactions = data.expenses.isNotEmpty() || data.incomes.isNotEmpty()
         )
-    }
-    .stateIn(
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = TransactionListUiState.Loading
     )
 
-    /**
-     * Build list of all transactions in reverse chronological order
-     */
     private fun buildTransactionList(
         expenses: List<Expense>,
         incomes: List<Income>
@@ -193,24 +179,15 @@ class TransactionListViewModel @Inject constructor(
             }
     }
 
-    /**
-     * Set date range filter
-     */
     fun setDateRange(startDate: Long?, endDate: Long?) {
         _startDate.value = startDate
         _endDate.value = endDate
     }
 
-    /**
-     * Set transaction type filter
-     */
     fun setTransactionType(type: TransactionType) {
         _selectedType.value = type
     }
 
-    /**
-     * Toggle category in filter
-     */
     fun toggleCategory(categoryId: Long) {
         _selectedCategories.value = if (categoryId in _selectedCategories.value) {
             _selectedCategories.value - categoryId
@@ -219,16 +196,10 @@ class TransactionListViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Clear all category filters
-     */
     fun clearCategoryFilters() {
         _selectedCategories.value = emptySet()
     }
 
-    /**
-     * Clear all filters
-     */
     fun clearAllFilters() {
         _startDate.value = null
         _endDate.value = null
@@ -236,9 +207,6 @@ class TransactionListViewModel @Inject constructor(
         _selectedCategories.value = emptySet()
     }
 
-    /**
-     * Check if any filters are active
-     */
     fun hasActiveFilters(): Boolean {
         return _startDate.value != null ||
                 _endDate.value != null ||
@@ -246,13 +214,7 @@ class TransactionListViewModel @Inject constructor(
                 _selectedCategories.value.isNotEmpty()
     }
 
-    /**
-     * Refresh transaction data.
-     * Note: Room Flows automatically update when data changes, so manual refresh is not needed.
-     * This method is kept for compatibility but does nothing.
-     */
     fun refresh() {
-        // No-op: Room Flows provide automatic real-time updates
     }
 
     fun enrichTransactions(transactions: List<RecentTransaction>) {
@@ -292,9 +254,6 @@ class TransactionListViewModel @Inject constructor(
     }
 }
 
-/**
- * UI state for transaction list screen
- */
 sealed interface TransactionListUiState {
     data object Loading : TransactionListUiState
     data class Success(
@@ -309,9 +268,6 @@ sealed interface TransactionListUiState {
     data class Error(val message: String) : TransactionListUiState
 }
 
-/**
- * Transaction type filter
- */
 enum class TransactionType {
     ALL,
     EXPENSE,
