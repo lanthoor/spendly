@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -107,7 +108,7 @@ private fun RecentTransactionItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
+    val dateFormatter = remember { SimpleDateFormat("MMM dd", Locale.getDefault()) }
     val categoryMap = categories.associateBy { it.id }
     val accountMap = accounts.associateBy { it.id }
 

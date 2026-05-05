@@ -54,8 +54,8 @@ fun DateRangeFilterChip(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val dateFormatter = SimpleDateFormat("dd-MM-yy", Locale.getDefault())
-    val dateInputFormatter = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+    val dateFormatter = remember { SimpleDateFormat("dd-MM-yy", Locale.getDefault()) }
+    val dateInputFormatter = remember { SimpleDateFormat("dd/MM/yy", Locale.getDefault()) }
 
     // Button label
     val buttonLabel = when {
