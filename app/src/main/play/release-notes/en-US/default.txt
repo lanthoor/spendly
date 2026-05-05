@@ -1,7 +1,7 @@
 What's new
 
-- decouple domain usecases from UI layer (#44)
-- add AI SMS enrichment flow (#45)
-- bump org.jetbrains.kotlinx:kotlinx-serialization-json from 1.10.0 to 1.11.0 (#47)
-- bump actions/create-github-app-token from 2.2.1 to 3.1.1 (#46)
-- bump softprops/action-gh-release from 2.5.0 to 3.0.0 (#48)
+- bump androidx.biometric:biometric from 1.4.0-alpha06 to 1.4.0-alpha07 (#51)
+- bump kotlin from 2.3.0 to 2.3.21 (#56)
+- bump com.google.devtools.ksp from 2.3.6 to 2.3.7 (#55)
+- extract AI enrichment logic into AiEnrichmentEngine (#57)
+- bump androidx.compose:compose-bom from 2026.03.01 to 2026.04.01 (#54)

@@ -4,6 +4,21 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.7] - 2026-05-05
+
+### Changed
+- chore(ai): remove verbose debug logs from enrichment flow (#53)
+- chore(deps): bump actions/cache from 5.0.1 to 5.0.5 (#52)
+- chore(deps): bump github/codeql-action from 4.35.1 to 4.35.2 (#50)
+- chore(deps): bump com.google.guava:guava from 33.5.0-android to 33.6.0-android (#49)
+- chore(deps): bump androidx.biometric:biometric from 1.4.0-alpha06 to 1.4.0-alpha07 (#51)
+- chore(deps): bump kotlin from 2.3.0 to 2.3.21 (#56)
+- chore(deps): bump com.google.devtools.ksp from 2.3.6 to 2.3.7 (#55)
+- refactor: extract AI enrichment logic into AiEnrichmentEngine (#57)
+- chore(deps): bump androidx.compose:compose-bom from 2026.03.01 to 2026.04.01 (#54)
+
+---
+
 ## [0.9.6] - 2026-04-25
 
 ### Changed
@@ -124,6 +139,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.7]: https://github.com/lanthoor/spendly/releases/tag/v0.9.7
 [0.9.6]: https://github.com/lanthoor/spendly/releases/tag/v0.9.6
 [0.9.5]: https://github.com/lanthoor/spendly/releases/tag/v0.9.5
 [0.9.4]: https://github.com/lanthoor/spendly/releases/tag/v0.9.4
