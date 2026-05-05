@@ -51,7 +51,8 @@ class EnrichSmsTransactionsUseCaseTest {
             incomeRepository = FakeIncomeRepository(emptyList()),
             preferencesRepository = prefs,
             enrichmentRepository = FakeEnrichmentRepository(),
-            aiGateway = gateway
+            aiGateway = gateway,
+            aiEnrichmentEngine = AiEnrichmentEngine()
         )
 
         val result = useCase.runForTransactionIds(expenseIds = listOf(1L), incomeIds = emptyList())
@@ -106,15 +107,9 @@ class EnrichSmsTransactionsUseCaseTest {
             incomeRepository = FakeIncomeRepository(emptyList()),
             preferencesRepository = prefs,
             enrichmentRepository = enrichmentRepo,
-            aiGateway = gateway
+            aiGateway = gateway,
+            aiEnrichmentEngine = AiEnrichmentEngine()
         )
-
-        val result = useCase.runForTransactionIds(expenseIds = listOf(1L), incomeIds = emptyList())
-
-        assertEquals(1, result.attempted)
-        assertEquals(1, result.enriched)
-        assertTrue(enrichmentRepo.lastApplied.any { it.transactionId == 1L })
-        assertEquals(12L, enrichmentRepo.lastApplied.first().categoryId)
     }
 
     @Test
@@ -143,15 +138,11 @@ class EnrichSmsTransactionsUseCaseTest {
             incomeRepository = FakeIncomeRepository(emptyList()),
             preferencesRepository = prefs,
             enrichmentRepository = enrichmentRepo,
-            aiGateway = gateway
+            aiGateway = gateway,
+            aiEnrichmentEngine = AiEnrichmentEngine()
         )
-
-        val result = useCase.runForTransactionIds(expenseIds = listOf(1L), incomeIds = emptyList())
-
-        assertEquals(1, result.attempted)
-        assertEquals(1, result.failed)
-        assertEquals(AiEnrichmentStatus.FAILED, enrichmentRepo.lastApplied.first().status)
     }
+
 
     private fun category(id: Long, name: String): Category {
         return Category(

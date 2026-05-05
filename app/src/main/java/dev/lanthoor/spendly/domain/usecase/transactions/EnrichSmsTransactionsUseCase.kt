@@ -17,8 +17,6 @@ import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
 import dev.lanthoor.spendly.core.model.preferences.AiPromptVersion
 import java.util.Locale
 import kotlinx.coroutines.flow.first
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class EnrichSmsTransactionsResult(
@@ -34,15 +32,12 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
     private val incomeRepository: IncomeRepository,
     private val preferencesRepository: PreferencesRepository,
     private val enrichmentRepository: TransactionAiEnrichmentRepository,
-    private val aiGateway: TransactionAiModelGateway
+    private val aiGateway: TransactionAiModelGateway,
+    private val aiEnrichmentEngine: AiEnrichmentEngine
 ) {
     companion object {
         private const val TAG = "EnrichSmsTxUseCase"
         private const val MAX_SMS_CHAR_BUDGET = 8000
-    }
-
-    private val json = Json {
-        ignoreUnknownKeys = true
     }
 
     suspend fun refreshModelAvailability() {
@@ -93,7 +88,8 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         var enriched = 0
         var failed = 0
 
-        val batches = splitIntoBatches(pendingCandidates, settings.batchSize)
+        val batches = aiEnrichmentEngine.splitIntoBatches(pendingCandidates, settings.batchSize)
+        safeLogDebug("runForTransactionIds: batches=${batches.size}")
         batches.forEachIndexed { index, batch ->
             val batchId = "${System.currentTimeMillis()}-$index"
             val prompt = AiEnrichmentPromptBuilder.buildPrompt(batchId, batch, allowedCategories)
@@ -101,21 +97,27 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
 
             val updates = try {
                 val generation = aiGateway.generate(prompt)
-                val parsed = parseResponse(generation.responseText)
+                val parsed = aiEnrichmentEngine.parseResponse(generation.responseText)
                 val now = System.currentTimeMillis()
+                safeLogDebug(
+                    TAG,
+                    "runForTransactionIds: batch[$index] generation ok model=${generation.modelName}, " +
+                            "responseLength=${generation.responseText.length}, parsedResults=${parsed.results.size}"
+                )
                 preferencesRepository.setAiModelAvailability(
                     availability = availabilityResult.availability,
                     checkedAt = now,
                     baseModelName = generation.modelName ?: availabilityResult.baseModelName,
                     lastErrorCode = null
                 )
-                buildUpdatesFromResponse(
+                aiEnrichmentEngine.buildUpdatesFromResponse(
                     candidates = batch,
                     response = parsed,
                     categoryLookup = categoryLookup,
                     promptVersion = settings.promptVersion,
                     modelName = generation.modelName ?: availabilityResult.baseModelName,
-                    enrichedAt = now
+                    enrichedAt = now,
+                    categoryResolver = { name, lookup -> resolveCategoryId(name, lookup) }
                 )
             } catch (e: Exception) {
                 safeLogWarn("Batch enrichment failed", e)
@@ -245,88 +247,6 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
         return result
     }
 
-    private fun splitIntoBatches(
-        candidates: List<TransactionEnrichmentCandidate>,
-        batchSize: Int
-    ): List<List<TransactionEnrichmentCandidate>> {
-        if (candidates.isEmpty()) return emptyList()
-        val configuredSize = batchSize.coerceAtLeast(1)
-        val batches = mutableListOf<List<TransactionEnrichmentCandidate>>()
-        var current = mutableListOf<TransactionEnrichmentCandidate>()
-        var currentCharCount = 0
-
-        candidates.forEach { candidate ->
-            val candidateChars = candidate.smsBody.length + candidate.regexDescription.length + candidate.smsSender.length
-            val exceedBatchSize = current.size >= configuredSize
-            val exceedCharBudget = current.isNotEmpty() && (currentCharCount + candidateChars) > MAX_SMS_CHAR_BUDGET
-
-            if (exceedBatchSize || exceedCharBudget) {
-                batches += current.toList()
-                current = mutableListOf()
-                currentCharCount = 0
-            }
-
-            current += candidate
-            currentCharCount += candidateChars
-        }
-
-        if (current.isNotEmpty()) {
-            batches += current.toList()
-        }
-
-        return batches
-    }
-
-    private fun parseResponse(responseText: String): AiPromptBatchResponse {
-        return try {
-            json.decodeFromString(AiPromptBatchResponse.serializer(), responseText)
-        } catch (e: SerializationException) {
-            val extractedJson = extractJsonObject(responseText)
-            json.decodeFromString(AiPromptBatchResponse.serializer(), extractedJson)
-        }
-    }
-
-    private fun extractJsonObject(value: String): String {
-        val start = value.indexOf('{')
-        val end = value.lastIndexOf('}')
-        if (start >= 0 && end > start) {
-            return value.substring(start, end + 1)
-        }
-        throw SerializationException("No JSON object found in model response")
-    }
-
-    private fun buildUpdatesFromResponse(
-        candidates: List<TransactionEnrichmentCandidate>,
-        response: AiPromptBatchResponse,
-        categoryLookup: Map<String, Long>,
-        promptVersion: Int,
-        modelName: String?,
-        enrichedAt: Long
-    ): List<TransactionAiEnrichmentUpdate> {
-        val byTxKey = response.results.associateBy { it.txKey }
-
-        return candidates.map { candidate ->
-            val result = byTxKey[candidate.txKey]
-            if (result == null) {
-                AiEnrichmentParser.failedUpdate(
-                    candidate = candidate,
-                    promptVersion = promptVersion,
-                    reason = "missing-result",
-                    modelName = modelName
-                )
-            } else {
-                AiEnrichmentParser.toUpdate(
-                    candidate = candidate,
-                    result = result,
-                    resolvedCategoryId = resolveCategoryId(result.categoryName, categoryLookup),
-                    promptVersion = promptVersion,
-                    modelName = modelName,
-                    enrichedAt = enrichedAt
-                )
-            }
-        }
-    }
-
     private suspend fun applyCategoryUpdates(
         candidates: List<TransactionEnrichmentCandidate>,
         updates: List<TransactionAiEnrichmentUpdate>
@@ -380,6 +300,14 @@ class EnrichSmsTransactionsUseCase @Inject constructor(
 
     private fun safeLogWarn(message: String, throwable: Throwable) {
         runCatching { Log.w(TAG, message, throwable) }
+    }
+
+    private fun safeLogDebug(message: String) {
+        runCatching { Log.d(TAG, message) }
+    }
+
+    private fun safeLogDebug(tag: String, message: String) {
+        runCatching { Log.d(tag, message) }
     }
 
     private fun classifyAiErrorCode(throwable: Throwable): String {

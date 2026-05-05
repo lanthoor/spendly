@@ -13,15 +13,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * ViewModel for account management screens.
- * Handles CRUD operations, validation, and transaction counts.
- */
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
@@ -29,36 +27,37 @@ class AccountViewModel @Inject constructor(
     private val incomeRepository: IncomeRepository
 ) : ViewModel() {
 
-    // UI State
-    private val _uiState = MutableStateFlow<AccountUiState>(AccountUiState.Loading)
-    val uiState: StateFlow<AccountUiState> = _uiState.asStateFlow()
-
-    // Form State
     private val _formState = MutableStateFlow(AccountFormState())
     val formState: StateFlow<AccountFormState> = _formState.asStateFlow()
 
-    // All accounts
-    val accounts: StateFlow<List<Account>> = accountRepository.getAllAccounts()
+    private val accountsFlow = accountRepository.getAllAccounts()
+        .distinctUntilChanged()
+
+    val accounts: StateFlow<List<Account>> = accountsFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    init {
-        loadAccounts()
-    }
+    val uiState: StateFlow<AccountUiState> = accountsFlow
+        .map<List<Account>, AccountUiState> { list -> AccountUiState.Success(list) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AccountUiState.Loading)
 
-    fun loadAccounts() {
-        viewModelScope.launch {
-            _uiState.value = AccountUiState.Loading
-            try {
-                accountRepository.getAllAccounts().collect { accountList ->
-                    _uiState.value = AccountUiState.Success(accountList)
-                }
-            } catch (e: Exception) {
-                _uiState.value = AccountUiState.Error(e.message ?: "Failed to load accounts")
-            }
+    private val transactionCountFlows =
+        mutableMapOf<Long, StateFlow<TransactionCount>>()
+
+    fun getTransactionCount(accountId: Long): StateFlow<TransactionCount> {
+        return transactionCountFlows.getOrPut(accountId) {
+            combine(
+                expenseRepository.getExpensesByAccount(accountId),
+                incomeRepository.getIncomeByAccount(accountId)
+            ) { expenses, income ->
+                TransactionCount(
+                    expenseCount = expenses.size,
+                    incomeCount = income.size,
+                    totalCount = expenses.size + income.size
+                )
+            }.distinctUntilChanged()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TransactionCount())
         }
     }
-
-    // Form operations
 
     fun initializeFormForAdd() {
         _formState.value = AccountFormState()
@@ -88,7 +87,6 @@ class AccountViewModel @Inject constructor(
         val state = _formState.value
         val errors = mutableMapOf<AccountFormField, String>()
 
-        // Validate name
         if (state.name.isBlank()) {
             errors[AccountFormField.NAME] = "Account name is required"
         } else if (state.name.length > 50) {
@@ -114,7 +112,6 @@ class AccountViewModel @Inject constructor(
 
             val state = _formState.value
 
-            // Check name uniqueness
             if (!isNameUnique(state.name, if (state.isEditMode) state.id else null)) {
                 _formState.value = state.copy(
                     isSubmitting = false,
@@ -133,7 +130,7 @@ class AccountViewModel @Inject constructor(
                     icon = state.icon,
                     color = state.color,
                     isCustom = true,
-                    sortOrder = if (state.isEditMode) 0 else 0, // Will be set by repository
+                    sortOrder = if (state.isEditMode) 0 else 0,
                     createdAt = if (state.isEditMode) 0 else timestamp,
                     modifiedAt = timestamp
                 )
@@ -161,7 +158,6 @@ class AccountViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                // Prevent deletion of default account
                 if (accountId == Account.DEFAULT_ACCOUNT_ID) {
                     onError("Cannot delete the default account")
                     return@launch
@@ -174,33 +170,14 @@ class AccountViewModel @Inject constructor(
             }
         }
     }
-
-    fun getTransactionCount(accountId: Long): StateFlow<TransactionCount> {
-        return combine(
-            expenseRepository.getExpensesByAccount(accountId),
-            incomeRepository.getIncomeByAccount(accountId)
-        ) { expenses, income ->
-            TransactionCount(
-                expenseCount = expenses.size,
-                incomeCount = income.size,
-                totalCount = expenses.size + income.size
-            )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TransactionCount())
-    }
 }
 
-/**
- * UI state for account list screen
- */
 sealed interface AccountUiState {
     data object Loading : AccountUiState
     data class Success(val accounts: List<Account>) : AccountUiState
     data class Error(val message: String) : AccountUiState
 }
 
-/**
- * Form state for add/edit account
- */
 data class AccountFormState(
     val id: Long = 0,
     val name: String = "",
@@ -212,16 +189,10 @@ data class AccountFormState(
     val errors: Map<AccountFormField, String> = emptyMap()
 )
 
-/**
- * Form fields for validation
- */
 enum class AccountFormField {
     NAME, TYPE, ICON, COLOR
 }
 
-/**
- * Transaction count for an account
- */
 data class TransactionCount(
     val expenseCount: Int = 0,
     val incomeCount: Int = 0,
