@@ -116,7 +116,7 @@ private fun ExpensePickerDialog(
     onExpenseSelected: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val dateFormatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,

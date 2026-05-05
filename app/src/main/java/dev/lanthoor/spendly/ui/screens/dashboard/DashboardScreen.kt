@@ -101,12 +101,14 @@ fun DashboardScreen(
                         }
 
                         // Center - Month selector chip
-                        val monthLabel = SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(
-                            Date(Calendar.getInstance().apply {
-                                set(Calendar.YEAR, selectedYear)
-                                set(Calendar.MONTH, selectedMonth - 1)
-                            }.timeInMillis)
-                        )
+                        val monthLabel = remember {
+                            SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(
+                                Date(Calendar.getInstance().apply {
+                                    set(Calendar.YEAR, selectedYear)
+                                    set(Calendar.MONTH, selectedMonth - 1)
+                                }.timeInMillis)
+                            )
+                        }
 
                         AssistChip(
                             onClick = { showMonthPicker = true },

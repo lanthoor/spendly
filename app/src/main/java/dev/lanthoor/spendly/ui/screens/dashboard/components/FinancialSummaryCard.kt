@@ -19,6 +19,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -46,12 +47,14 @@ fun FinancialSummaryCard(
     onYearTypeChange: (YearType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val monthLabel = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
-        Date(Calendar.getInstance().apply {
-            set(Calendar.YEAR, summary.selectedYear)
-            set(Calendar.MONTH, summary.selectedMonth - 1)
-        }.timeInMillis)
-    )
+    val monthLabel = remember {
+        SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(
+            Date(Calendar.getInstance().apply {
+                set(Calendar.YEAR, summary.selectedYear)
+                set(Calendar.MONTH, summary.selectedMonth - 1)
+            }.timeInMillis)
+        )
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),

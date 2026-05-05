@@ -76,8 +76,9 @@ fun TransactionFilterDialog(
                     ) {
                         Text(
                             text = if (startDate != null && endDate != null) {
-                                val formatter =
+                                val formatter = remember {
                                     SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                                }
                                 "${formatter.format(Date(startDate))} - ${
                                     formatter.format(
                                         Date(

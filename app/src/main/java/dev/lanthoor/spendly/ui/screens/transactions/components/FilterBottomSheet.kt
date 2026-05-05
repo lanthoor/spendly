@@ -91,7 +91,7 @@ fun FilterBottomSheet(
     )
 
     // Format date range for display
-    val dateFormatter = SimpleDateFormat("MMM dd", Locale.getDefault())
+    val dateFormatter = remember { SimpleDateFormat("MMM dd", Locale.getDefault()) }
     val dateRangeLabel = when {
         dateRangePickerState.selectedStartDateMillis != null &&
                 dateRangePickerState.selectedEndDateMillis != null -> {
