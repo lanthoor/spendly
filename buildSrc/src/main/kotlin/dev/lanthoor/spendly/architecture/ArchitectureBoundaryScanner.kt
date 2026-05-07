@@ -16,7 +16,6 @@ class ArchitectureBoundaryScanner(
         "${config.packagePrefix}.utils.TransactionType",
         "${config.packagePrefix}.utils.AccountType",
         "${config.packagePrefix}.utils.AppTheme",
-        "${config.packagePrefix}.utils.AppLanguage",
         "${config.packagePrefix}.utils.YearType",
         "${config.packagePrefix}.utils.TimePeriod",
         "${config.packagePrefix}.utils.LockTimeout",
@@ -25,7 +24,6 @@ class ArchitectureBoundaryScanner(
         "${config.packagePrefix}.utils.getDefaultIcon",
         "${config.packagePrefix}.utils.getDisplayRange",
         "${config.packagePrefix}.utils.getDateRange",
-        "${config.packagePrefix}.utils.displayNameRes",
     )
 
     fun scan(baseDir: File): List<ArchitectureViolation> {

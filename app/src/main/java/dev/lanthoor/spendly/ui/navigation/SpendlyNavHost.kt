@@ -20,7 +20,6 @@ import dev.lanthoor.spendly.ui.screens.datamanagement.DataManagementScreen
 import dev.lanthoor.spendly.ui.screens.recurring.RecurringTransactionListScreen
 import dev.lanthoor.spendly.ui.screens.settings.AboutScreen
 import dev.lanthoor.spendly.ui.screens.settings.BudgetSettingsScreen
-import dev.lanthoor.spendly.ui.screens.settings.LanguageSettingsScreen
 import dev.lanthoor.spendly.ui.screens.settings.SettingsScreen
 
 /**
@@ -146,9 +145,6 @@ fun SpendlyNavHost(
                 },
                 onNavigateToDataManagement = {
                     navController.navigate(Screen.DataManagement.route)
-                },
-                onNavigateToLanguageSettings = {
-                    navController.navigate(Screen.LanguageSettings.route)
                 }
             )
         }
@@ -156,15 +152,6 @@ fun SpendlyNavHost(
         // About Screen
         composable(Screen.About.route) {
             AboutScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        // Language Settings Screen
-        composable(Screen.LanguageSettings.route) {
-            LanguageSettingsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }

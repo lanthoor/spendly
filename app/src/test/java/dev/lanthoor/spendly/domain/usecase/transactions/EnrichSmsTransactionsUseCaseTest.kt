@@ -266,8 +266,6 @@ class EnrichSmsTransactionsUseCaseTest {
 
         override fun getTheme() = flowOf(dev.lanthoor.spendly.core.model.preferences.AppTheme.SYSTEM)
         override suspend fun setTheme(theme: dev.lanthoor.spendly.core.model.preferences.AppTheme) = Unit
-        override fun getLanguage() = flowOf(dev.lanthoor.spendly.core.model.preferences.AppLanguage.ENGLISH)
-        override suspend fun setLanguage(language: dev.lanthoor.spendly.core.model.preferences.AppLanguage) = Unit
         override fun getSmsAutoDetectionEnabled() = flowOf(false)
         override suspend fun setSmsAutoDetectionEnabled(enabled: Boolean) = Unit
         override fun getYearType() = flowOf(dev.lanthoor.spendly.core.model.preferences.YearType.CALENDAR)

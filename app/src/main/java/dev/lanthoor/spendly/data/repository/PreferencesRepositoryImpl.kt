@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
 import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
@@ -26,7 +25,6 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     companion object {
         private val THEME_KEY = stringPreferencesKey("app_theme")
-        private val LANGUAGE_KEY = stringPreferencesKey("app_language")
         private val SMS_AUTO_DETECTION_KEY = booleanPreferencesKey("sms_auto_detection")
         private val YEAR_TYPE_KEY = stringPreferencesKey("year_type")
         private val APP_LOCK_ENABLED_KEY = booleanPreferencesKey("app_lock_enabled")
@@ -54,19 +52,6 @@ class PreferencesRepositoryImpl @Inject constructor(
     override suspend fun setTheme(theme: AppTheme) {
         dataStore.edit { preferences ->
             preferences[THEME_KEY] = theme.name
-        }
-    }
-
-    override fun getLanguage(): Flow<AppLanguage> {
-        return dataStore.data.map { preferences ->
-            val languageName = preferences[LANGUAGE_KEY] ?: AppLanguage.ENGLISH.name
-            AppLanguage.fromStringOrDefault(languageName, AppLanguage.ENGLISH)
-        }
-    }
-
-    override suspend fun setLanguage(language: AppLanguage) {
-        dataStore.edit { preferences ->
-            preferences[LANGUAGE_KEY] = language.name
         }
     }
 

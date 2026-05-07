@@ -1,6 +1,5 @@
 package dev.lanthoor.spendly.domain.repository
 
-import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
 import dev.lanthoor.spendly.core.model.preferences.AiModelAvailability
 import dev.lanthoor.spendly.core.model.preferences.AiEnrichmentSettings
@@ -25,18 +24,6 @@ interface PreferencesRepository {
      * @param theme The theme to set (LIGHT, DARK, or SYSTEM)
      */
     suspend fun setTheme(theme: AppTheme)
-
-    /**
-     * Get current language preference as a Flow.
-     * Returns ENGLISH as default if no preference is set.
-     */
-    fun getLanguage(): Flow<AppLanguage>
-
-    /**
-     * Update language preference.
-     * @param language The language to set (ENGLISH, HINDI, or MALAYALAM)
-     */
-    suspend fun setLanguage(language: AppLanguage)
 
     /**
      * Get SMS auto-detection enabled state.
