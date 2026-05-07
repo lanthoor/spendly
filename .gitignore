@@ -33,3 +33,6 @@ play-store-credentials.json
 *.env
 
 /buildSrc/build
+
+# Foojay auto-generated daemon JVM config
+gradle/gradle-daemon-jvm.properties
