@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -320,22 +320,8 @@ fun FilterBottomSheet(
 
     // Date Range Picker Dialog
     if (showDatePickerDialog) {
-        AlertDialog(
+        DatePickerDialog(
             onDismissRequest = { showDatePickerDialog = false },
-            title = { Text(stringResource(R.string.title_select_date_range)) },
-            text = {
-                Column {
-                    DateRangePicker(
-                        state = dateRangePickerState,
-                        title = null,
-                        headline = null,
-                        showModeToggle = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(450.dp)
-                    )
-                }
-            },
             confirmButton = {
                 TextButton(
                     onClick = { showDatePickerDialog = false }
@@ -361,6 +347,21 @@ fun FilterBottomSheet(
                     }
                 }
             }
-        )
+        ) {
+            DateRangePicker(
+                state = dateRangePickerState,
+                title = {
+                    Text(
+                        text = stringResource(R.string.title_select_date_range),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                },
+                headline = null,
+                showModeToggle = false
+            )
+        }
     }
 }
