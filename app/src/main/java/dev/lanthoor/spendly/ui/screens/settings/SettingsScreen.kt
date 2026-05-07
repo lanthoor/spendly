@@ -34,9 +34,7 @@ import com.adamglin.phosphoricons.regular.Download
 import com.adamglin.phosphoricons.regular.Export
 import com.adamglin.phosphoricons.regular.Info
 import com.adamglin.phosphoricons.regular.Lock
-import com.adamglin.phosphoricons.regular.Translate
 import dev.lanthoor.spendly.R
-import dev.lanthoor.spendly.core.ui.format.displayNameRes
 import dev.lanthoor.spendly.ui.screens.settings.components.AppLockTimeoutInfo
 import dev.lanthoor.spendly.ui.screens.settings.components.SettingsDialogs
 import dev.lanthoor.spendly.ui.screens.settings.components.SettingsItems
@@ -54,12 +52,10 @@ fun SettingsScreen(
     onNavigateToRecurringTransactions: () -> Unit,
     onNavigateToAbout: () -> Unit,
     onNavigateToDataManagement: () -> Unit,
-    onNavigateToLanguageSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val theme by viewModel.theme.collectAsStateWithLifecycle()
-    val language by viewModel.language.collectAsStateWithLifecycle()
     val smsAutoDetectionEnabled by viewModel.smsAutoDetectionEnabled.collectAsStateWithLifecycle()
     val appLockEnabled by viewModel.appLockEnabled.collectAsStateWithLifecycle()
     val lockTimeout by viewModel.lockTimeout.collectAsStateWithLifecycle()
@@ -202,14 +198,6 @@ fun SettingsScreen(
                     selectedTheme = theme,
                     onThemeSelected = { viewModel.updateTheme(it) },
                     label = stringResource(R.string.label_theme)
-                )
-            }
-            item {
-                SettingsItems.Navigation(
-                    icon = PhosphorIcons.Regular.Translate,
-                    title = stringResource(R.string.settings_language),
-                    subtitle = stringResource(language.displayNameRes),
-                    onClick = onNavigateToLanguageSettings
                 )
             }
             item { SettingsItems.SectionDivider() }

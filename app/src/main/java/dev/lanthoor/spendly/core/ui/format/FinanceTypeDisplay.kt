@@ -2,13 +2,10 @@ package dev.lanthoor.spendly.core.ui.format
 
 import dev.lanthoor.spendly.core.model.finance.AccountType
 import dev.lanthoor.spendly.core.model.finance.IncomeSource
-import dev.lanthoor.spendly.core.model.preferences.AppLanguage
-import dev.lanthoor.spendly.core.ui.format.displayNameRes
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
 import dev.lanthoor.spendly.core.model.preferences.LockTimeout
 import dev.lanthoor.spendly.core.model.preferences.TimePeriod
 import dev.lanthoor.spendly.core.model.preferences.YearType
-import dev.lanthoor.spendly.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -41,13 +38,6 @@ fun AppTheme.toDisplayName(): String {
         .split('_')
         .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase() } }
 }
-
-val AppLanguage.displayNameRes: Int
-    get() = when (this) {
-        AppLanguage.ENGLISH -> R.string.language_english
-        AppLanguage.HINDI -> R.string.language_hindi
-        AppLanguage.MALAYALAM -> R.string.language_malayalam
-    }
 
 fun YearType.toDisplayName(): String {
     return when (this) {

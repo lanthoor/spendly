@@ -105,11 +105,6 @@ sealed class Screen(val route: String) {
     data object About : Screen("about")
 
     /**
-     * Language settings screen - select app language (English, Hindi, Malayalam)
-     */
-    data object LanguageSettings : Screen("language_settings")
-
-    /**
      * Data Management screen - import/export functionality
      */
     data object DataManagement : Screen("data_management")

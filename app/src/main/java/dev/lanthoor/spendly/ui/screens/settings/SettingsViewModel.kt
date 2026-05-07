@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.lanthoor.spendly.domain.repository.PreferencesRepository
-import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.core.model.preferences.AppTheme
 import dev.lanthoor.spendly.core.model.preferences.LockTimeout
 import dev.lanthoor.spendly.core.model.preferences.YearType
@@ -28,17 +27,6 @@ class SettingsViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = AppTheme.SYSTEM
-        )
-
-    /**
-     * Current language preference, exposed as StateFlow for UI observation.
-     * Caches the last value with WhileSubscribed(5000) for 5-second timeout.
-     */
-    val language: StateFlow<AppLanguage> = preferencesRepository.getLanguage()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AppLanguage.ENGLISH
         )
 
     /**
@@ -93,12 +81,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     /**
-     * Update language preference.
-     * @param newLanguage The language to set (ENGLISH, HINDI, or MALAYALAM)
+     * Update year type preference.
+     * @param newYearType The year type to set (CALENDAR or FINANCIAL)
      */
-    fun updateLanguage(newLanguage: AppLanguage) {
+    fun updateYearType(newYearType: YearType) {
         viewModelScope.launch {
-            preferencesRepository.setLanguage(newLanguage)
+            preferencesRepository.setYearType(newYearType)
         }
     }
 
@@ -109,16 +97,6 @@ class SettingsViewModel @Inject constructor(
     fun setSmsAutoDetectionEnabled(enabled: Boolean) {
         viewModelScope.launch {
             preferencesRepository.setSmsAutoDetectionEnabled(enabled)
-        }
-    }
-
-    /**
-     * Update year type preference.
-     * @param newYearType The year type to set (CALENDAR or FINANCIAL)
-     */
-    fun updateYearType(newYearType: YearType) {
-        viewModelScope.launch {
-            preferencesRepository.setYearType(newYearType)
         }
     }
 

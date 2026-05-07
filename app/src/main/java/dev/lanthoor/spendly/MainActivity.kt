@@ -1,7 +1,6 @@
 package dev.lanthoor.spendly
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,18 +47,13 @@ import dev.lanthoor.spendly.ui.screens.settings.SettingsViewModel
 import dev.lanthoor.spendly.ui.theme.SpendlyTheme
 import dev.lanthoor.spendly.ui.viewmodels.AppLockViewModel
 import dev.lanthoor.spendly.ui.viewmodels.InitializationViewModel
-import dev.lanthoor.spendly.core.model.preferences.AppLanguage
 import dev.lanthoor.spendly.utils.BiometricAuthManager
-import dev.lanthoor.spendly.utils.LocaleHelper
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()
     private val appLockViewModel: AppLockViewModel by viewModels()
     private val initializationViewModel: InitializationViewModel by viewModels()
-
-    // Track current language for locale changes
-    private var currentLanguage: AppLanguage? = null
 
     // Notification permission launcher for Android 13+
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -69,19 +62,6 @@ class MainActivity : FragmentActivity() {
         // Permission result handled here
         // User can still use the app even if notification permission is denied
         // Notifications will just not be shown
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        // Load saved language preference from SharedPreferences
-        // (SharedPreferences is used here instead of DataStore for synchronous access)
-        val sharedPrefs = newBase.getSharedPreferences("spendly_prefs", MODE_PRIVATE)
-        val languageCode = sharedPrefs.getString("app_language_code", "en") ?: "en"
-        val language = AppLanguage.fromLocaleCode(languageCode) ?: AppLanguage.ENGLISH
-        currentLanguage = language
-
-        // Wrap context with the selected locale
-        val context = LocaleHelper.wrap(newBase, language)
-        super.attachBaseContext(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,23 +81,7 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val theme by settingsViewModel.theme.collectAsStateWithLifecycle()
-            val language by settingsViewModel.language.collectAsStateWithLifecycle()
             val initializationState by initializationViewModel.initializationState.collectAsStateWithLifecycle()
-
-            // Handle language changes by recreating the activity
-            LaunchedEffect(language) {
-                // Skip first composition where currentLanguage matches
-                if (currentLanguage != null && currentLanguage != language) {
-                    // Persist to SharedPreferences for attachBaseContext
-                    getSharedPreferences("spendly_prefs", MODE_PRIVATE)
-                        .edit()
-                        .putString("app_language_code", language.code)
-                        .apply()
-
-                    // Recreate activity to apply locale change
-                    recreate()
-                }
-            }
 
             SpendlyTheme(theme = theme) {
                 when (initializationState) {
@@ -194,7 +158,6 @@ fun SpendlyApp(navController: NavHostController) {
         Screen.Settings.route -> AppDestinations.SETTINGS
         // Map Settings sub-screens to Settings destination
         Screen.About.route -> AppDestinations.SETTINGS
-        Screen.LanguageSettings.route -> AppDestinations.SETTINGS
         Screen.AccountList.route -> AppDestinations.SETTINGS
         Screen.BudgetList.route -> AppDestinations.SETTINGS
         Screen.RecurringTransactionList.route -> AppDestinations.SETTINGS
