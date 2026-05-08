@@ -531,7 +531,7 @@ class SmsParserTest {
 
     @Test
     fun `Two digit year uses sms timestamp century`() {
-        val smsTimestamp = buildTimestamp(1999, Calendar.JANUARY, 2, 11, 10, 9, 8)
+        val smsTimestamp = buildTimestamp(1999, Calendar.DECEMBER, 20, 11, 10, 9, 8)
         val sms = "INR 899 debited from A/c **7788 on 13/12/99"
 
         val parsed = SmsParser.parseBankSms(sms, "SPAM-123", smsTimestamp)
@@ -545,6 +545,28 @@ class SmsParserTest {
         assertEquals(10, parsedCalendar.get(Calendar.MINUTE))
         assertEquals(9, parsedCalendar.get(Calendar.SECOND))
         assertEquals(8, parsedCalendar.get(Calendar.MILLISECOND))
+    }
+
+    @Test
+    fun `Future date in body falls back to sms timestamp`() {
+        val smsTimestamp = buildTimestamp(2025, Calendar.JANUARY, 20, 14, 30, 0, 0)
+        val sms = "INR 500.00 debited from A/c **1234 on 25-Dec-26"
+
+        val parsed = SmsParser.parseBankSms(sms, "HDFCBK", smsTimestamp)
+
+        assertNotNull(parsed)
+        assertEquals(smsTimestamp, parsed!!.date)
+    }
+
+    @Test
+    fun `Future date in body falls back to sms timestamp for generic parser`() {
+        val smsTimestamp = buildTimestamp(2025, Calendar.MARCH, 10, 8, 15, 0, 0)
+        val sms = "INR 899 debited from A/c **7788 on 13/12/26"
+
+        val parsed = SmsParser.parseBankSms(sms, "SPAM-123", smsTimestamp)
+
+        assertNotNull(parsed)
+        assertEquals(smsTimestamp, parsed!!.date)
     }
 
     // ============================================================

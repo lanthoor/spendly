@@ -41,7 +41,7 @@ abstract class BaseBankParser {
 
         // Date: try to extract from SMS body first, fall back to SMS receipt timestamp
         val extractedDate = extractDate(smsBody, smsTimestamp)
-        val date = if (extractedDate != null) {
+        val date = if (extractedDate != null && extractedDate <= smsTimestamp) {
             extractedDate
         } else {
             smsTimestamp
