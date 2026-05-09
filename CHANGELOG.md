@@ -4,6 +4,17 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.8] - 2026-05-09
+
+### Changed
+- chore: remove localization feature (#58)
+- chore: remove foojay toolchain resolver (#59)
+- fix(ui): replace AlertDialog with DatePickerDialog in filter sheet (#60)
+- fix(sms): fall back to SMS receipt time when body date is in future (#61)
+- fix(ui): center month picker chips and fix top bar layout reactivity (#62)
+
+---
+
 ## [0.9.7] - 2026-05-05
 
 ### Changed
@@ -139,6 +150,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.8]: https://github.com/lanthoor/spendly/releases/tag/v0.9.8
 [0.9.7]: https://github.com/lanthoor/spendly/releases/tag/v0.9.7
 [0.9.6]: https://github.com/lanthoor/spendly/releases/tag/v0.9.6
 [0.9.5]: https://github.com/lanthoor/spendly/releases/tag/v0.9.5

@@ -1,7 +1,7 @@
 What's new
 
-- bump androidx.biometric:biometric from 1.4.0-alpha06 to 1.4.0-alpha07 (#51)
-- bump kotlin from 2.3.0 to 2.3.21 (#56)
-- bump com.google.devtools.ksp from 2.3.6 to 2.3.7 (#55)
-- extract AI enrichment logic into AiEnrichmentEngine (#57)
-- bump androidx.compose:compose-bom from 2026.03.01 to 2026.04.01 (#54)
+- remove localization feature (#58)
+- remove foojay toolchain resolver (#59)
+- replace AlertDialog with DatePickerDialog in filter sheet (#60)
+- fall back to SMS receipt time when body date is in future (#61)
+- center month picker chips and fix top bar layout reactivity (#62)
