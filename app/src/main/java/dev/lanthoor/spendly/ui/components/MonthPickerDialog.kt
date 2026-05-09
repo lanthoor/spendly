@@ -1,6 +1,7 @@
 package dev.lanthoor.spendly.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -92,7 +93,15 @@ fun MonthPickerDialog(
                         FilterChip(
                             selected = month == tempMonth && tempYear == selectedYear,
                             onClick = { tempMonth = month },
-                            label = { Text(getMonthShortName(month)) }
+                            modifier = Modifier.fillMaxWidth(),
+                            label = {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(getMonthShortName(month))
+                                }
+                            }
                         )
                     }
                 }

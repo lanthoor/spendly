@@ -73,35 +73,54 @@ fun DashboardScreen(
         topBar = {
             // Custom top bar with month navigation
             TopAppBar(
-                title = {
-                    // Full-width row with three sections for proper centering
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Left arrow - previous month
-                        IconButton(
-                            onClick = {
-                                val prevCalendar = Calendar.getInstance().apply {
-                                    set(Calendar.YEAR, selectedYear)
-                                    set(Calendar.MONTH, selectedMonth - 1)
-                                    add(Calendar.MONTH, -1)
-                                }
-                                viewModel.selectMonth(
-                                    prevCalendar.get(Calendar.YEAR),
-                                    prevCalendar.get(Calendar.MONTH) + 1
-                                )
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            val prevCalendar = Calendar.getInstance().apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth - 1)
+                                add(Calendar.MONTH, -1)
                             }
-                        ) {
-                            Icon(
-                                imageVector = PhosphorIcons.Regular.CaretLeft,
-                                contentDescription = stringResource(R.string.cd_previous_month)
+                            viewModel.selectMonth(
+                                prevCalendar.get(Calendar.YEAR),
+                                prevCalendar.get(Calendar.MONTH) + 1
                             )
                         }
-
+                    ) {
+                        Icon(
+                            imageVector = PhosphorIcons.Regular.CaretLeft,
+                            contentDescription = stringResource(R.string.cd_previous_month)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            val nextCalendar = Calendar.getInstance().apply {
+                                set(Calendar.YEAR, selectedYear)
+                                set(Calendar.MONTH, selectedMonth - 1)
+                                add(Calendar.MONTH, 1)
+                            }
+                            viewModel.selectMonth(
+                                nextCalendar.get(Calendar.YEAR),
+                                nextCalendar.get(Calendar.MONTH) + 1
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = PhosphorIcons.Regular.CaretRight,
+                            contentDescription = stringResource(R.string.cd_next_month)
+                        )
+                    }
+                },
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         // Center - Month selector chip
-                        val monthLabel = remember {
+                        val monthLabel = remember(selectedYear, selectedMonth) {
                             SimpleDateFormat("MMM yyyy", Locale.getDefault()).format(
                                 Date(Calendar.getInstance().apply {
                                     set(Calendar.YEAR, selectedYear)
@@ -120,26 +139,6 @@ fun DashboardScreen(
                                 )
                             }
                         )
-
-                        // Right arrow - next month
-                        IconButton(
-                            onClick = {
-                                val nextCalendar = Calendar.getInstance().apply {
-                                    set(Calendar.YEAR, selectedYear)
-                                    set(Calendar.MONTH, selectedMonth - 1)
-                                    add(Calendar.MONTH, 1)
-                                }
-                                viewModel.selectMonth(
-                                    nextCalendar.get(Calendar.YEAR),
-                                    nextCalendar.get(Calendar.MONTH) + 1
-                                )
-                            }
-                        ) {
-                            Icon(
-                                imageVector = PhosphorIcons.Regular.CaretRight,
-                                contentDescription = stringResource(R.string.cd_next_month)
-                            )
-                        }
                     }
                 }
             )
