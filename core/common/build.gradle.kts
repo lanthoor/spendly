@@ -4,10 +4,10 @@ plugins {
 
 android {
     namespace = "dev.lanthoor.spendly.core.common"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
-        minSdk = 31
+        minSdk = 26
     }
 
     compileOptions {

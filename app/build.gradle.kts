@@ -13,12 +13,12 @@ plugins {
 
 configure<ApplicationExtension> {
     namespace = "dev.lanthoor.spendly"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "dev.lanthoor.spendly"
-        minSdk = 31
-        targetSdk = 36
+        minSdk = 26
+        targetSdk = 37
         ndkVersion = "30.0.14904198"
         versionCode = 98
         versionName = "0.9.8"
