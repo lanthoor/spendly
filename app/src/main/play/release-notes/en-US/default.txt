@@ -1,7 +1,7 @@
 What's new
 
-- remove localization feature (#58)
-- remove foojay toolchain resolver (#59)
-- replace AlertDialog with DatePickerDialog in filter sheet (#60)
-- fall back to SMS receipt time when body date is in future (#61)
-- center month picker chips and fix top bar layout reactivity (#62)
+- add Play Integrity API integration (#75)
+- bump github/codeql-action from 4.35.4 to 4.35.5 (#72)
+- bump actions/create-github-app-token from 3.1.1 to 3.2.0 (#70)
+- bump gradle-wrapper from 9.5.0 to 9.5.1 (#71)
+- bump com.google.devtools.ksp from 2.3.7 to 2.3.8 (#73)

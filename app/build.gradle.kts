@@ -21,8 +21,8 @@ configure<ApplicationExtension> {
         minSdk = 26
         targetSdk = 37
         ndkVersion = "30.0.14904198"
-        versionCode = 98
-        versionName = "0.9.8"
+        versionCode = 99
+        versionName = "0.9.9"
 
         val localProperties = Properties().apply {
             val localPropsFile = rootProject.file("local.properties")

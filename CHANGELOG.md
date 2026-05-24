@@ -4,6 +4,22 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+## [0.9.9] - 2026-05-24
+
+### Changed
+- chore(deps): bump SonarSource/sonarqube-scan-action from 7.1.0 to 8.0.0 (#63)
+- chore(deps): bump github/codeql-action from 4.35.2 to 4.35.3 (#64)
+- chore(deps): bump gradle-wrapper from 9.3.1 to 9.5.0 (#65)
+- chore(deps): bump github/codeql-action from 4.35.3 to 4.35.4 (#68)
+- feat: support Android 8.0+ (API 26) (#69)
+- feat(integrity): add Play Integrity API integration (#75)
+- chore(deps): bump github/codeql-action from 4.35.4 to 4.35.5 (#72)
+- chore(deps): bump actions/create-github-app-token from 3.1.1 to 3.2.0 (#70)
+- chore(deps): bump gradle-wrapper from 9.5.0 to 9.5.1 (#71)
+- chore(deps): bump com.google.devtools.ksp from 2.3.7 to 2.3.8 (#73)
+
+---
+
 ## [0.9.8] - 2026-05-09
 
 ### Changed
@@ -150,6 +166,7 @@ All notable changes to Spendly will be documented in this file.
 
 ---
 
+[0.9.9]: https://github.com/lanthoor/spendly/releases/tag/v0.9.9
 [0.9.8]: https://github.com/lanthoor/spendly/releases/tag/v0.9.8
 [0.9.7]: https://github.com/lanthoor/spendly/releases/tag/v0.9.7
 [0.9.6]: https://github.com/lanthoor/spendly/releases/tag/v0.9.6
