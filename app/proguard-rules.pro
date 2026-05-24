@@ -48,3 +48,18 @@
 
 # Keep SmsReceiver
 -keep class dev.lanthoor.spendly.receivers.SmsReceiver { *; }
+
+# Play Integrity
+-keep class com.google.android.play.core.integrity.** { *; }
+-dontwarn com.google.android.play.core.integrity.**
+
+# Retrofit + OkHttp
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn retrofit2.KotlinJsonAdapterFactory
+-keep class dev.lanthoor.spendly.data.remote.dto.** { *; }

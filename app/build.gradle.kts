@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -22,6 +23,21 @@ configure<ApplicationExtension> {
         ndkVersion = "30.0.14904198"
         versionCode = 98
         versionName = "0.9.8"
+
+        val localProperties = Properties().apply {
+            val localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) {
+                localPropsFile.inputStream().use { load(it) }
+            }
+        }
+
+        val integrityBackendUrl = System.getenv("INTEGRITY_BACKEND_URL")
+            ?: localProperties.getProperty("integrity.backend.url") ?: ""
+        val cloudProjectNumber = System.getenv("CLOUD_PROJECT_NUMBER")?.toLongOrNull()
+            ?: localProperties.getProperty("cloud.project.number")?.toLongOrNull() ?: 0L
+
+        buildConfigField("String", "INTEGRITY_BACKEND_URL", "\"$integrityBackendUrl\"")
+        buildConfigField("Long", "CLOUD_PROJECT_NUMBER", "${cloudProjectNumber}L")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -150,6 +166,15 @@ dependencies {
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.mlkit.genai.prompt)
+
+    // Play Integrity
+    implementation(libs.play.integrity)
+
+    // Networking (for Play Integrity backend verification)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

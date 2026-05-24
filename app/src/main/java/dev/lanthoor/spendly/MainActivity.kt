@@ -37,22 +37,26 @@ import com.adamglin.phosphoricons.regular.Gear
 import com.adamglin.phosphoricons.regular.ListBullets
 import com.adamglin.phosphoricons.regular.Plus
 import dagger.hilt.android.AndroidEntryPoint
+import dev.lanthoor.spendly.domain.model.IntegrityVerdict
 import dev.lanthoor.spendly.domain.repository.InitializationState
 import dev.lanthoor.spendly.ui.components.AddTransactionBottomSheet
 import dev.lanthoor.spendly.ui.components.LockScreen
 import dev.lanthoor.spendly.ui.navigation.Screen
 import dev.lanthoor.spendly.ui.navigation.SpendlyNavHost
+import dev.lanthoor.spendly.ui.screens.IntegrityBlockScreen
 import dev.lanthoor.spendly.ui.screens.SplashScreen
 import dev.lanthoor.spendly.ui.screens.settings.SettingsViewModel
 import dev.lanthoor.spendly.ui.theme.SpendlyTheme
 import dev.lanthoor.spendly.ui.viewmodels.AppLockViewModel
 import dev.lanthoor.spendly.ui.viewmodels.InitializationViewModel
+import dev.lanthoor.spendly.ui.viewmodels.IntegrityViewModel
 import dev.lanthoor.spendly.utils.BiometricAuthManager
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     private val settingsViewModel: SettingsViewModel by viewModels()
     private val appLockViewModel: AppLockViewModel by viewModels()
+    private val integrityViewModel: IntegrityViewModel by viewModels()
     private val initializationViewModel: InitializationViewModel by viewModels()
 
     // Notification permission launcher for Android 13+
@@ -81,40 +85,47 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             val theme by settingsViewModel.theme.collectAsStateWithLifecycle()
+            val integrityVerdict by integrityViewModel.verdict.collectAsStateWithLifecycle()
             val initializationState by initializationViewModel.initializationState.collectAsStateWithLifecycle()
 
             SpendlyTheme(theme = theme) {
-                when (initializationState) {
-                    is InitializationState.Loading -> {
-                        // Show splash screen while initializing
-                        SplashScreen(
-                            initializationState = initializationState,
-                            onRetry = { initializationViewModel.retry() }
+                when (integrityVerdict) {
+                    is IntegrityVerdict.Red -> {
+                        IntegrityBlockScreen(
+                            reason = (integrityVerdict as IntegrityVerdict.Red).reason,
+                            onRetry = { integrityViewModel.retry() }
                         )
                     }
 
-                    is InitializationState.Error -> {
-                        // Show splash screen with error and retry button
-                        SplashScreen(
-                            initializationState = initializationState,
-                            onRetry = { initializationViewModel.retry() }
-                        )
-                    }
-
-                    is InitializationState.Success -> {
-                        // Initialization complete, show main app with optional lock overlay
-                        val isLocked by appLockViewModel.isLocked.collectAsStateWithLifecycle()
-
-                        Box {
-                            SpendlyApp()
-
-                            // Show lock screen overlay if app is locked
-                            // (isLocked is already computed from isLockEnabled && shouldLock)
-                            if (isLocked) {
-                                LockScreen(
-                                    onAuthenticationSuccess = { appLockViewModel.unlock() },
-                                    biometricAuthManager = BiometricAuthManager(context = this@MainActivity)
+                    else -> {
+                        when (initializationState) {
+                            is InitializationState.Loading -> {
+                                SplashScreen(
+                                    initializationState = initializationState,
+                                    onRetry = { initializationViewModel.retry() }
                                 )
+                            }
+
+                            is InitializationState.Error -> {
+                                SplashScreen(
+                                    initializationState = initializationState,
+                                    onRetry = { initializationViewModel.retry() }
+                                )
+                            }
+
+                            is InitializationState.Success -> {
+                                val isLocked by appLockViewModel.isLocked.collectAsStateWithLifecycle()
+
+                                Box {
+                                    SpendlyApp()
+
+                                    if (isLocked) {
+                                        LockScreen(
+                                            onAuthenticationSuccess = { appLockViewModel.unlock() },
+                                            biometricAuthManager = BiometricAuthManager(context = this@MainActivity)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
