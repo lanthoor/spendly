@@ -426,4 +426,10 @@ File size: %2$s</string>
     <string name="title_spending_by_category">Spending by Category</string>
     <string name="label_top_n">Top %1$d</string>
     <string name="label_no_expense_data">No expense data available</string>
+
+    <string name="integrity_block_title">Security Check Failed</string>
+    <string name="integrity_block_message">This device cannot run Spendly because it doesn\'t meet security requirements. This may be due to a rooted device, custom ROM, or the app being installed outside the Play Store.</string>
+    <string name="integrity_block_error_label">Error details:</string>
+    <string name="integrity_block_action">If you believe this is a mistake, try reinstalling the app from the Google Play Store. If the issue persists, contact support at support@lanthoor.dev.</string>
+    <string name="integrity_block_retry">Retry</string>
 </resources>

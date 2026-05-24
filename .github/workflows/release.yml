@@ -7,6 +7,8 @@ on:
 
 env:
   NDK_VERSION: "30.0.14904198"
+  INTEGRITY_BACKEND_URL: ${{ secrets.INTEGRITY_BACKEND_URL }}
+  CLOUD_PROJECT_NUMBER: ${{ secrets.CLOUD_PROJECT_NUMBER }}
 
 jobs:
   release:
